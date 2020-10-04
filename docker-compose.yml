@@ -1,0 +1,19 @@
+version: '3.3'
+
+services:
+
+  mongo_db:
+    image: mongo:latest
+    container_name: 'mongo_db'
+    ports:
+      - "27017:27017"
+
+  cinema-webflux-rest-api:
+    image: cinema-webflux-rest-api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo_db
+    ports:
+      - "8000:9000"

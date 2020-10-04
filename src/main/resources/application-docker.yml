@@ -1,0 +1,9 @@
+server:
+  port: 8000
+
+spring:
+  data:
+    mongodb:
+      database: cinema_db
+      host: mongo_db
+      port: 27017
