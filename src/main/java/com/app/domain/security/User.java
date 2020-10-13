@@ -18,7 +18,6 @@ public final class User extends BaseUser {
 
     private LocalDate birthDate;
     private List<Movie> favoriteMovies;
-    private Role role;
 
     public Integer getAge() {
 
@@ -29,10 +28,9 @@ public final class User extends BaseUser {
     }
 
     public User(String username, String password, LocalDate birthDate, List<Movie> favoriteMovies) {
-        super(username, password);
+        super(username, password, Role.ROLE_USER);
         this.birthDate = birthDate;
         this.favoriteMovies = favoriteMovies;
-        role = Role.ROLE_USER;
     }
 
     public static RegularUserBuilder builder() {

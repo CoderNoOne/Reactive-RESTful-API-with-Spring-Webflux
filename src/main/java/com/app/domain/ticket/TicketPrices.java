@@ -8,22 +8,34 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Optional;
 
-public interface TicketPricesByAge {
+public interface TicketPrices {
 
     static BigDecimal getTicketPriceAfterDiscount(Integer age, BigDecimal basePrice, TicketType ticketType) {
 
         return Optional.ofNullable(age)
-                .flatMap(TicketPricesByAge::getDiscount)
-                .orElse(new Discount("0"))
-                .getValue().multiply(basePrice);
+                .map(TicketPrices::getDiscountRegardingAge)
+                .map(Discount::inverse)
+                .map(discAge -> discAge.getValue()
+                        .multiply(getDiscountRegardingTicketType(ticketType).getValue())
+                        .multiply(basePrice))
+                .orElse(basePrice);
     }
 
-    private static Optional<Discount> getDiscount(Integer age) {
+    private static Discount getDiscountRegardingTicketType(TicketType ticketType) {
+
+        return Optional
+                .ofNullable(ticketType)
+                .map(TicketType::getDiscount)
+                .orElse(new Discount("0"));
+    }
+
+    private static Discount getDiscountRegardingAge(Integer age) {
 
         return Arrays.stream(TicketDiscountPerAgeRange.values())
                 .filter(enumVal -> isBetween(age, enumVal))
                 .map(TicketDiscountPerAgeRange::getDiscount)
-                .findFirst();
+                .findFirst()
+                .orElse(new Discount("0"));
     }
 
     private static boolean isBetween(Integer age, TicketDiscountPerAgeRange ticketDiscountPerAgeRange) {

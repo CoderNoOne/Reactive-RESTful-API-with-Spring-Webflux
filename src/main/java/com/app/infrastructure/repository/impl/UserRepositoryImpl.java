@@ -1,6 +1,5 @@
 package com.app.infrastructure.repository.impl;
 
-import com.app.domain.security.BaseUser;
 import com.app.domain.security.User;
 import com.app.domain.security.UserRepository;
 import com.app.infrastructure.repository.mongo.MongoUserRepository;

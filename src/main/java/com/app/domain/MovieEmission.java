@@ -1,6 +1,5 @@
 package com.app.domain;
 
-import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;

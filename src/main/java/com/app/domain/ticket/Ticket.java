@@ -29,7 +29,7 @@ public class Ticket {
     private Position position;
 
     public BigDecimal ticketPrice() {
-        return TicketPricesByAge.getTicketPriceAfterDiscount(
+        return TicketPrices.getTicketPriceAfterDiscount(
                 user.getAge(),
                 movieEmission.getMovie().getPrice().getValue(),
                 type);

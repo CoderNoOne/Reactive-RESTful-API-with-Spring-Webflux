@@ -1,7 +1,10 @@
 package com.app.domain.security;
 
 import com.app.domain.security.enums.Role;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
@@ -11,10 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("admins")
 public final class Admin extends BaseUser {
 
-    private Role role;
 
     public Admin(String username, String password) {
-        super(username, password);
-        this.role = Role.ROLE_ADMIN;
+        super(username, password, Role.ROLE_ADMIN);
     }
 }
