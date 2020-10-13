@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @Document("admins")
-public class Admin extends BaseUser {
+public final class Admin extends BaseUser {
 
     private Role role;
 

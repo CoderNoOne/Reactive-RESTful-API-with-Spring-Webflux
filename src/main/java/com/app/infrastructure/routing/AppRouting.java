@@ -1,5 +1,6 @@
 package com.app.infrastructure.routing;
 
+import com.app.infrastructure.routing.handlers.SecurityHandler;
 import com.app.infrastructure.routing.handlers.UsersHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,13 +17,16 @@ public class AppRouting {
 
     @Bean
     public RouterFunction<ServerResponse> routing(
-            UsersHandler usersHandler) {
+            UsersHandler usersHandler, SecurityHandler securityHandler) {
 
         return RouterFunctions
                 .nest(
                         path("/security"),
-                        route(GET("/all").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
-                                .andRoute(POST("/register").and(accept(MediaType.APPLICATION_JSON)), usersHandler::register));
+                        route(POST("/register").and(accept(MediaType.APPLICATION_JSON)), usersHandler::register))
+
+                .andNest(
+                        path("/login"),
+                        route(POST("").and(accept(MediaType.APPLICATION_JSON)), securityHandler::login));
     }
 
 }

@@ -2,6 +2,7 @@ package com.app.infrastructure.routing.handlers;
 
 import com.app.application.dto.CreateUserDto;
 import com.app.application.service.UsersService;
+import com.app.domain.security.UserRegistrationResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,11 +22,10 @@ public class UsersHandler {
                 .bodyToMono(CreateUserDto.class)
                 .flatMap(createUserDto -> usersService
                         .register(createUserDto)
-                        .flatMap(createdUserId -> ServerResponse
+                        .flatMap(response -> ServerResponse
                                 .status(HttpStatus.CREATED)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(createdUserId)))
-                );
+                                .body(BodyInserters.fromValue(response))));
     }
 
     public Mono<ServerResponse> getAllUsers(ServerRequest serverRequest) {

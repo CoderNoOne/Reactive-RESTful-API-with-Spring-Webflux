@@ -1,9 +1,19 @@
 server:
-  port: 8000
+  port: 9000
 
 spring:
   data:
     mongodb:
-      database: cinema_db
+      database: cinema
       host: localhost
       port: 27017
+
+jwt:
+  token:
+    prefix: Bearer
+  access-token:
+    expiration-time-ms: 300000
+  refresh-token:
+    expiration-time-ms: 28800000
+    access-token-key: AccessTokenKey
+

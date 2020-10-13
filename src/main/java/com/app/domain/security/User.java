@@ -14,7 +14,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Document("users")
-public class User extends BaseUser {
+public final class User extends BaseUser {
 
     private LocalDate birthDate;
     private List<Movie> favoriteMovies;
@@ -33,7 +33,6 @@ public class User extends BaseUser {
         this.birthDate = birthDate;
         this.favoriteMovies = favoriteMovies;
         role = Role.ROLE_USER;
-
     }
 
     public static RegularUserBuilder builder() {

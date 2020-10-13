@@ -6,10 +6,11 @@ import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
-public abstract class BaseUser {
+public abstract sealed class BaseUser permits Admin, User {
 
     @Id
     private String id;
+
     private String username;
     private String password;
 
@@ -18,3 +19,4 @@ public abstract class BaseUser {
         this.password = password;
     }
 }
+

@@ -17,6 +17,11 @@ public class AdminRepositoryImpl implements AdminRepository {
     private final MongoAdminUserRepository mongoAdminUserRepository;
 
     @Override
+    public Mono<Admin> findById(String id) {
+        return mongoAdminUserRepository.findById(id);
+    }
+
+    @Override
     public Mono<Admin> findByUsername(String username) {
         return mongoAdminUserRepository.findByUsername(username);
     }

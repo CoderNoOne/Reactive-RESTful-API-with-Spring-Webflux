@@ -38,6 +38,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Mono<User> findById(String id) {
+        return mongoUserRepository.findById(id);
+    }
+
+    @Override
     public Flux<User> findAllById(List<String> ids) {
         return mongoUserRepository.findAllById(ids);
     }

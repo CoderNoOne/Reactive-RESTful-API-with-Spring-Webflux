@@ -1,18 +1,24 @@
 package com.app;
 
-import com.app.application.dto.CreateUserDto;
-import com.app.infrastructure.repository.impl.UserRepositoryImpl;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import reactor.blockhound.BlockHound;
+
+import javax.crypto.SecretKey;
 
 @SpringBootApplication
 public class CinemaApplication {
 
     public static void main(String[] args) {
-        var ctx = SpringApplication.run(CinemaApplication.class, args);
-        var userRepositoryImpl = ctx.getBean("userRepositoryImpl", UserRepositoryImpl.class);
+        SpringApplication.run(CinemaApplication.class, args);
+    }
 
+    @Bean
+    public SecretKey secretKey() {
+        return Keys.secretKeyFor(SignatureAlgorithm.HS512);
     }
 
 }
