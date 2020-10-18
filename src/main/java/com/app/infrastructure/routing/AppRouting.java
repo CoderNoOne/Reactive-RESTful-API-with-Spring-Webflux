@@ -1,5 +1,6 @@
 package com.app.infrastructure.routing;
 
+import com.app.infrastructure.routing.handlers.MoviesHandler;
 import com.app.infrastructure.routing.handlers.SecurityHandler;
 import com.app.infrastructure.routing.handlers.UsersHandler;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,9 @@ public class AppRouting {
 
     @Bean
     public RouterFunction<ServerResponse> routing(
-            UsersHandler usersHandler, SecurityHandler securityHandler) {
+            UsersHandler usersHandler,
+            SecurityHandler securityHandler,
+            MoviesHandler moviesHandler) {
 
         return RouterFunctions
                 .nest(
@@ -26,7 +29,14 @@ public class AppRouting {
 
                 .andNest(
                         path("/login"),
-                        route(POST("").and(accept(MediaType.APPLICATION_JSON)), securityHandler::login));
+                        route(POST("").and(accept(MediaType.APPLICATION_JSON)), securityHandler::login))
+
+                .andNest(
+                        path("/movies"),
+                        route(PATCH("/{id}").and(accept(MediaType.APPLICATION_JSON)),moviesHandler::addMovieToFavorites)
+                );
+
+
     }
 
 }

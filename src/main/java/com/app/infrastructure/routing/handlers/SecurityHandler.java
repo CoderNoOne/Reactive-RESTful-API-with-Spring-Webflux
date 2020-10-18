@@ -5,6 +5,7 @@ import com.app.infrastructure.security.dto.AuthenticationDto;
 import com.app.infrastructure.security.tokens.AppTokensService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;

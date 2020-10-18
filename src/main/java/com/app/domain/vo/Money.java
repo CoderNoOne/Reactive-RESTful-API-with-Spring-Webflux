@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+
+import static java.util.Objects.isNull;
 
 @Getter
 @Setter
@@ -12,11 +15,17 @@ public class Money {
 
     private BigDecimal value;
 
-    public Money() {this.value = BigDecimal.ZERO;}
+    public Money() {
+        this.value = BigDecimal.ZERO;
+    }
 
-    public Money(String value) {this.value = init(value);}
+    public Money(String value) {
+        this.value = init(value);
+    }
 
-    private Money(BigDecimal value) {this.value = value;}
+    private Money(BigDecimal value) {
+        this.value = value;
+    }
 
     public Money add(String value) {
         return new Money(this.value.add(init(value)));
@@ -35,7 +44,7 @@ public class Money {
     }
 
     private static BigDecimal init(String value) {
-        if (value == null || !value.matches("\\d+(\\.\\d+)?")) {
+        if (isNull(value) || !value.matches("\\d+(\\.\\d+)?")) {
             throw new DiscountException("Money value is not correct");
         }
         return new BigDecimal(value);

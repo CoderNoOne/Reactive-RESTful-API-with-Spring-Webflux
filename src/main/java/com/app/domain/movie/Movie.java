@@ -1,5 +1,6 @@
 package com.app.domain.movie;
 
+import com.app.application.dto.MovieDto;
 import com.app.domain.vo.Money;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -26,4 +28,14 @@ public class Movie {
     private Money price;
     private LocalDate premiereDate;
 
+    public MovieDto toDto() {
+        return MovieDto.builder()
+                .id(id)
+                .name(name)
+                .genre(genre)
+                .price(price)
+                .premiereDate(premiereDate)
+                .duration(duration)
+                .build();
+    }
 }
