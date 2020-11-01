@@ -23,9 +23,9 @@ public class AppTokensService {
     @Value("${jwt.refresh-token.expiration-time-ms}")
     private Long refreshTokenExpirationTimeInMs;
 
-//    @Value("${jwt.token.prefix}")
-//    private String jwtTokenPrefix;
-//
+    @Value("${jwt.token.prefix}")
+    private String jwtTokenPrefix;
+
 //    @Value("${jwt.token.header}")
 //    private String jwtTokenHeader;
 
@@ -77,7 +77,7 @@ public class AppTokensService {
                 });
     }
 
-    public Claims claims(String token) {
+    private Claims claims(String token) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(secretKey)
@@ -87,14 +87,17 @@ public class AppTokensService {
     }
 
     public String getId(String token) {
+        token = token.substring(7);
         return claims(token).getSubject();
     }
 
-    public Date getExpiration(String token) {
+    private Date getExpiration(String token) {
         return claims(token).getExpiration();
     }
 
     public boolean isTokenValid(String token) {
+
+        token = token.substring(7);
         Date expirationDate = getExpiration(token);
         return expirationDate.after(new Date());
     }

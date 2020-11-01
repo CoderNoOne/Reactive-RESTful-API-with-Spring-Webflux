@@ -1,16 +1,19 @@
 package com.app.application.service;
 
+import com.app.application.dto.CreateMovieDto;
 import com.app.application.dto.MovieDto;
 import com.app.application.exception.MovieServiceException;
+import com.app.application.mapper.Mappers;
 import com.app.domain.movie.Movie;
 import com.app.domain.movie.MovieRepository;
-import com.app.domain.security.User;
 import com.app.domain.security.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.awt.desktop.ScreenSleepEvent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -21,6 +24,7 @@ import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class MovieService {
 
     private final MovieRepository movieRepository;
@@ -45,7 +49,7 @@ public class MovieService {
                         Objects.equals(movie.getGenre(), keyWord) ||
                                 Objects.equals(movie.getName(), keyWord) ||
                                 Objects.equals(movie.getPremiereDate().toString(), keyWord) ||
-                                Objects.equals(movie.getPrice().getValue().toString(), keyWord) ||
+                                Objects.equals(movie.getTicketPrice().getValue().toString(), keyWord) ||
                                 Objects.equals(String.valueOf(movie.getDuration()), keyWord))
                 .map(Movie::toDto);
 
@@ -132,9 +136,9 @@ public class MovieService {
         }
 
         return movieRepository.findAll()
-                .filter(movie -> nonNull(movie) && nonNull(movie.getPrice()) && nonNull(movie.getPrice().getValue()))
-                .filter(movie -> (!isMinPriceNull && movie.getPrice().getValue().compareTo(minPrice) >= 0) &&
-                        (!isMaxPriceNull && movie.getPrice().getValue().compareTo(maxPrice) <= 0));
+                .filter(movie -> nonNull(movie) && nonNull(movie.getTicketPrice()) && nonNull(movie.getTicketPrice().getValue()))
+                .filter(movie -> (!isMinPriceNull && movie.getTicketPrice().getValue().compareTo(minPrice) >= 0) &&
+                        (!isMaxPriceNull && movie.getTicketPrice().getValue().compareTo(maxPrice) <= 0));
     }
 
     public Mono<Movie> addMovieToFavorites(final String movieId, final String username) {
@@ -148,4 +152,28 @@ public class MovieService {
                         })
                 );
     }
+
+    public Mono<MovieDto> getById(final String id) {
+        return movieRepository.findById(id)
+                .map(Movie::toDto);
+    }
+
+    public Mono<MovieDto> addMovie(final Mono<CreateMovieDto> createMovieDto) {
+
+        return createMovieDto
+                .flatMap(val -> movieRepository.addOrUpdate(Mappers.fromCreateMovieDtoToMovie(val)))
+                .doOnSuccess(movie -> log.info("Movie {} saved", movie))
+                .doOnError(ex -> {
+                    log.info("Movie cannot be saved");
+                    log.error(ex.getMessage(), ex);
+                })
+                .map(Movie::toDto);
+    }
+
+    public Mono<MovieDto> deleteMovieById(final String id) {
+
+        return movieRepository.deleteById(id)
+                .map(Movie::toDto);
+    }
+
 }

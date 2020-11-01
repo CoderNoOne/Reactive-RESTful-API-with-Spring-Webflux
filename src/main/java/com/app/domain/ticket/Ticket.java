@@ -1,7 +1,6 @@
 package com.app.domain.ticket;
 
-import com.app.domain.MovieEmission;
-import com.app.domain.security.User;
+import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.ticket.enums.TicketType;
 import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
@@ -23,17 +22,17 @@ public class Ticket {
     @Id
     private String id;
 
-    private User user;
     private TicketType type;
     private MovieEmission movieEmission;
     private Position position;
+    private BigDecimal price;
 
-    public BigDecimal ticketPrice() {
-        return TicketPrices.getTicketPriceAfterDiscount(
-                user.getAge(),
-                movieEmission.getMovie().getPrice().getValue(),
-                type);
-    }
+//    public BigDecimal ticketPrice() {
+//        return TicketPrices.getTicketPriceAfterDiscount(
+//                user.getAge(),
+//                movieEmission.getMovie().getPrice().getValue(),
+//                type);
+//    }
 
 }
 

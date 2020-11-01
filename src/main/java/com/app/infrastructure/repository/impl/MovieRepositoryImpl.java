@@ -42,8 +42,12 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     @Override
-    public Mono<Movie> deleteById(String s) {
-        return null;
+    public Mono<Movie> deleteById(String id) {
+        return mongoMovieRepository
+                .findById(id)
+                .flatMap(movie -> mongoMovieRepository
+                        .delete(movie)
+                        .then(Mono.just(movie)));
     }
 
     @Override

@@ -1,6 +1,5 @@
-package com.app.domain;
+package com.app.domain.movie_emission;
 
-import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;
 import com.app.domain.vo.Position;
@@ -25,7 +24,6 @@ public class MovieEmission {
     @Id
     private String id;
 
-    private CinemaHall cinemaHall;
     private Movie movie;
     private LocalDateTime startDateTime;
 

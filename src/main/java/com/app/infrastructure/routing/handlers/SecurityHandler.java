@@ -1,9 +1,13 @@
 package com.app.infrastructure.routing.handlers;
 
+import com.app.application.dto.ErrorMessageDto;
+import com.app.application.dto.ResponseDto;
 import com.app.infrastructure.security.AppUserDetailsService;
 import com.app.infrastructure.security.dto.AuthenticationDto;
+import com.app.infrastructure.security.dto.TokensDto;
 import com.app.infrastructure.security.tokens.AppTokensService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,14 +29,26 @@ public class SecurityHandler {
         Mono<AuthenticationDto> authenticationDtoMono = serverRequest.bodyToMono(AuthenticationDto.class);
         return authenticationDtoMono
                 .flatMap(authenticationDto -> appUserDetailsService
-                    .findByUsername(authenticationDto.getUsername())
+                        .findByUsername(authenticationDto.getUsername())
                         .filter(user -> passwordEncoder.matches(authenticationDto.getPassword(), user.getPassword()))
                         .flatMap(user -> appTokensService.generateTokens(user)
-                            .flatMap(tokensDto -> ServerResponse
-                                .ok()
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .body(BodyInserters.fromValue(tokensDto))
-                            )
+                                .flatMap(tokensDto -> ServerResponse
+                                        .ok()
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .body(BodyInserters.fromValue(
+                                                ResponseDto.<TokensDto>builder()
+                                                        .data(tokensDto)
+                                                        .build()))
+                                )
+                        ).switchIfEmpty(ServerResponse
+                                .status(HttpStatus.BAD_REQUEST)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(ResponseDto
+                                        .builder()
+                                        .error(ErrorMessageDto.builder()
+                                                .message("Password is incorrect")
+                                                .build())
+                                        .build()))
                         )
                 );
     }

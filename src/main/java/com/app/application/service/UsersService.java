@@ -1,6 +1,7 @@
 package com.app.application.service;
 
 import com.app.application.dto.CreateUserDto;
+import com.app.application.exception.RegistrationUserException;
 import com.app.application.exception.UsersServiceException;
 import com.app.application.mapper.Mappers;
 import com.app.application.validator.CreateUserDtoValidator;
@@ -33,7 +34,7 @@ public class UsersService {
                     .stream()
                     .map(e -> e.getKey() + ": " + e.getValue())
                     .collect(Collectors.joining("\n"));
-            return Mono.error(new UsersServiceException(errorMessage));
+            return Mono.error(() -> new RegistrationUserException(errorMessage));
         }
 
         return userRepository
@@ -45,7 +46,8 @@ public class UsersService {
     }
 
     private Mono<String> createUser(final CreateUserDto createUserDto) {
-        createUserDto.setPassword(passwordEncoder.encode(createUserDto.getPassword()));
+        createUserDto.setPassword(createUserDto.getPassword() != null ?
+                passwordEncoder.encode(createUserDto.getPassword()) : null);
         var user = Mappers.fromCreateUserDtoToRegularUser(createUserDto);
         return userRepository.addOrUpdate(user).map(User::getId);
     }

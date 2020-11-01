@@ -8,9 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +25,9 @@ public class Movie {
     private String name;
     private String genre;
     private Integer duration;
-    private Money price;
+    private Money ticketPrice;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate premiereDate;
 
     public MovieDto toDto() {
@@ -33,7 +35,7 @@ public class Movie {
                 .id(id)
                 .name(name)
                 .genre(genre)
-                .price(price)
+                .price(ticketPrice)
                 .premiereDate(premiereDate)
                 .duration(duration)
                 .build();

@@ -8,15 +8,22 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
+import org.springframework.security.web.server.WebFilterExchange;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @EnableWebFluxSecurity
@@ -56,6 +63,26 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public ServerAuthenticationFailureHandler serverAuthenticationFailureHandler() {
+        return new ServerAuthenticationFailureHandler() {
+            @Override
+            public Mono<Void> onAuthenticationFailure(WebFilterExchange webFilterExchange, AuthenticationException e) {
+                webFilterExchange.getExchange().getResponse().setRawStatusCode(HttpStatus.UNAUTHORIZED.value());
+
+                ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
+                return Mono.empty();
+            }
+        };
+    }
+
+    @Bean
+    public AuthenticationWebFilter authenticationWebFilter() {
+        AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(authenticationManager);
+        authenticationWebFilter.setAuthenticationFailureHandler(serverAuthenticationFailureHandler());
+        return authenticationWebFilter;
+    }
+
+    @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
 
@@ -81,10 +108,13 @@ public class WebSecurityConfig {
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/login").permitAll()
                 .pathMatchers("/security/register").permitAll()
+                .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
+                .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
                 .pathMatchers("/tickets/**").hasRole("USER")
+                .pathMatchers("/ticketOrders/**").hasRole("USER")
 
                 .anyExchange().authenticated()
-                .and()
+                .and().addFilterAt(authenticationWebFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
 }

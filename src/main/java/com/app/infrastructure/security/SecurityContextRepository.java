@@ -1,20 +1,22 @@
 package com.app.infrastructure.security;
 
+import com.app.application.exception.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import static java.util.Objects.nonNull;
+
 @Component
 public class SecurityContextRepository implements ServerSecurityContextRepository {
-
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -26,14 +28,17 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
     @Override
     public Mono<SecurityContext> load(ServerWebExchange serverWebExchange) {
-        ServerHttpRequest request = serverWebExchange.getRequest();
-        String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String authToken = authHeader.substring(7);
-            Authentication auth = new UsernamePasswordAuthenticationToken("", authToken);
-            return this.authenticationManager.authenticate(auth).map(SecurityContextImpl::new);
-        }
-        return Mono.error(new IllegalStateException("AUTHENTICATICATION FAILED 4"));
+        return Mono.justOrEmpty(serverWebExchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
+                .filter(header -> nonNull(header) && header.startsWith("Bearer "))
+                .map(header -> new UsernamePasswordAuthenticationToken("", header.substring(7)))
+                .flatMap(auth -> authenticationManager.authenticate(auth)
+                        .map(SecurityContextImpl::new)
+                        .map(impl -> (SecurityContext) impl)
+                )
+                .onErrorMap(
+                        er -> er instanceof AuthenticationException,
+                        autEx -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authorized", autEx)
+                );
     }
 }

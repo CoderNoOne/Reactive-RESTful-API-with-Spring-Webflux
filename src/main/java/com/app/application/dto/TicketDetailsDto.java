@@ -1,5 +1,6 @@
-package com.app.domain.position_index;
+package com.app.application.dto;
 
+import com.app.domain.ticket.enums.TicketType;
 import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Data
-public class PositionIndex {
+public class TicketDetailsDto {
 
+    private Integer viewerAge;
+    private TicketType ticketType;
     private Position position;
-    private boolean isFree;
+
 }

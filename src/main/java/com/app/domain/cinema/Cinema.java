@@ -1,8 +1,6 @@
 package com.app.domain.cinema;
 
-import com.app.domain.MovieEmission;
 import com.app.domain.cinema_hall.CinemaHall;
-import com.app.domain.city.City;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,9 +20,5 @@ public class Cinema {
     @Id
     private String id;
 
-    private City city;
     private List<CinemaHall> cinemaHalls;
-
-    private List<MovieEmission> movieEmissions;
-
 }
