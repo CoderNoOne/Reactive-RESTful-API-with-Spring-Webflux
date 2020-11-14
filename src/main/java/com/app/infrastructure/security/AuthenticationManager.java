@@ -29,25 +29,13 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
 
-//        return Mono.just(authentication.getCredentials().toString())
-//                .flatMap(authToken -> !appTokensService.isTokenValid(authToken) ?
-//                        Mono.error(() -> new AuthenticationException("AUTH FAILED 1")) :
-//                        userRepository.findById(appTokensService.getId(authToken))
-//                                .map(userFromDb -> new UsernamePasswordAuthenticationToken(
-//                                        userFromDb.getUsername(),
-//                                        null,
-//                                        List.of(new SimpleGrantedAuthority(userFromDb.getRole().toString()))
-//                                ))
-//                );
-
         try {
-            String authToken = authentication.getCredentials().toString();
-            if (!appTokensService.isTokenValid(authToken)) {
-                return Mono.error(() -> new AuthenticationException("AUTH FAILED 1"));
+            if (!appTokensService.isTokenValid(authentication.getCredentials().toString())) {
+                return Mono.error(() -> new AuthenticationException("AUTH FAILED - TOKEN IS NOT VALID"));
             }
-            var userId = appTokensService.getId(authToken);
             return userRepository
-                    .findById(userId)
+                    .findById(appTokensService.getId(authentication.getCredentials().toString()))
+                    .switchIfEmpty(Mono.error(() -> new AuthenticationException("Wrong username")))
                     .map(userFromDb -> new UsernamePasswordAuthenticationToken(
                             userFromDb.getUsername(),
                             null,
@@ -55,7 +43,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     ));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return Mono.error(() -> new AuthenticationException("AUTH FAILED 2"));
+            return Mono.error(() -> new AuthenticationException("USER CANNOT BE AUTHENTICATED"));
         }
     }
 }

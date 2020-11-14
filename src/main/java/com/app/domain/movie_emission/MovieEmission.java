@@ -1,5 +1,6 @@
 package com.app.domain.movie_emission;
 
+import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;
 import com.app.domain.vo.Position;
@@ -26,8 +27,10 @@ public class MovieEmission {
 
     private Movie movie;
     private LocalDateTime startDateTime;
+    private CinemaHall cinemaHall;
 
     private List<PositionIndex> positionIndices;
+
 
     public List<Position> getFreePositions() {
         return positionIndices

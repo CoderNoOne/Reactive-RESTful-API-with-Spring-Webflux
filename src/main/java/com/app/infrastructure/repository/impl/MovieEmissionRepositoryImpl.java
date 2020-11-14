@@ -61,4 +61,9 @@ public class MovieEmissionRepositoryImpl implements MovieEmissionRepository {
                 .flatMapMany(Flux::fromIterable);
 
     }
+
+    @Override
+    public Flux<MovieEmission> findMovieEmissionsByMovieId(String movieId) {
+        return mongoMovieEmissionRepository.findMovieEmissionsByMovieId(movieId);
+    }
 }

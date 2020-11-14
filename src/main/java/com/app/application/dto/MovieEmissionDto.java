@@ -5,13 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class CreateMovieEmission {
+@Data
+public class MovieEmissionDto {
 
-    private CreateMovieDto movieDto;
-//    private CinemaHallDto cinemaHallDto;
-
+    private String id;
+    private String movieId;
+    private LocalDateTime startTime;
+    private String cinemaHallId;
 }

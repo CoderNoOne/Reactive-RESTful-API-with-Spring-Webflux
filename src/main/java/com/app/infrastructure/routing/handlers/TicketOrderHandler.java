@@ -21,14 +21,9 @@ public class TicketOrderHandler {
 
     public Mono<ServerResponse> orderTickets(final ServerRequest serverRequest) {
 
-        Mono<String> principal = serverRequest.principal().map(Principal::getName);
-
-        return ticketOrderService
-                .addTicketOrder(serverRequest.principal(), serverRequest.bodyToMono(CreateTicketOrderDto.class))
-                .flatMap(resp -> ServerResponse
-                        .status(HttpStatus.CREATED)
+        return serverRequest.bodyToMono(CreateTicketOrderDto.class)
+                .flatMap(value -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(resp))
-                );
+                        .body(BodyInserters.fromValue(ticketOrderService.addTicketOrder(serverRequest.principal(), value))));
     }
 }

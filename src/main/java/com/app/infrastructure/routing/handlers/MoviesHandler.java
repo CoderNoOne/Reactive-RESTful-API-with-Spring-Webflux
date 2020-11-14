@@ -2,13 +2,9 @@ package com.app.infrastructure.routing.handlers;
 
 import com.app.application.dto.CreateMovieDto;
 import com.app.application.dto.ErrorMessageDto;
-import com.app.application.dto.ExceptionResponseDto;
 import com.app.application.dto.ResponseDto;
 import com.app.application.exception.AuthenticationException;
-import com.app.application.exception.RegistrationUserException;
 import com.app.application.service.MovieService;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.mongodb.internal.connection.Server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,11 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
-import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -89,10 +81,7 @@ public class MoviesHandler {
 
     public Mono<ServerResponse> deleteMovieById(final ServerRequest serverRequest) {
 
-        String id = serverRequest.pathVariable("id");
-
-
-        return movieService.deleteMovieById(serverRequest.pathVariable("id"))
+        return movieService.deleteMovieById(serverRequest.pathVariable(serverRequest.pathVariable("id")))
                 .flatMap(movie -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)

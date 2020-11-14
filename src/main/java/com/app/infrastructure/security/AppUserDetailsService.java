@@ -1,5 +1,6 @@
 package com.app.infrastructure.security;
 
+import com.app.application.exception.AuthenticationException;
 import com.app.domain.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,6 +24,6 @@ public class AppUserDetailsService {
                         user.getPassword(),
                         true, true, true, true,
                         List.of(new SimpleGrantedAuthority(user.getRole().toString()))
-                )).switchIfEmpty(Mono.error(() -> new IllegalStateException("Username not found")));
+                ));
     }
 }

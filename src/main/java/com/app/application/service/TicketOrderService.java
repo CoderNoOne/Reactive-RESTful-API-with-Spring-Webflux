@@ -23,9 +23,9 @@ public class TicketOrderService {
     private final MovieEmissionRepository movieEmissionRepository;
     private final UserRepository userRepository;
 
-    public Mono<TicketOrder> addTicketOrder(Mono<? extends Principal> principal, Mono<CreateTicketOrderDto> createTicketOrderDto) {
+    public Mono<TicketOrder> addTicketOrder(Mono<? extends Principal> principal, CreateTicketOrderDto createTicketOrderDto) {
 
-        return createTicketOrderDto
+        return Mono.justOrEmpty(createTicketOrderDto)
                 .switchIfEmpty(Mono.error(() -> new IllegalArgumentException("empty createTickerOrderDto")))
                 .flatMap(value -> movieEmissionRepository
                         .findById(value.getMovieEmissionId())

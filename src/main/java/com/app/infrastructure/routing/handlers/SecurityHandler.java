@@ -40,16 +40,18 @@ public class SecurityHandler {
                                                         .data(tokensDto)
                                                         .build()))
                                 )
-                        ).switchIfEmpty(ServerResponse
+                        ).switchIfEmpty(Mono.error(() -> new IllegalArgumentException("asdsad")))
+
+                        /*.switchIfEmpty(ServerResponse
                                 .status(HttpStatus.BAD_REQUEST)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .body(BodyInserters.fromValue(ResponseDto
                                         .builder()
                                         .error(ErrorMessageDto.builder()
-                                                .message("Password is incorrect")
+                                                .message("Credentials are not valid")
                                                 .build())
                                         .build()))
-                        )
+                        )*/
                 );
     }
 }
