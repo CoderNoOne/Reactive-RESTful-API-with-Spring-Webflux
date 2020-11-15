@@ -1,12 +1,12 @@
 package com.app.application.dto;
 
-import com.app.domain.vo.Money;
+import com.opencsv.bean.CsvBindByName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,9 +14,18 @@ import java.time.LocalDate;
 @Data
 public class CreateMovieDto {
 
-    private String name;
+    @CsvBindByName
     private String genre;
+
+    @CsvBindByName
+    private String name;
+
+    @CsvBindByName
     private Integer duration;
-    private Money price;
-    private LocalDate premiereDate;
+
+    @CsvBindByName
+    private BigDecimal price;
+
+    @CsvBindByName(format = "yyyy/MM/dd")
+    private String premiereDate;
 }

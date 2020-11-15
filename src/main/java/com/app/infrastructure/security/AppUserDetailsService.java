@@ -1,10 +1,8 @@
 package com.app.infrastructure.security;
 
-import com.app.application.exception.AuthenticationException;
 import com.app.domain.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

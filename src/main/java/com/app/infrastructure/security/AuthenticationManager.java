@@ -1,19 +1,15 @@
 package com.app.infrastructure.security;
 
-import com.app.application.dto.ErrorMessageDto;
-import com.app.application.dto.ResponseDto;
 import com.app.application.exception.AuthenticationException;
 import com.app.domain.security.UserRepository;
 import com.app.infrastructure.security.tokens.AppTokensService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

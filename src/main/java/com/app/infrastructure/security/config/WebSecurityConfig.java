@@ -125,11 +125,13 @@ public class WebSecurityConfig {
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
                 .pathMatchers("/login").permitAll()
+                .pathMatchers("/demo/**").permitAll()
                 .pathMatchers("/security/register").permitAll()
                 .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
                 .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
                 .pathMatchers("/tickets/**").hasRole("USER")
                 .pathMatchers("/ticketOrders/**").hasRole("USER")
+                .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
 
                 .anyExchange().authenticated()
                 .and().build();

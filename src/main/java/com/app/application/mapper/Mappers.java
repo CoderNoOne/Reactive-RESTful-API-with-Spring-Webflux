@@ -4,7 +4,11 @@ import com.app.application.dto.CreateMovieDto;
 import com.app.application.dto.CreateUserDto;
 import com.app.domain.movie.Movie;
 import com.app.domain.security.User;
+import com.app.domain.vo.Money;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public interface Mappers {
@@ -25,8 +29,8 @@ public interface Mappers {
                         .duration(value.getDuration())
                         .genre(value.getGenre())
                         .name(value.getName())
-                        .ticketPrice(value.getPrice())
-                        .premiereDate(value.getPremiereDate())
+                        .ticketPrice(new Money(value.getPrice().toString()))
+                        .premiereDate(LocalDate.parse(value.getPremiereDate(), DateTimeFormatter.ofPattern("yyyy/MM/dd")))
                         .build())
                 .orElse(null);
     }

@@ -7,15 +7,29 @@ import com.app.application.mapper.Mappers;
 import com.app.domain.movie.Movie;
 import com.app.domain.movie.MovieRepository;
 import com.app.domain.security.UserRepository;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.awt.image.DataBuffer;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -166,6 +180,51 @@ public class MovieService {
                     log.info("Movie cannot be saved");
                     log.error(ex.getMessage(), ex);
                 })
+                .map(Movie::toDto);
+    }
+
+//    public Flux<MovieDto> uploadCSVFile(final Mono<FilePart> filePartFlux) {
+//
+//        return filePartFlux
+//                .map(filePart -> filePart.content()
+//                        .map(dataBuffer ->
+//                                new CsvToBeanBuilder<CreateMovieDto>(new BufferedReader(new InputStreamReader(dataBuffer.asInputStream())))
+//                                        .withType(CreateMovieDto.class)
+//                                        .withIgnoreLeadingWhiteSpace(true)
+//                                        .withSeparator(',')
+//                                        .build())
+//                        .flatMapIterable(CsvToBean::parse))
+//                .flatMap(Flux::collectList)
+//                .map(list -> list.stream()
+//                        .map(Mappers::fromCreateMovieDtoToMovie)
+//                        .collect(Collectors.toList()))
+//                .flatMapMany(Flux::fromIterable)
+//                .map(Movie::toDto);
+//
+//    }
+
+    public Flux<MovieDto> uploadCSVFile(final Mono<Resource> resourceMono) {
+
+        return resourceMono
+                .map(resource -> {
+                    try {
+                        return new BufferedReader(new InputStreamReader(resource.getInputStream()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    throw new IllegalArgumentException();
+                })
+                .map(bufferedReader -> new CsvToBeanBuilder<CreateMovieDto>(bufferedReader)
+                        .withType(CreateMovieDto.class)
+                        .withIgnoreLeadingWhiteSpace(true)
+                        .withSeparator(',')
+                        .build())
+                .map(CsvToBean::parse)
+                .map(list -> list.stream()
+                        .map(Mappers::fromCreateMovieDtoToMovie)
+                        .collect(Collectors.toList()))
+                .map(movieRepository::addOrUpdateMany)
+                .flatMapMany(Function.identity())
                 .map(Movie::toDto);
     }
 

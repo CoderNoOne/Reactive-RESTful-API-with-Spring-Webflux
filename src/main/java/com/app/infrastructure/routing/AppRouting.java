@@ -1,9 +1,6 @@
 package com.app.infrastructure.routing;
 
-import com.app.infrastructure.routing.handlers.MoviesHandler;
-import com.app.infrastructure.routing.handlers.SecurityHandler;
-import com.app.infrastructure.routing.handlers.TicketOrderHandler;
-import com.app.infrastructure.routing.handlers.UsersHandler;
+import com.app.infrastructure.routing.handlers.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -22,7 +19,8 @@ public class AppRouting {
             final UsersHandler usersHandler,
             final SecurityHandler securityHandler,
             final MoviesHandler moviesHandler,
-            final TicketOrderHandler ticketOrderHandler
+            final TicketOrderHandler ticketOrderHandler,
+            final MovieEmissionsHandler movieEmissionsHandler
     ) {
 
         return RouterFunctions
@@ -43,11 +41,17 @@ public class AppRouting {
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::addMovieToDatabase)
                                 .andRoute(DELETE("/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::deleteMovieById)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getAllMovies)
+                                .andRoute(POST("/csv").and(accept(MediaType.MULTIPART_FORM_DATA)), moviesHandler::addMovieToDatabaseWithCsvFile)
                 )
 
                 .andNest(
                         path("/ticketOrders"),
                         route(POST("").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::orderTickets)
+                )
+
+                .andNest(
+                        path("/movieEmissions"),
+                        route(POST("").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::addMovieEmission)
                 );
 
 

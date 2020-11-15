@@ -6,9 +6,13 @@ import com.app.application.dto.ResponseDto;
 import com.app.application.exception.AuthenticationException;
 import com.app.application.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -78,6 +82,18 @@ public class MoviesHandler {
                         .body(BodyInserters.fromValue(movie))
                 );
     }
+
+    public Mono<ServerResponse> addMovieToDatabaseWithCsvFile(final ServerRequest serverRequest) {
+
+        return movieService.uploadCSVFile(serverRequest.bodyToMono(Resource.class))
+                .collectList()
+                .flatMap(addedMovieList -> ServerResponse
+                        .status(HttpStatus.CREATED)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(addedMovieList))
+                );
+    }
+
 
     public Mono<ServerResponse> deleteMovieById(final ServerRequest serverRequest) {
 
