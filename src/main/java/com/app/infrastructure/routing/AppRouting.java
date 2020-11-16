@@ -53,8 +53,6 @@ public class AppRouting {
                         path("/movieEmissions"),
                         route(POST("").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::addMovieEmission)
                 );
-
-
     }
 
 }
