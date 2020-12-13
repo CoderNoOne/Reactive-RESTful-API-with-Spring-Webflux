@@ -199,16 +199,16 @@ public class MovieService {
                     }
                     throw new IllegalArgumentException();
                 })
-                .map(bufferedReader -> new CsvToBeanBuilder<CreateMovieDto>(bufferedReader)
-                        .withType(CreateMovieDto.class)
-                        .withIgnoreLeadingWhiteSpace(true)
-                        .withSeparator(',')
-                        .build())
-                .map(CsvToBean::parse)
-                .map(list -> list.stream()
-                        .map(Mappers::fromCreateMovieDtoToMovie)
-                        .collect(Collectors.toList()))
-                .map(movieRepository::addOrUpdateMany)
+                .map(bufferedReader -> movieRepository
+                        .addOrUpdateMany(new CsvToBeanBuilder<CreateMovieDto>(bufferedReader)
+                                .withType(CreateMovieDto.class)
+                                .withIgnoreLeadingWhiteSpace(true)
+                                .withSeparator(',')
+                                .build()
+                                .parse()
+                                .stream()
+                                .map(Mappers::fromCreateMovieDtoToMovie)
+                                .collect(Collectors.toList())))
                 .flatMapMany(Function.identity())
                 .map(Movie::toDto);
     }

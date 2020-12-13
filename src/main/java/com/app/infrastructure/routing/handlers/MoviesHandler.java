@@ -1,8 +1,6 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.CreateMovieDto;
-import com.app.application.dto.ErrorMessageDto;
-import com.app.application.dto.ResponseDto;
+import com.app.application.dto.*;
 import com.app.application.exception.AuthenticationException;
 import com.app.application.service.MovieService;
 import com.app.infrastructure.aspect.annotations.Loggable;
@@ -10,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.http.codec.multipart.Part;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -120,5 +115,89 @@ public class MoviesHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(movie))
                 );
+    }
+
+    @Loggable
+    public Mono<ServerResponse> getMoviesFilteredByBasePrice(ServerRequest serverRequest) {
+
+        return serverRequest.bodyToMono(MovieFilteredByEmissionDate.class)
+                .flatMap(dto -> movieService.getFilteredByBaseTicketPrice(dto.getMinPrice(), dto.getMaxPrice())
+                        .collectList()
+                        .flatMap(movie -> ServerResponse
+                                .status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(movie))
+                        ));
+
+    }
+
+    @Loggable
+    public Mono<ServerResponse> getMoviesFilteredByPremiereDate(ServerRequest serverRequest) {
+
+        return serverRequest.bodyToMono(MovieFilteredByPremiereDate.class)
+                .flatMap(dto -> movieService.getFilteredByPremiereDate(dto.getDateFrom(), dto.getDateTo())
+                        .collectList()
+                        .flatMap(movie -> ServerResponse
+                                .status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(movie))
+                        ));
+
+    }
+
+    @Loggable
+    public Mono<ServerResponse> getMoviesFilteredByDuration(ServerRequest serverRequest) {
+
+        return serverRequest.bodyToMono(MovieFilteredByDuration.class)
+                .flatMap(dto -> movieService.getFilteredByDuration(dto.getMinDuration(), dto.getMaxDuration())
+                        .collectList()
+                        .flatMap(movie -> ServerResponse
+                                .status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(movie))
+                        ));
+
+    }
+
+    @Loggable
+    public Mono<ServerResponse> getMoviesFilteredByName(ServerRequest serverRequest) {
+
+        return
+                movieService.getFilteredByName(serverRequest.pathVariable("name"))
+                        .collectList()
+                        .flatMap(movie -> ServerResponse
+                                .status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(movie))
+                        );
+
+    }
+
+    @Loggable
+    public Mono<ServerResponse> getMoviesFilteredByGenre(ServerRequest serverRequest) {
+
+        return
+                movieService.getFilteredByGenre(serverRequest.pathVariable("genre"))
+                        .collectList()
+                        .flatMap(movie -> ServerResponse
+                                .status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(movie))
+                        );
+
+    }
+
+    @Loggable
+    public Mono<ServerResponse> getMoviesFilteredByKeyword(ServerRequest serverRequest) {
+
+        return
+                movieService.getFilteredByKeyword(serverRequest.pathVariable("keyword"))
+                        .collectList()
+                        .flatMap(movie -> ServerResponse
+                                .status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(movie))
+                        );
+
     }
 }

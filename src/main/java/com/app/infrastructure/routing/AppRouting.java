@@ -44,6 +44,12 @@ public class AppRouting {
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::addMovieToDatabase)
                                 .andRoute(DELETE("/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::deleteMovieById)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getAllMovies)
+                                .andRoute(GET("filter/ticketPrice").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByBasePrice)
+                                .andRoute(GET("filter/premiereDate").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByPremiereDate)
+                                .andRoute(GET("filter/duration").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByDuration)
+                                .andRoute(GET("filter/name/{name}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByName)
+                                .andRoute(GET("filter/name/{genre}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByGenre)
+                                .andRoute(GET("filter/name/{keyword}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByKeyword)
                                 .andRoute(POST("/csv").and(accept(MediaType.MULTIPART_FORM_DATA)), moviesHandler::addMovieToDatabaseWithCsvFile)
                 )
 
@@ -66,8 +72,6 @@ public class AppRouting {
                                 .andRoute(GET("name/{name}").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::findByName)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::getAll)
                 );
-
-
     }
 
 }
