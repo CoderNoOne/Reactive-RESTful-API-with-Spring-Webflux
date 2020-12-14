@@ -1,10 +1,7 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.CreateCityDto;
-import com.app.application.dto.ErrorMessageDto;
-import com.app.application.dto.ResponseDto;
+import com.app.application.dto.*;
 import com.app.application.service.CityService;
-import com.app.domain.city.City;
 import com.app.infrastructure.aspect.annotations.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,7 +38,7 @@ public class CitiesHandler {
                 .flatMap(city -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ResponseDto.<City>builder().data(city).build())))
+                        .body(BodyInserters.fromValue(ResponseDto.<CityDto>builder().data(city).build())))
                 .switchIfEmpty(ServerResponse
                         .status(HttpStatus.NOT_FOUND)
                         .body(BodyInserters
@@ -60,6 +57,18 @@ public class CitiesHandler {
                 .flatMap(cities -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ResponseDto.<List<City>>builder().data(cities).build())));
+                        .body(BodyInserters.fromValue(ResponseDto.<List<CityDto>>builder().data(cities).build())));
+    }
+
+    @Loggable
+    public Mono<ServerResponse> addCinemaToCity(ServerRequest serverRequest) {
+
+        return serverRequest.bodyToMono(AddCinemaToCityDto.class)
+                .flatMap(dto -> cityService.addCinemaToCity(dto)
+                        .flatMap(city -> ServerResponse.status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(BodyInserters.fromValue(ResponseDto.<CityDto>builder().data(city).build())))
+
+                );
     }
 }

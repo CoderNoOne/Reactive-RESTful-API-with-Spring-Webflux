@@ -1,20 +1,19 @@
 package com.app.application.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class CreateMovieEmissionDto {
+@Data
+public class AddCinemaToCityDto {
 
-    private String movieId;
-    private String cinemaHallId;
-    private LocalDateTime startTime;
-
+    private String city;
+    private List<CreateCinemaHallDto> cinemaHallsCapacity;
 }

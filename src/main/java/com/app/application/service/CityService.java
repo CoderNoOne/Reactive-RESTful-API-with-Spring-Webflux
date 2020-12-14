@@ -1,31 +1,78 @@
 package com.app.application.service;
 
+import com.app.application.dto.AddCinemaToCityDto;
+import com.app.application.dto.CityDto;
 import com.app.application.dto.CreateCityDto;
+import com.app.application.service.util.ServiceUtils;
+import com.app.domain.cinema.Cinema;
+import com.app.domain.cinema.CinemaRepository;
+import com.app.domain.cinema_hall.CinemaHall;
+import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.city.City;
 import com.app.domain.city.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
 public class CityService {
 
     private final CityRepository cityRepository;
+    private final CinemaRepository cinemaRepository;
+    private final CinemaHallRepository cinemaHallRepository;
+    private final TransactionalOperator transactionalOperator;
 
-    public Mono<City> addCity(Mono<CreateCityDto> createCityDto) {
+    public Mono<CityDto> addCity(Mono<CreateCityDto> createCityDto) {
         return createCityDto
                 .flatMap(dto -> cityRepository
-                .addOrUpdate(dto.toEntity()));
+                        .addOrUpdate(dto.toEntity()))
+                .map(City::toDto);
     }
 
-    public Mono<City> findByName(String name){
-        return cityRepository.findByName(name);
+    public Mono<CityDto> findByName(String name) {
+        return cityRepository.findByName(name).map(City::toDto);
     }
 
-    public Flux<City> getAll() {
-        return cityRepository.findAll();
+    public Mono<CityDto> addCinemaToCity(AddCinemaToCityDto addCinemaToCityDtoMono) {
+
+        return cinemaHallRepository.addOrUpdateMany(addCinemaToCityDtoMono
+                .getCinemaHallsCapacity().stream()
+                .map(dtoVal -> CinemaHall.builder()
+                        .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
+                        .movieEmissions(Collections.emptyList())
+                        .build())
+                .collect(Collectors.toList()))
+                .collectList()
+                .flatMap(cinemaHalls -> cinemaRepository.addOrUpdate(Cinema.builder()
+                        .cinemaHalls(cinemaHalls)
+                        .build()))
+                .flatMap(cinema ->
+                        cityRepository.findByName(addCinemaToCityDtoMono.getCity())
+                                .switchIfEmpty(Mono.error(() -> new IllegalArgumentException("")))
+                                .flatMap(cityEntity -> {
+                                            cinema.setCity(cityEntity.getName());
+                                            if (isNull(cityEntity.getCinemas())) {
+                                                cityEntity.setCinemas(new ArrayList<>());
+                                            }
+                                            cityEntity.getCinemas().add(cinema);
+                                            return cinemaRepository.addOrUpdate(cinema)
+                                                    .then(cityRepository.addOrUpdate(cityEntity).map(City::toDto));
+                                        }
+                                )
+                ).as(transactionalOperator::transactional);
+
+    }
+
+    public Flux<CityDto> getAll() {
+        return cityRepository.findAll().map(City::toDto);
     }
 }

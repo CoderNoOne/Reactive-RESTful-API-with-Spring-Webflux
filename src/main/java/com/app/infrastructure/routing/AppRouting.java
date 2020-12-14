@@ -72,6 +72,7 @@ public class AppRouting {
                         route(POST("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::addCity)
                                 .andRoute(GET("name/{name}").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::findByName)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::getAll)
+                                .andRoute(PUT("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::addCinemaToCity)
                 );
     }
 

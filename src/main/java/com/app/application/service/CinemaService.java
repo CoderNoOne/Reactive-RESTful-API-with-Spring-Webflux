@@ -1,6 +1,8 @@
 package com.app.application.service;
 
+import com.app.application.dto.CinemaDto;
 import com.app.application.dto.CreateCinemaDto;
+import com.app.application.service.util.ServiceUtils;
 import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema.CinemaRepository;
 import com.app.domain.cinema_hall.CinemaHall;
@@ -36,7 +38,7 @@ public class CinemaService {
         return cinemaHallRepository.addOrUpdateMany(createCinemaDto
                 .getCinemaHallsCapacity().stream()
                 .map(dtoVal -> CinemaHall.builder()
-                        .positions(buildPositions(dtoVal.getPositionNumbers()))
+                        .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
                         .movieEmissions(Collections.emptyList())
                         .build())
                 .collect(Collectors.toList()))
@@ -63,60 +65,13 @@ public class CinemaService {
                 ).as(transactionalOperator::transactional);
     }
 
-    private List<Position> buildPositions(Integer positionNumber) {
-        int sqrt = (int) Math.sqrt(positionNumber);
-        var positions = new ArrayList<Position>();
-
-        int rest = positionNumber - sqrt * sqrt;
-
-        int i1 = rest / sqrt; /*tyle dodatkowych  pełnych rzędów*/
-
-        int i2 = rest % sqrt;/*tyle miejsc zajętych w ostanim rzedzie*/
-
-        for (int i = 1; i <= sqrt; i++) {
-            for (int j = 1; j <= sqrt + i1; j++) {
-                positions.add(Position.builder()
-                        .rowNo(j)
-                        .colNo(i)
-                        .build());
-            }
-        }
-
-        for (int i = 1; i <= i2; i++) {
-            positions.add(Position.builder()
-                    .rowNo(sqrt + i1 + 1)
-                    .colNo(i)
-                    .build());
-
-        }
-
-        System.out.println(positions);
-
-//        long count = IntStream.rangeClosed(1, sqrt)
-//                .boxed()
-//                .map(positionNo ->
-//                        IntStream.rangeClosed(positionNo, sqrt)
-//                                .boxed()
-//                                .map(position ->
-//                                        IntStream.rangeClosed(position, sqrt)
-//                                                .boxed()
-//                                                .peek(pos -> positions.add(Position.builder()
-//                                                        .rowNo(positionNo)
-//                                                        .colNo(sqrt)
-//                                                        .build()))
-//                                )
-//                                .map()
-//
-//                ).count();
-
-        return positions;
+    public Flux<CinemaDto> getAll() {
+        return cinemaRepository.findAll()
+                .map(Cinema::toDto);
     }
 
-    public Flux<Cinema> getAll() {
-        return cinemaRepository.findAll();
-    }
-
-    public Flux<Cinema> getAllByCity(String city) {
-        return cinemaRepository.findAllByCity(city);
+    public Flux<CinemaDto> getAllByCity(String city) {
+        return cinemaRepository.findAllByCity(city)
+                .map(Cinema::toDto);
     }
 }

@@ -1,5 +1,6 @@
 package com.app.infrastructure.routing.handlers;
 
+import com.app.application.dto.CinemaDto;
 import com.app.application.dto.CreateCinemaDto;
 import com.app.application.dto.ResponseDto;
 import com.app.application.service.CinemaService;
@@ -42,7 +43,7 @@ public class CinemasHandler {
                 .flatMap(cinemas -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ResponseDto.<List<Cinema>>builder().data(cinemas).build()))
+                        .body(BodyInserters.fromValue(ResponseDto.<List<CinemaDto>>builder().data(cinemas).build()))
                 );
     }
 
@@ -54,7 +55,7 @@ public class CinemasHandler {
                 .flatMap(cinemas -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ResponseDto.<List<Cinema>>builder().data(cinemas).build()))
+                        .body(BodyInserters.fromValue(ResponseDto.<List<CinemaDto>>builder().data(cinemas).build()))
                 );
     }
 

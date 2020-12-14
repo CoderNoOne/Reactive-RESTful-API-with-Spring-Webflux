@@ -1,5 +1,6 @@
 package com.app.domain.cinema;
 
+import com.app.application.dto.CinemaDto;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.city.City;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,4 +25,19 @@ public class Cinema {
 
     private String city;
     private List<CinemaHall> cinemaHalls;
+
+    public CinemaDto toDto(){
+
+        return CinemaDto.builder()
+                .id(id)
+                .city(city)
+                .hallsCapacity(cinemaHalls
+                        .stream()
+                        .collect(Collectors.toMap(
+                                CinemaHall::getId,
+                                e -> e.getPositions().size()
+                        ))
+                )
+                .build();
+    }
 }
