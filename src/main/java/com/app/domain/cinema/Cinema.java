@@ -24,6 +24,8 @@ public class Cinema {
     private String id;
 
     private String city;
+    private String street;
+
     private List<CinemaHall> cinemaHalls;
 
     public CinemaDto toDto(){
@@ -31,6 +33,7 @@ public class Cinema {
         return CinemaDto.builder()
                 .id(id)
                 .city(city)
+                .street(street)
                 .hallsCapacity(cinemaHalls
                         .stream()
                         .collect(Collectors.toMap(

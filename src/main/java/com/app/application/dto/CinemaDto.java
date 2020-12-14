@@ -15,5 +15,6 @@ public class CinemaDto {
 
     private String id;
     private String city;
+    private String street;
     private Map<String, Integer> hallsCapacity;
 }

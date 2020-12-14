@@ -15,5 +15,6 @@ import java.util.List;
 public class AddCinemaToCityDto {
 
     private String city;
+    private String street;
     private List<CreateCinemaHallDto> cinemaHallsCapacity;
 }

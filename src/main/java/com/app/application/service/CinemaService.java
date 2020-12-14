@@ -45,6 +45,7 @@ public class CinemaService {
                 .collectList()
                 .flatMap(cinemaHalls -> cinemaRepository.addOrUpdate(Cinema.builder()
                         .cinemaHalls(cinemaHalls)
+                        .street(createCinemaDto.getStreet())
                         .build()))
                 .flatMap(cinema ->
                         cityRepository.findByName(createCinemaDto.getCity())
