@@ -125,7 +125,7 @@ public class WebSecurityConfig {
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
 //                .pathMatchers(HttpMethod.GET, "/cinemas").permitAll()
-                .pathMatchers( "/cinemas").permitAll()
+                .pathMatchers( "/cinemas/**").permitAll()
                 .pathMatchers( "/cities/**").permitAll()
                 .pathMatchers("/login").permitAll()
                 .pathMatchers("/demo/**").permitAll()

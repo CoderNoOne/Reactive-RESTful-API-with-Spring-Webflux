@@ -46,7 +46,6 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
-    private final TransactionalOperator transactionalOperator;
 
     public Flux<MovieDto> getAll() {
 

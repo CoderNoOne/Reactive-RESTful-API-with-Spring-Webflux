@@ -16,7 +16,6 @@ import java.util.List;
 public class CreateCityDto {
 
     private String name;
-//    private List<CreateCinemaDto> cinemas;
 
     public City toEntity(){
         return City.builder()

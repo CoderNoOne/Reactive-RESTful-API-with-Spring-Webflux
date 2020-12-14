@@ -21,6 +21,6 @@ public class Cinema {
     @Id
     private String id;
 
-    private String cityName;
+    private String city;
     private List<CinemaHall> cinemaHalls;
 }

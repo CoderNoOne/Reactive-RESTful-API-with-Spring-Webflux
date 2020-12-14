@@ -32,13 +32,6 @@ public class CinemasHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(savedCinema))
                 );
-
-//        return cinemaService.addCinema(serverRequest.bodyToMono(CreateCinemaDto.class))
-//                .flatMap(savedCinema -> ServerResponse
-//                        .status(HttpStatus.CREATED)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .body(BodyInserters.fromValue(savedCinema))
-//                );
     }
 
     @Loggable
@@ -52,4 +45,17 @@ public class CinemasHandler {
                         .body(BodyInserters.fromValue(ResponseDto.<List<Cinema>>builder().data(cinemas).build()))
                 );
     }
+
+    @Loggable
+    public Mono<ServerResponse> getAllCinemasByCity(ServerRequest serverRequest) {
+
+        return cinemaService.getAllByCity(serverRequest.pathVariable("city"))
+                .collectList()
+                .flatMap(cinemas -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ResponseDto.<List<Cinema>>builder().data(cinemas).build()))
+                );
+    }
+
 }

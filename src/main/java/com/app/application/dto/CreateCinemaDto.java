@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateCinemaDto {
 
-    private String cityName;
-    private List<CreateCinemaHallDto> cinemaHalls;
+    private String city;
+    private List<CreateCinemaHallDto> cinemaHallsCapacity;
 }

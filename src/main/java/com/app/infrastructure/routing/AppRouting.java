@@ -60,7 +60,8 @@ public class AppRouting {
                 .andNest(
                         path("/cinemas"),
                         route(POST("").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::addCinema)
-                                .andRoute(GET(""), cinemasHandler::getAll))
+                                .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::getAll)
+                                .andRoute(GET("/city/{city}").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::getAllCinemasByCity))
 
                 .andNest(
                         path("/movieEmissions"),

@@ -64,4 +64,9 @@ public class CinemaRepositoryImpl implements CinemaRepository {
                         mongoCinemaRepository.deleteAll(cinemas).then(Mono.just(cinemas)))
                 .flatMapMany(Flux::fromIterable);
     }
+
+    @Override
+    public Flux<Cinema> findAllByCity(String city) {
+        return mongoCinemaRepository.getAllByCity(city);
+    }
 }
