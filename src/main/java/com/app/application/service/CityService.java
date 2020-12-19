@@ -3,6 +3,7 @@ package com.app.application.service;
 import com.app.application.dto.AddCinemaToCityDto;
 import com.app.application.dto.CityDto;
 import com.app.application.dto.CreateCityDto;
+import com.app.application.exception.CityServiceException;
 import com.app.application.service.util.ServiceUtils;
 import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema.CinemaRepository;
@@ -42,9 +43,9 @@ public class CityService {
         return cityRepository.findByName(name).map(City::toDto);
     }
 
-    public Mono<CityDto> addCinemaToCity(AddCinemaToCityDto addCinemaToCityDtoMono) {
+    public Mono<CityDto> addCinemaToCity(AddCinemaToCityDto addCinemaToCityDto) {
 
-        return cinemaHallRepository.addOrUpdateMany(addCinemaToCityDtoMono
+        return cinemaHallRepository.addOrUpdateMany(addCinemaToCityDto
                 .getCinemaHallsCapacity().stream()
                 .map(dtoVal -> CinemaHall.builder()
                         .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
@@ -56,8 +57,8 @@ public class CityService {
                         .cinemaHalls(cinemaHalls)
                         .build()))
                 .flatMap(cinema ->
-                        cityRepository.findByName(addCinemaToCityDtoMono.getCity())
-                                .switchIfEmpty(Mono.error(() -> new IllegalArgumentException("")))
+                        cityRepository.findByName(addCinemaToCityDto.getCity())
+                                .switchIfEmpty(Mono.error(() -> new CityServiceException("No city with name: %s".formatted(addCinemaToCityDto.getCity()))))
                                 .flatMap(cityEntity -> {
                                             cinema.setCity(cityEntity.getName());
                                             if (isNull(cityEntity.getCinemas())) {
