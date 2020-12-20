@@ -30,7 +30,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
     public Mono<Void> handle(ServerWebExchange serverWebExchange, Throwable throwable) {
 
         serverWebExchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        serverWebExchange.getResponse().setRawStatusCode(501);
+        serverWebExchange.getResponse().setRawStatusCode(500);
 
         return serverWebExchange
                 .getResponse()

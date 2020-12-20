@@ -9,11 +9,11 @@ public interface Validations {
         return errors
                 .entrySet()
                 .stream()
-                .map(e -> e.getKey() + ": " + e.getValue())
+                .map(e -> "%s %s".formatted(e.getKey(), e.getValue()))
                 .collect(Collectors.joining(", "));
     }
 
     static boolean hasErrors(Map<String, String> errors) {
-        return errors.isEmpty();
+        return !errors.isEmpty();
     }
 }

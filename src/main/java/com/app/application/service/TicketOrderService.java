@@ -1,6 +1,11 @@
 package com.app.application.service;
 
 import com.app.application.dto.CreateTicketOrderDto;
+import com.app.application.dto.TicketDetailsDto;
+import com.app.application.exception.TicketOrderServiceException;
+import com.app.application.exception.handler.GlobalExceptionHandler;
+import com.app.application.validator.CreateTicketsOrderDtoValidator;
+import com.app.application.validator.util.Validations;
 import com.app.domain.movie_emission.MovieEmissionRepository;
 import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
@@ -13,6 +18,7 @@ import reactor.core.publisher.Mono;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,13 +28,30 @@ public class TicketOrderService {
     private final TicketOrderRepository ticketOrderRepository;
     private final MovieEmissionRepository movieEmissionRepository;
     private final UserRepository userRepository;
+    private final CreateTicketsOrderDtoValidator createTicketsOrderDtoValidator;
 
     public Mono<TicketOrder> addTicketOrder(Mono<? extends Principal> principal, CreateTicketOrderDto createTicketOrderDto) {
 
+        var errors = createTicketsOrderDtoValidator.validate(createTicketOrderDto);
+
+        if (Validations.hasErrors(errors)) {
+            return Mono.error(() -> new TicketOrderServiceException("Validation errors: %s".formatted(Validations.createErrorMessage(errors))));
+        }
+
         return Mono.justOrEmpty(createTicketOrderDto)
-                .switchIfEmpty(Mono.error(() -> new IllegalArgumentException("empty createTickerOrderDto")))
+                .switchIfEmpty(Mono.error(() -> new TicketOrderServiceException("empty createTickerOrderDto")))
                 .flatMap(value -> movieEmissionRepository
                         .findById(value.getMovieEmissionId())
+                        .switchIfEmpty(Mono.error(() -> new TicketOrderServiceException("No movie emission with id: %s".formatted(createTicketOrderDto.getMovieEmissionId()))))
+                        .map(movieEmission -> {
+                            if (createTicketOrderDto.getTicketsDetails().stream()
+                                    .map(TicketDetailsDto::getPosition)
+                                    .allMatch(position -> movieEmission.getFreePositions().contains(position))
+                            ) {
+                                return movieEmission;
+                            }
+                            throw new TicketOrderServiceException("Positions are not valid");
+                        })
                         .flatMap(movieEmission -> principal
                                 .flatMap(val -> userRepository.findByUsername(val.getName()))
                                 .map(user -> TicketOrder.builder()
@@ -42,7 +65,7 @@ public class TicketOrderService {
                                                         .position(ticketDetailsDto.getPosition())
                                                         .type(ticketDetailsDto.getTicketType())
                                                         .movieEmission(movieEmission)
-                                                        .price(new BigDecimal("2"))/*value.getTicketOrderType()*/ // TODO: 10/31/20  )
+                                                        .price(new BigDecimal("2"))
                                                         .build())
                                                 .collect(Collectors.toList()))
                                         .build()

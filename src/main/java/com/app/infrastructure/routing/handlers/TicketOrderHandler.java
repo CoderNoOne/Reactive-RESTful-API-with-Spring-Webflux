@@ -12,8 +12,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.security.Principal;
-
 @Component
 @RequiredArgsConstructor
 public class TicketOrderHandler {
@@ -24,8 +22,9 @@ public class TicketOrderHandler {
     public Mono<ServerResponse> orderTickets(final ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(CreateTicketOrderDto.class)
+                .flatMap(value -> ticketOrderService.addTicketOrder(serverRequest.principal(), value))
                 .flatMap(value -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ticketOrderService.addTicketOrder(serverRequest.principal(), value))));
+                        .body(BodyInserters.fromValue(value)));
     }
 }

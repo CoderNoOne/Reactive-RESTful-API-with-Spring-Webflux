@@ -133,7 +133,7 @@ public class WebSecurityConfig {
                 .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
                 .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
                 .pathMatchers("/tickets/**").hasRole("USER")
-                .pathMatchers("/ticketOrders/**").hasRole("USER")
+                .pathMatchers("/ticketOrders/**").permitAll()/*.hasRole("USER")*/
                 .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
 
 

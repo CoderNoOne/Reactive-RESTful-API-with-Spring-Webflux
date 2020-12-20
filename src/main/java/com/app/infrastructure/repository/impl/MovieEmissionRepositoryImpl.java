@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static java.util.Objects.nonNull;
+
 @Repository
 @RequiredArgsConstructor
 public class MovieEmissionRepositoryImpl implements MovieEmissionRepository {
@@ -33,7 +35,7 @@ public class MovieEmissionRepositoryImpl implements MovieEmissionRepository {
 
     @Override
     public Mono<MovieEmission> findById(String id) {
-        return mongoMovieEmissionRepository.findById(id);
+        return nonNull(id) ? mongoMovieEmissionRepository.findById(id) : Mono.empty();
     }
 
     @Override
