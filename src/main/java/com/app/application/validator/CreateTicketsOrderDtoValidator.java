@@ -30,15 +30,15 @@ public class CreateTicketsOrderDtoValidator implements Validator<CreateTicketOrd
         }
 
         if (!isMovieEmissionIdValid(item.getMovieEmissionId())) {
-            errors.put("movieEmissionId: [%s]".formatted(item.getMovieEmissionId()), "is not valid");
+            errors.put("movieEmissionId {%s}".formatted(item.getMovieEmissionId()), "is not valid");
         }
 
         if (!areTicketDetailsValid(item.getTicketsDetails())) {
-            errors.put("ticketDetails: [%s]".formatted(item.getTicketsDetails()), "are not valid");
+            errors.put("ticketDetails {%s}".formatted(item.getTicketsDetails()), "are not valid");
         }
 
         if (!isTicketOrderTypeValid(item.getTicketOrderType())) {
-            errors.put("ticketOrderType [%s]".formatted(item.getTicketOrderType()), "is not valid");
+            errors.put("ticketOrderType {%s}".formatted(item.getTicketOrderType()), "is not valid");
         }
 
         return errors;

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +27,6 @@ public class CreateMovieDto {
     @CsvBindByName
     private BigDecimal price;
 
-    @CsvBindByName(format = "yyyy/MM/dd")
+    @CsvBindByName(format = "yyyy-MM-dd")
     private String premiereDate;
 }

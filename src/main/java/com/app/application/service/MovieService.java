@@ -4,6 +4,8 @@ import com.app.application.dto.CreateMovieDto;
 import com.app.application.dto.MovieDto;
 import com.app.application.exception.MovieServiceException;
 import com.app.application.mapper.Mappers;
+import com.app.application.validator.CreateMovieDtoValidator;
+import com.app.application.validator.util.Validations;
 import com.app.domain.movie.Movie;
 import com.app.domain.movie.MovieRepository;
 import com.app.domain.security.UserRepository;
@@ -31,6 +33,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -46,6 +49,7 @@ public class MovieService {
 
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
+    private final CreateMovieDtoValidator createMovieDtoValidator;
 
     public Flux<MovieDto> getAll() {
 
@@ -178,12 +182,15 @@ public class MovieService {
     public Mono<MovieDto> addMovie(final Mono<CreateMovieDto> createMovieDto) {
 
         return createMovieDto
+                .map(dto -> {
+                    var errors = createMovieDtoValidator.validate(dto);
+                    if (Validations.hasErrors(errors)) {
+                        throw new MovieServiceException(Validations.createErrorMessage(errors));
+                    }
+                    return dto;
+                })
                 .flatMap(val -> movieRepository.addOrUpdate(Mappers.fromCreateMovieDtoToMovie(val)))
                 .doOnSuccess(movie -> log.info("Movie {} saved", movie))
-                .doOnError(ex -> {
-                    log.info("Movie cannot be saved");
-                    log.error(ex.getMessage(), ex);
-                })
                 .map(Movie::toDto);
     }
 
@@ -196,7 +203,7 @@ public class MovieService {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    throw new IllegalArgumentException();
+                    throw new MovieServiceException("Cannot parse csv file");
                 })
                 .map(bufferedReader -> movieRepository
                         .addOrUpdateMany(new CsvToBeanBuilder<CreateMovieDto>(bufferedReader)
@@ -206,8 +213,15 @@ public class MovieService {
                                 .build()
                                 .parse()
                                 .stream()
+                                .peek(dto -> {
+                                    var errors = createMovieDtoValidator.validate(dto);
+                                    if (Validations.hasErrors(errors)) {
+                                        throw new MovieServiceException(Validations.createErrorMessage(errors));
+                                    }
+                                })
                                 .map(Mappers::fromCreateMovieDtoToMovie)
-                                .collect(Collectors.toList())))
+                                .collect(Collectors.toList()))
+                )
                 .flatMapMany(Function.identity())
                 .map(Movie::toDto);
     }

@@ -123,21 +123,21 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeExchange()
-                .pathMatchers(HttpMethod.OPTIONS).permitAll()
-//                .pathMatchers(HttpMethod.GET, "/cinemas").permitAll()
-                .pathMatchers( "/cinemas/**").permitAll()
-                .pathMatchers( "/cities/**").permitAll()
-                .pathMatchers("/login").permitAll()
-                .pathMatchers("/demo/**").permitAll()
-                .pathMatchers("/security/register").permitAll()
-                .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
-                .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
-                .pathMatchers("/tickets/**").hasRole("USER")
-                .pathMatchers("/ticketOrders/**").permitAll()/*.hasRole("USER")*/
-                .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
+//                .pathMatchers(HttpMethod.OPTIONS).permitAll()
+////                .pathMatchers(HttpMethod.GET, "/cinemas").permitAll()
+//                .pathMatchers( "/cinemas/**").permitAll()
+//                .pathMatchers( "/cities/**").permitAll()
+//                .pathMatchers("/login").permitAll()
+//                .pathMatchers("/demo/**").permitAll()
+//                .pathMatchers("/security/register").permitAll()
+//                .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
+//                .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
+//                .pathMatchers("/tickets/**").hasRole("USER")
+//                .pathMatchers("/ticketOrders/**").permitAll()/*.hasRole("USER")*/
+//                .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
 
 
-                .anyExchange().authenticated()
+                .anyExchange().permitAll()
                 .and().build();
     }
 }
