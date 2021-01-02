@@ -2,8 +2,10 @@ package com.app.application.validator;
 
 import com.app.application.dto.CreateMovieEmissionDto;
 import com.app.application.validator.generic.Validator;
+import org.apache.commons.validator.GenericValidator;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,14 +32,17 @@ public class CreateMovieEmissionDtoValidator implements Validator<CreateMovieEmi
         }
 
         if (!isStartTimeValid(item.getStartTime())) {
-            errors.put("start time", "is not valid");
+            errors.put("start time: %s".formatted(item.getStartTime()), "is not valid");
         }
 
         return errors;
     }
 
-    private boolean isStartTimeValid(LocalDateTime startTime) {
-        return nonNull(startTime) && startTime.compareTo(LocalDateTime.now()) > 0;
+    private boolean isStartTimeValid(String startTime) {
+        var dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return nonNull(startTime) &&
+                GenericValidator.isDate(startTime, "yyyy-MM-dd HH:mm", true) &&
+                LocalDate.from(dateTimeFormatter.parse(startTime)).compareTo(LocalDate.now()) > 0;
     }
 
     private boolean isMovieIdValid(String movieId) {

@@ -13,6 +13,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -67,11 +68,11 @@ public class MovieService {
         return movieRepository.findAll()
                 .filter(Objects::nonNull)
                 .filter(movie ->
-                        Objects.equals(movie.getGenre(), keyWord) ||
-                                Objects.equals(movie.getName(), keyWord) ||
-                                Objects.equals(movie.getPremiereDate().toString(), keyWord) ||
-                                Objects.equals(movie.getTicketPrice().getValue().toString(), keyWord) ||
-                                Objects.equals(String.valueOf(movie.getDuration()), keyWord))
+                        keyWord.equalsIgnoreCase(movie.getGenre()) ||
+                                keyWord.equalsIgnoreCase(movie.getName()) ||
+                                keyWord.equalsIgnoreCase(movie.getPremiereDate().toString()) ||
+                                keyWord.equalsIgnoreCase(movie.getTicketPrice().getValue().toString()) ||
+                                keyWord.equalsIgnoreCase(String.valueOf(movie.getDuration())))
                 .map(Movie::toDto);
 
     }

@@ -15,6 +15,6 @@ public class CreateMovieEmissionDto {
 
     private String movieId;
     private String cinemaHallId;
-    private LocalDateTime startTime;
+    private String startTime;
 
 }

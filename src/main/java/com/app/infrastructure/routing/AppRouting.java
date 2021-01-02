@@ -48,8 +48,8 @@ public class AppRouting {
                                 .andRoute(GET("filter/premiereDate").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByPremiereDate)
                                 .andRoute(GET("filter/duration").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByDuration)
                                 .andRoute(GET("filter/name/{name}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByName)
-                                .andRoute(GET("filter/name/{genre}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByGenre)
-                                .andRoute(GET("filter/name/{keyword}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByKeyword)
+                                .andRoute(GET("filter/genre/{genre}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByGenre)
+                                .andRoute(GET("filter/keyword/{keyword}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByKeyword)
                                 .andRoute(POST("/csv").and(accept(MediaType.MULTIPART_FORM_DATA)), moviesHandler::addMovieToDatabaseWithCsvFile)
                 )
 

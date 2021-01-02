@@ -47,7 +47,7 @@ public class CreateMovieDtoValidator implements Validator<CreateMovieDto> {
         }
 
         if (!isPremiereDateValid(item.getPremiereDate())) {
-            errors.put("premier date %s".formatted(item.getPremiereDate()), "is not valid");
+            errors.put("premiere date %s".formatted(item.getPremiereDate()), "is not valid");
         }
 
         return errors;

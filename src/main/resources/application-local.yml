@@ -1,5 +1,5 @@
 server:
-  port: 9000
+  port: 9001
 
 spring:
   data:
@@ -7,7 +7,14 @@ spring:
       database: cinema_db
       host: localhost
       port: 27017
+    elasticsearch:
+      client:
+        reactive:
+          endpoints: localhost:9200
 
+  elasticsearch:
+    rest:
+      uris:http://localhost:9200
 
 jwt:
   token:
