@@ -60,4 +60,9 @@ public class CinemaHallRepositoryImpl implements CinemaHallRepository {
                         .then(Mono.just(list)))
                 .flatMapMany(Flux::fromIterable);
     }
+
+    @Override
+    public Flux<CinemaHall> getAllForCinemaById(String cinemaId) {
+        return mongoCinemaHallRepository.findByCinemaId(cinemaId);
+    }
 }

@@ -35,13 +35,14 @@ public class CinemaService {
 
     public Mono<Cinema> addCinema(CreateCinemaDto createCinemaDto) {
 
-        return cinemaHallRepository.addOrUpdateMany(createCinemaDto
-                .getCinemaHallsCapacity().stream()
-                .map(dtoVal -> CinemaHall.builder()
-                        .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
-                        .movieEmissions(Collections.emptyList())
-                        .build())
-                .collect(Collectors.toList()))
+        return cinemaHallRepository
+                .addOrUpdateMany(createCinemaDto
+                        .getCinemaHallsCapacity().stream()
+                        .map(dtoVal -> CinemaHall.builder()
+                                .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
+                                .movieEmissions(Collections.emptyList())
+                                .build())
+                        .collect(Collectors.toList()))
                 .collectList()
                 .flatMap(cinemaHalls -> cinemaRepository.addOrUpdate(Cinema.builder()
                         .cinemaHalls(cinemaHalls)
@@ -55,11 +56,15 @@ public class CinemaService {
                                                 .build()))
                                 .flatMap(city -> {
                                             cinema.setCity(city.getName());
+                                            cinema.getCinemaHalls()
+                                                    .forEach(cinemaHall -> cinemaHall.setCinemaId(cinema.getId()));
+
                                             if (isNull(city.getCinemas())) {
                                                 city.setCinemas(new ArrayList<>());
                                             }
                                             city.getCinemas().add(cinema);
-                                            return cityRepository.addOrUpdate(city)
+                                            return cinemaHallRepository.addOrUpdateMany(cinema.getCinemaHalls())
+                                                    .then(cityRepository.addOrUpdate(city))
                                                     .then(cinemaRepository.addOrUpdate(cinema));
                                         }
                                 )

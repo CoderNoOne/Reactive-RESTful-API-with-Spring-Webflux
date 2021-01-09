@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface MongoCinemaRepository extends ReactiveMongoRepository<Cinema, String> {
 
-    @Query(value = "{'cinemaHalls':{$elemMatch: {'id': 0?}}}")
+    @Query(value = "{'cinemaHalls':{$elemMatch: {'id': ?0}}}")
     Mono<Cinema> findByCinemaHallId(String id);
 
     @Query("{'city': ?0}")

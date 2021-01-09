@@ -23,32 +23,32 @@ public class StatisticsService {
     private final TicketOrderRepository ticketOrderRepository;
     private final CinemaRepository cinemaRepository;
 
-    //miejscowosc w której najwiecej osob chodzi do kina
-    public Flux<Cinema> findCityWithMostFrequency() {
-
-        return ticketOrderRepository
-                .findAll()
-                .collectMap(ticketOrder -> ticketOrder.getMovieEmission().getCinemaHall(),
-                        ticketOrder -> ticketOrder.getTickets().size())
-                .map(map -> {
-
-                    if (map.isEmpty()) {
-                        return map;
-                    }
-
-                    Integer maxValue = map.entrySet()
-                            .stream()
-                            .reduce(new ArrayList<>(map.entrySet()).get(0), (entry1, entry2) -> entry1.getValue() > entry2.getValue() ? entry1 : entry2)
-                            .getValue();
-
-                    return map.entrySet()
-                            .stream()
-                            .filter(entry -> entry.getValue().equals(maxValue))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                })
-                .flatMapIterable(Map::keySet)
-                .flatMap(cinemaHall -> cinemaRepository.findByCinemaHallId(cinemaHall.getId()));
-    }
+//    //miejscowosc w której najwiecej osob chodzi do kina
+//    public Flux<Cinema> findCityWithMostFrequency() {
+//
+//        return ticketOrderRepository
+//                .findAll()
+//                .collectMap(ticketOrder -> ticketOrder.getMovieEmission().getCinemaHall(),
+//                        ticketOrder -> ticketOrder.getTickets().size())
+//                .map(map -> {
+//
+//                    if (map.isEmpty()) {
+//                        return map;
+//                    }
+//
+//                    Integer maxValue = map.entrySet()
+//                            .stream()
+//                            .reduce(new ArrayList<>(map.entrySet()).get(0), (entry1, entry2) -> entry1.getValue() > entry2.getValue() ? entry1 : entry2)
+//                            .getValue();
+//
+//                    return map.entrySet()
+//                            .stream()
+//                            .filter(entry -> entry.getValue().equals(maxValue))
+//                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+//                })
+//                .flatMapIterable(Map::keySet)
+//                .flatMap(cinemaHall -> cinemaRepository.findByCinemaHallId(cinemaHall.getId()));
+//    }
 
 
 }

@@ -9,7 +9,7 @@ public interface MovieEmissionMapper {
                 .id(movieEmission.getId())
                 .movieId(movieEmission.getMovie().getId())
                 .startTime(movieEmission.getStartDateTime())
-                .cinemaHallId(movieEmission.getCinemaHall().getId())
+                .cinemaHallId(movieEmission.getCinemaHallId())
                 .build();
     }
 }

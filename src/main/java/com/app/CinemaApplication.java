@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
+import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
@@ -15,12 +17,16 @@ public class CinemaApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CinemaApplication.class, args);
-
     }
 
     @Bean
     public SecretKey secretKey() {
         return Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    }
+
+    @PostConstruct
+    public void init() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 }
 

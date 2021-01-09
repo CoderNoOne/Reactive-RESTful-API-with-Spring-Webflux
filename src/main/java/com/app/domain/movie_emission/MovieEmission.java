@@ -1,6 +1,6 @@
 package com.app.domain.movie_emission;
 
-import com.app.domain.cinema_hall.CinemaHall;
+import com.app.application.dto.MovieEmissionDto;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;
 import com.app.domain.vo.Position;
@@ -27,7 +27,7 @@ public class MovieEmission {
 
     private Movie movie;
     private LocalDateTime startDateTime;
-    private CinemaHall cinemaHall;
+    private String cinemaHallId;
 
     private List<PositionIndex> positionIndices;
 
@@ -38,6 +38,15 @@ public class MovieEmission {
                 .filter(PositionIndex::isFree)
                 .map(PositionIndex::getPosition)
                 .collect(Collectors.toList());
+    }
+
+    public MovieEmissionDto toDto(){
+        return MovieEmissionDto.builder()
+                .id(id)
+                .startTime(startDateTime)
+                .cinemaHallId(cinemaHallId)
+                .movieId(movie.getId())
+                .build();
     }
 
 }
