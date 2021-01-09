@@ -38,9 +38,7 @@ public class Cinema {
                         .stream()
                         .collect(Collectors.toMap(
                                 CinemaHall::getId,
-                                e -> e.getPositions().size()
-                        ))
-                )
+                                e -> e.getPositions().size())))
                 .build();
     }
 }

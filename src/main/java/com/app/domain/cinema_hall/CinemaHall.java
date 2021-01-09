@@ -4,11 +4,11 @@ import com.app.application.dto.CinemaHallDto;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.vo.Position;
 import lombok.*;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Builder
@@ -36,7 +36,15 @@ public class CinemaHall {
                         .map(MovieEmission::toDto)
                         .collect(Collectors.toList())
                 )
-                .positions(positions)
+                .rowNo(getMaxNumber(Position::getRowNo))
+                .colNo(getMaxNumber(Position::getColNo))
                 .build();
+    }
+
+    private Integer getMaxNumber(Function<Position, Integer> function) {
+        return positions
+                .stream()
+                .map(function)
+                .reduce(1, (pos1, pos2) -> pos1 > pos2 ? pos1 : pos2);
     }
 }

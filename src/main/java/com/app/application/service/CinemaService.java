@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Objects.isNull;
 
@@ -39,7 +40,7 @@ public class CinemaService {
                 .addOrUpdateMany(createCinemaDto
                         .getCinemaHallsCapacity().stream()
                         .map(dtoVal -> CinemaHall.builder()
-                                .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
+                                .positions(ServiceUtils.buildPositions(dtoVal.getRowNo(), dtoVal.getColNo()))
                                 .movieEmissions(Collections.emptyList())
                                 .build())
                         .collect(Collectors.toList()))

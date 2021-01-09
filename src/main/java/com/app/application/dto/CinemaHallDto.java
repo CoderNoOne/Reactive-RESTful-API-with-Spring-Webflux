@@ -1,6 +1,5 @@
 package com.app.application.dto;
 
-import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +15,10 @@ public class CinemaHallDto {
 
     private String id;
     private String cinemaId;
-    private List<Position> positions;
+
+    private Integer rowNo;
+    private Integer colNo;
+//    private List<Position> positions;
 
     private List<MovieEmissionDto> movieEmissions;
 

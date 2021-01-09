@@ -48,7 +48,7 @@ public class CityService {
         return cinemaHallRepository.addOrUpdateMany(addCinemaToCityDto
                 .getCinemaHallsCapacity().stream()
                 .map(dtoVal -> CinemaHall.builder()
-                        .positions(ServiceUtils.buildPositions(dtoVal.getPositionNumbers()))
+                        .positions(ServiceUtils.buildPositions(dtoVal.getRowNo(), dtoVal.getColNo()))
                         .movieEmissions(Collections.emptyList())
                         .build())
                 .collect(Collectors.toList()))
