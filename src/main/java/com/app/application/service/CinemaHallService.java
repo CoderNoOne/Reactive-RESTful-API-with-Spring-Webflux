@@ -66,14 +66,15 @@ public class CinemaHallService {
                 .map(CinemaHall::toDto);
     }
 
-    public Flux<CinemaHall> getAllForCinema(String cinemaId) {
+    public Flux<CinemaHallDto> getAllForCinema(String cinemaId) {
 
-        return /*cinemaRepository.findById(cinemaId)
+        return cinemaRepository.findById(cinemaId)
                 .switchIfEmpty(Mono.error(() -> new CinemaHallServiceException("No cinema with id: %s".formatted(cinemaId))))
-                .flatMapMany(cinema -> */
-                cinemaHallRepository
-                        .getAllForCinemaById(cinemaId)
-                       /* .map(x -> CinemaHallDto.builder().build())*/;
+                .flatMapMany(cinema ->
+                        cinemaHallRepository
+                                .getAllForCinemaById(cinemaId)
+                                .map(CinemaHall::toDto)
+                );
 
     }
 }
