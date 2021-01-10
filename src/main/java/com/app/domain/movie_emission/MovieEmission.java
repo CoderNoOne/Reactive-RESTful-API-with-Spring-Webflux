@@ -46,6 +46,7 @@ public class MovieEmission {
                 .startTime(startDateTime)
                 .cinemaHallId(cinemaHallId)
                 .movieId(movie.getId())
+                .positionIndices(positionIndices)
                 .build();
     }
 

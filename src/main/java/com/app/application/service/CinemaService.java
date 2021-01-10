@@ -2,14 +2,17 @@ package com.app.application.service;
 
 import com.app.application.dto.CinemaDto;
 import com.app.application.dto.CreateCinemaDto;
+import com.app.application.dto.CreateCinemaHallDto;
+import com.app.application.exception.CinemaServiceException;
 import com.app.application.service.util.ServiceUtils;
+import com.app.application.validator.CreateCinemaHallDtoValidator;
+import com.app.application.validator.util.Validations;
 import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema.CinemaRepository;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.city.City;
 import com.app.domain.city.CityRepository;
-import com.app.domain.vo.Position;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -18,9 +21,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static java.util.Objects.isNull;
 
@@ -80,5 +82,30 @@ public class CinemaService {
     public Flux<CinemaDto> getAllByCity(String city) {
         return cinemaRepository.findAllByCity(city)
                 .map(Cinema::toDto);
+    }
+
+    public Mono<CinemaDto> addCinemaHallToCinema(String cinemaId, CreateCinemaHallDto createCinemaHallDto) {
+
+        var errors = new CreateCinemaHallDtoValidator().validate(createCinemaHallDto);
+
+        if (Validations.hasErrors(errors)) {
+            throw new CinemaServiceException("CreateCinemaHallDto is not valid. Errors are: [%s]".formatted(Validations.createErrorMessage(errors)));
+        }
+
+        return cinemaRepository
+                .findById(cinemaId)
+                .switchIfEmpty(Mono.error(() -> new CinemaServiceException("No cinema with id: %s".formatted(cinemaId))))
+                .flatMap(cinema -> cinemaHallRepository
+                        .addOrUpdate(createCinemaHallDto.toEntity(cinema.getId()))
+                        .flatMap(savedCinemaHall -> cinemaRepository.addOrUpdate(addCinemaHallToCinema(cinema, savedCinemaHall)))
+                )
+                .map(Cinema::toDto)
+                .as(transactionalOperator::transactional);
+
+    }
+
+    private Cinema addCinemaHallToCinema(Cinema cinema, CinemaHall cinemaHall) {
+        cinema.getCinemaHalls().add(cinemaHall);
+        return cinema;
     }
 }

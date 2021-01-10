@@ -26,11 +26,9 @@ public class CreateCinemaDtoValidator implements Validator<CreateCinemaDto> {
             errors.put("City name", "is blank");
         }
 
-//        if(item.getCinemaHallsCapacity())
 
         return errors;
     }
 
-//    private boolean areCinemaHallsValid(List<CreateCinem>)
 
 }

@@ -2,9 +2,9 @@ package com.app.infrastructure.routing.handlers;
 
 import com.app.application.dto.CinemaDto;
 import com.app.application.dto.CreateCinemaDto;
+import com.app.application.dto.CreateCinemaHallDto;
 import com.app.application.dto.ResponseDto;
 import com.app.application.service.CinemaService;
-import com.app.domain.cinema.Cinema;
 import com.app.infrastructure.aspect.annotations.Loggable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,4 +59,15 @@ public class CinemasHandler {
                 );
     }
 
+    @Loggable
+    public Mono<ServerResponse> addCinemaHall(ServerRequest serverRequest) {
+
+        return serverRequest.bodyToMono(CreateCinemaHallDto.class)
+                .flatMap(createCinemaHallDto -> cinemaService.addCinemaHallToCinema(serverRequest.pathVariable("id"), createCinemaHallDto))
+                .flatMap(cinemaDto -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(cinemaDto))
+                );
+    }
 }

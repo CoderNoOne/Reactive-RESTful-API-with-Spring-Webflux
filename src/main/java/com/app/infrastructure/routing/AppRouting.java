@@ -62,7 +62,9 @@ public class AppRouting {
                         path("/cinemas"),
                         route(POST("").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::addCinema)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::getAll)
-                                .andRoute(GET("/city/{city}").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::getAllCinemasByCity))
+                                .andRoute(GET("/city/{city}").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::getAllCinemasByCity)
+                                .andRoute(PUT("/id/{id}/addCinemaHall").and(accept(MediaType.APPLICATION_JSON)), cinemasHandler::addCinemaHall)
+                )
 
                 .andNest(
                         path("/movieEmissions"),
@@ -76,9 +78,9 @@ public class AppRouting {
                                 .andRoute(PUT("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::addCinemaToCity)
                 )
                 .andNest(path("/cinemaHalls"),
-                        route(POST("").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::addCinemaHallToCinema)
+                        route(POST("addToCinema/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::addCinemaHallToCinema)
                                 .andRoute(GET("/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAllForCinema)
-                        .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAll)
+                                .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAll)
                 );
     }
 
