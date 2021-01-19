@@ -9,15 +9,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Data
-public class CreateTicketOrderDto implements TicketDtoMarker {
+public class CreateTicketPurchaseDto implements TicketDtoMarker {
 
     private String movieEmissionId;
     private List<TicketDetailsDto> ticketsDetails;
     private TicketOrderType ticketOrderType;
-
 }
-
