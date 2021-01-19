@@ -17,7 +17,10 @@ import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class TicketOrderService {
     private final MovieEmissionRepository movieEmissionRepository;
     private final UserRepository userRepository;
     private final CreateTicketsOrderDtoValidator createTicketsOrderDtoValidator;
+
 
     public Mono<TicketOrder> addTicketOrder(Mono<? extends Principal> principal, CreateTicketOrderDto createTicketOrderDto) {
 
@@ -71,5 +75,21 @@ public class TicketOrderService {
                                 )
                         ))
                 .flatMap(ticketOrderRepository::addOrUpdate);
+    }
+
+
+    public Mono<TicketOrder> cancelOrder(String username, String orderId) {
+
+        if (isNull(orderId)) {
+            throw new TicketOrderServiceException("Order id is null");
+        }
+
+        return ticketOrderRepository.findById(orderId)
+                .map(ticketOrder -> {
+                    if (!Objects.equals(ticketOrder.getUser().getUsername(), username)) {
+                        throw new TicketOrderServiceException("That ticker order does not belong to you");
+                    }
+                    return ticketOrder.changeOrderStatusToCancelled();
+                });
     }
 }

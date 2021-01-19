@@ -18,7 +18,6 @@ public class CinemaHallDto {
 
     private Integer rowNo;
     private Integer colNo;
-//    private List<Position> positions;
 
     private List<MovieEmissionDto> movieEmissions;
 
