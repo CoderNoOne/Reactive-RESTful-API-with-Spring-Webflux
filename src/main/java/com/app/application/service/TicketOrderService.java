@@ -8,6 +8,7 @@ import com.app.application.validator.util.Validations;
 import com.app.domain.movie_emission.MovieEmissionRepository;
 import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
+import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket_order.TicketOrder;
 import com.app.domain.ticket_order.TicketOrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,7 @@ public class TicketOrderService {
                                                         .type(ticketDetailsDto.getIndividualTicketType())
                                                         .movieEmission(movieEmission)
                                                         .discount(createTicketOrderDto.getBaseDiscount())
+                                                        .ticketStatus(TicketStatus.ORDERED)
                                                         .build())
                                                 .collect(Collectors.toList()))
                                         .build()

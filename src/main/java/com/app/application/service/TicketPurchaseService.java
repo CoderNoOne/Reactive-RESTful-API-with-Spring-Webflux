@@ -7,6 +7,7 @@ import com.app.application.validator.util.Validations;
 import com.app.domain.movie_emission.MovieEmissionRepository;
 import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
+import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket_purchase.TicketPurchase;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ public class TicketPurchaseService {
                                                         .position(ticketDetailsDto.getPosition())
                                                         .type(ticketDetailsDto.getIndividualTicketType())
                                                         .movieEmission(movieEmission)
+                                                        .ticketStatus(TicketStatus.PURCHASED)
                                                         .discount(createPurchaseDto.getBaseDiscount().add(ticketDetailsDto.getIndividualTicketType().getDiscount()))
                                                         .build())
                                                 .collect(Collectors.toList()))
