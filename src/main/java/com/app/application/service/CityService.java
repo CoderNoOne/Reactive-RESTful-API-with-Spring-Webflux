@@ -59,15 +59,10 @@ public class CityService {
                 .flatMap(cinema ->
                         cityRepository.findByName(addCinemaToCityDto.getCity())
                                 .switchIfEmpty(Mono.error(() -> new CityServiceException("No city with name: %s".formatted(addCinemaToCityDto.getCity()))))
-                                .flatMap(cityEntity -> {
-                                            cinema.setCity(cityEntity.getName());
-                                            if (isNull(cityEntity.getCinemas())) {
-                                                cityEntity.setCinemas(new ArrayList<>());
-                                            }
-                                            cityEntity.getCinemas().add(cinema);
-                                            return cinemaRepository.addOrUpdate(cinema)
-                                                    .then(cityRepository.addOrUpdate(cityEntity).map(City::toDto));
-                                        }
+                                .flatMap(cityEntity ->
+                                        cinemaRepository.addOrUpdate(cinema.setCity(cityEntity.getName()))
+                                                .then(cityRepository.addOrUpdate(cityEntity.addCinema(cinema)))
+                                                .map(City::toDto)
                                 )
                 ).as(transactionalOperator::transactional);
 

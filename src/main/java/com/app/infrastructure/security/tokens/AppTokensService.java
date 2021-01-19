@@ -26,9 +26,6 @@ public class AppTokensService {
     @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
-//    @Value("${jwt.token.header}")
-//    private String jwtTokenHeader;
-
     @Value("${jwt.refresh-token.access-token-key}")
     private String refreshTokenAccessTokenKey;
 

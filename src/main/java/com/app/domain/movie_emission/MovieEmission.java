@@ -4,10 +4,7 @@ import com.app.application.dto.MovieEmissionDto;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;
 import com.app.domain.vo.Position;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,15 +15,20 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
 @Document("movie_emissions")
 public class MovieEmission {
 
     @Id
+    @Getter
     private String id;
 
+    @Getter
     private Movie movie;
+
+    @Getter
     private LocalDateTime startDateTime;
+
+    @Getter
     private String cinemaHallId;
 
     private List<PositionIndex> positionIndices;

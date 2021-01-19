@@ -7,24 +7,31 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Document("cinema_halls")
 public class CinemaHall {
 
     @Id
+    @Getter
     private String id;
 
+    @Getter
     private List<Position> positions;
+
+    @Setter
     private String cinemaId;
 
-
+    @Getter
     private List<MovieEmission> movieEmissions;
 
     public CinemaHallDto toDto() {
@@ -46,5 +53,14 @@ public class CinemaHall {
                 .stream()
                 .map(function)
                 .reduce(1, (pos1, pos2) -> pos1 > pos2 ? pos1 : pos2);
+    }
+
+    public CinemaHall addMovieEmission(MovieEmission movieEmission) {
+        if (nonNull(movieEmissions)) {
+            movieEmissions.add(movieEmission);
+        } else {
+            movieEmissions = new ArrayList<>(Collections.singletonList(movieEmission));
+        }
+        return this;
     }
 }

@@ -57,21 +57,12 @@ public class CinemaService {
                                         City.builder()
                                                 .name(createCinemaDto.getCity())
                                                 .build()))
-                                .flatMap(city -> {
-                                            cinema.setCity(city.getName());
-                                            cinema.getCinemaHalls()
-                                                    .forEach(cinemaHall -> cinemaHall.setCinemaId(cinema.getId()));
-
-                                            if (isNull(city.getCinemas())) {
-                                                city.setCinemas(new ArrayList<>());
-                                            }
-                                            city.getCinemas().add(cinema);
-                                            return cinemaHallRepository.addOrUpdateMany(cinema.getCinemaHalls())
-                                                    .then(cityRepository.addOrUpdate(city))
-                                                    .then(cinemaRepository.addOrUpdate(cinema));
-                                        }
-                                )
-                ).as(transactionalOperator::transactional);
+                                .flatMap(city -> cinemaHallRepository
+                                        .addOrUpdateMany(cinema.getCinemaHalls())
+                                        .then(cityRepository.addOrUpdate(city.addCinema(cinema)))
+                                        .then(cinemaRepository.addOrUpdate(cinema.setCity(city.getName()).setCinemasIdForCinemaHalls(cinema.getId())))
+                                ))
+                .as(transactionalOperator::transactional);
     }
 
     public Flux<CinemaDto> getAll() {

@@ -3,32 +3,45 @@ package com.app.domain.cinema;
 import com.app.application.dto.CinemaDto;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.city.City;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
 @Document("cinemas")
 public class Cinema {
 
     @Id
+    @Getter
     private String id;
 
     private String city;
     private String street;
 
+    @Getter
     private List<CinemaHall> cinemaHalls;
 
-    public CinemaDto toDto(){
+    public Cinema setCity(String city) {
+        this.city = city;
+        return this;
+    }
+
+    public Cinema setCinemasIdForCinemaHalls(String cinemaId) {
+
+        if (nonNull(cinemaHalls)) {
+            cinemaHalls.forEach(cinemaHall -> cinemaHall.setCinemaId(cinemaId));
+        }
+        return this;
+    }
+
+    public CinemaDto toDto() {
 
         return CinemaDto.builder()
                 .id(id)
