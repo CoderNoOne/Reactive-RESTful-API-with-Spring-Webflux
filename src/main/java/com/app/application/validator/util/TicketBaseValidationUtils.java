@@ -35,7 +35,7 @@ public class TicketBaseValidationUtils {
     }
 
     private static boolean isSingleTicketDetailValid(TicketDetailsDto ticketDetailsDto) {
-        return nonNull(ticketDetailsDto) && ticketDetailsDto.getViewerAge() >= 1 && isPositionValid(ticketDetailsDto.getPosition());
+        return nonNull(ticketDetailsDto) && isPositionValid(ticketDetailsDto.getPosition());
     }
 
     private static boolean arePositionsUnique(List<Position> positions) {
@@ -44,7 +44,7 @@ public class TicketBaseValidationUtils {
                 .distinct().count() == positions.size();
     }
 
-    public static <T extends TicketDtoMarker> Map<String, String> validate(T item) {
+    public static Map<String, String> validate(TicketDtoMarker item) {
 
         var errors = new HashMap<String, String>();
 

@@ -10,7 +10,6 @@ import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.TicketOrder;
 import com.app.domain.ticket_order.TicketOrderRepository;
-import com.app.domain.vo.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -55,15 +54,15 @@ public class TicketOrderService {
                                 .map(user -> TicketOrder.builder()
                                         .orderDate(LocalDate.now())
                                         .movieEmission(movieEmission)
-                                        .ticketOrderType(value.getTicketOrderType())
+                                        .ticketGroupType(value.getTicketGroupType())
                                         .user(user)
                                         .tickets(value.getTicketsDetails()
                                                 .stream()
                                                 .map(ticketDetailsDto -> Ticket.builder()
                                                         .position(ticketDetailsDto.getPosition())
-                                                        .type(ticketDetailsDto.getTicketType())
+                                                        .type(ticketDetailsDto.getIndividualTicketType())
                                                         .movieEmission(movieEmission)
-                                                        .price(Money.of("2"))
+                                                        .discount(createTicketOrderDto.getBaseDiscount())
                                                         .build())
                                                 .collect(Collectors.toList()))
                                         .build()

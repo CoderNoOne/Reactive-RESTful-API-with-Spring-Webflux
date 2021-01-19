@@ -29,6 +29,7 @@ public class MovieEmission {
     @Getter
     private LocalDateTime startDateTime;
 
+    @Getter
     private Money baseTicketPrice;
 
     @Getter

@@ -11,11 +11,25 @@ import java.math.BigDecimal;
 public class Discount {
     private BigDecimal value;
 
-    public Discount() {this.value = BigDecimal.ZERO;}
+    private Discount() {
+        this.value = BigDecimal.ZERO;
+    }
 
-    public Discount(String value) {this.value = init(value);}
+    private Discount(String value) {
+        this.value = init(value);
+    }
 
-    private Discount(BigDecimal value) {this.value = value;}
+    private Discount(BigDecimal value) {
+        this.value = value;
+    }
+
+    public static Discount of(BigDecimal value) {
+        return new Discount(value);
+    }
+
+    public static Discount of(String value) {
+        return new Discount(value);
+    }
 
     public Discount inverse() {
         return new Discount(BigDecimal.ONE.subtract(value));
@@ -32,6 +46,10 @@ public class Discount {
         }
 
         return decimalValue;
+    }
+
+    public Discount add(Discount toAdd) {
+        return Discount.of(this.getValue().add(toAdd.getValue()));
     }
 
     @Override
