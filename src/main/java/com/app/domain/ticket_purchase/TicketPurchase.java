@@ -1,14 +1,11 @@
-package com.app.domain.ticket_order;
+package com.app.domain.ticket_purchase;
 
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.security.User;
 import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.enums.TicketOrderType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
@@ -16,16 +13,13 @@ import java.util.List;
 
 
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Document("ticket_orders")
-public class TicketOrder {
+public class TicketPurchase {
 
     @Id
     private String id;
 
     private User user;
-    private LocalDate orderDate;
+    private LocalDate purchaseDate;
     private MovieEmission movieEmission;
 
     private List<Ticket> tickets;
@@ -33,6 +27,3 @@ public class TicketOrder {
     @Field("ticket_order_type")
     private TicketOrderType ticketOrderType;
 }
-
-
-

@@ -3,7 +3,6 @@ package com.app.application.service;
 import com.app.application.dto.CreateTicketOrderDto;
 import com.app.application.dto.TicketDetailsDto;
 import com.app.application.exception.TicketOrderServiceException;
-import com.app.application.exception.handler.GlobalExceptionHandler;
 import com.app.application.validator.CreateTicketsOrderDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.movie_emission.MovieEmissionRepository;
@@ -16,10 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +53,7 @@ public class TicketOrderService {
                         .flatMap(movieEmission -> principal
                                 .flatMap(val -> userRepository.findByUsername(val.getName()))
                                 .map(user -> TicketOrder.builder()
-                                        .dateOrder(LocalDate.now())
+                                        .orderDate(LocalDate.now())
                                         .movieEmission(movieEmission)
                                         .ticketOrderType(value.getTicketOrderType())
                                         .user(user)

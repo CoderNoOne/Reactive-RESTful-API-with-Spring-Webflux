@@ -1,6 +1,7 @@
 package com.app.domain.ticket;
 
 import com.app.domain.movie_emission.MovieEmission;
+import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket.enums.TicketType;
 import com.app.domain.vo.Money;
 import com.app.domain.vo.Position;
@@ -23,11 +24,11 @@ public class Ticket {
     @Id
     private String id;
 
+    private TicketStatus ticketStatus;
     private TicketType type;
     private MovieEmission movieEmission;
     private Position position;
     private Money price;
-
 
 }
 
