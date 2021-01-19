@@ -71,7 +71,6 @@ public class MovieService {
                         keyWord.equalsIgnoreCase(movie.getGenre()) ||
                                 keyWord.equalsIgnoreCase(movie.getName()) ||
                                 keyWord.equalsIgnoreCase(movie.getPremiereDate().toString()) ||
-                                keyWord.equalsIgnoreCase(movie.getTicketPrice().getValue().toString()) ||
                                 keyWord.equalsIgnoreCase(String.valueOf(movie.getDuration())))
                 .map(Movie::toDto);
 
@@ -142,25 +141,6 @@ public class MovieService {
                 .filter(Objects::nonNull)
                 .filter(movie -> (!isMinDateNull && movie.getPremiereDate().compareTo(minDate) >= 0) &&
                         (!isMaxDateNull && movie.getPremiereDate().compareTo(maxDate) <= 0));
-    }
-
-    public Flux<Movie> getFilteredByBaseTicketPrice(final BigDecimal minPrice, final BigDecimal maxPrice) {
-
-        var isMinPriceNull = isNull(minPrice);
-        var isMaxPriceNull = isNull(maxPrice);
-
-        if ((isMinPriceNull && isMaxPriceNull) ||
-                (!isMinPriceNull && minPrice.compareTo(BigDecimal.ZERO) < 0) ||
-                (!isMaxPriceNull && maxPrice.compareTo(BigDecimal.ZERO) < 0) ||
-                (!isMinPriceNull && !isMaxPriceNull && minPrice.compareTo(maxPrice) > 0)
-        ) {
-            return Flux.error(() -> new MovieServiceException("At least one boundary price should be defined, minPrice must not be greater than maxPrice (if defined) and both prizes should be positive"));
-        }
-
-        return movieRepository.findAll()
-                .filter(movie -> nonNull(movie) && nonNull(movie.getTicketPrice()) && nonNull(movie.getTicketPrice().getValue()))
-                .filter(movie -> (!isMinPriceNull && movie.getTicketPrice().getValue().compareTo(minPrice) >= 0) &&
-                        (!isMaxPriceNull && movie.getTicketPrice().getValue().compareTo(maxPrice) <= 0));
     }
 
     public Mono<Movie> addMovieToFavorites(final String movieId, final String username) {

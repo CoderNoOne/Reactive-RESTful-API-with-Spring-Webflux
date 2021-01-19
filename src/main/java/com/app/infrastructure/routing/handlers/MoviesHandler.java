@@ -118,20 +118,6 @@ public class MoviesHandler {
     }
 
     @Loggable
-    public Mono<ServerResponse> getMoviesFilteredByBasePrice(ServerRequest serverRequest) {
-
-        return serverRequest.bodyToMono(MovieFilteredByEmissionDate.class)
-                .flatMap(dto -> movieService.getFilteredByBaseTicketPrice(dto.getMinPrice(), dto.getMaxPrice())
-                        .collectList()
-                        .flatMap(movie -> ServerResponse
-                                .status(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(movie))
-                        ));
-
-    }
-
-    @Loggable
     public Mono<ServerResponse> getMoviesFilteredByPremiereDate(ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(MovieFilteredByPremiereDate.class)

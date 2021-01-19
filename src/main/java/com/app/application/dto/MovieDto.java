@@ -18,6 +18,6 @@ public class MovieDto {
     private String name;
     private String genre;
     private Integer duration;
-    private Money price;
+//    private Money price;
     private LocalDate premiereDate;
 }

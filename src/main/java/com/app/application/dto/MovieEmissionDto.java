@@ -20,4 +20,5 @@ public class MovieEmissionDto {
     private LocalDateTime startTime;
     private String cinemaHallId;
     private List<PositionIndex> positionIndices;
+    private String baseTicketPrice;
 }

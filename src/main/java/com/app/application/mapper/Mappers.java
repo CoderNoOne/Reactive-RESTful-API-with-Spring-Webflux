@@ -29,7 +29,6 @@ public interface Mappers {
                         .duration(value.getDuration())
                         .genre(value.getGenre())
                         .name(value.getName())
-                        .ticketPrice(new Money(value.getPrice().toString()))
                         .premiereDate(LocalDate.parse(value.getPremiereDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                         .build())
                 .orElse(null);

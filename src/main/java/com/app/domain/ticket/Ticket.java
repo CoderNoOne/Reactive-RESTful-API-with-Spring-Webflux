@@ -2,6 +2,7 @@ package com.app.domain.ticket;
 
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.ticket.enums.TicketType;
+import com.app.domain.vo.Money;
 import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class Ticket {
     private TicketType type;
     private MovieEmission movieEmission;
     private Position position;
-    private BigDecimal price;
+    private Money price;
 
 
 }

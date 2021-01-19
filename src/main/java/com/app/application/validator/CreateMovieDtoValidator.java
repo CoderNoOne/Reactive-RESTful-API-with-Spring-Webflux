@@ -30,10 +30,6 @@ public class CreateMovieDtoValidator implements Validator<CreateMovieDto> {
             return errors;
         }
 
-        if (!isTicketPriceValid(item.getPrice())) {
-            errors.put("price %s".formatted(item.getPrice()), "is not valid");
-        }
-
         if (!isMovieGenreValid(item.getGenre())) {
             errors.put("genre %s".formatted(item.getGenre()), "is not valid");
         }
@@ -69,10 +65,6 @@ public class CreateMovieDtoValidator implements Validator<CreateMovieDto> {
 
     private boolean isMovieNameValid(String name) {
         return nonNull(name) && name.length() >= 2;
-    }
-
-    private boolean isTicketPriceValid(BigDecimal price) {
-        return nonNull(price) && price.compareTo(BigDecimal.ZERO) > 0;
     }
 
     private boolean isMovieGenreValid(String genre) {

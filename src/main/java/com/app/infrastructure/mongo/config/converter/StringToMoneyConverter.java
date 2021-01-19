@@ -9,6 +9,6 @@ public class StringToMoneyConverter implements Converter<String, Money> {
 
     @Override
     public Money convert(String stringValue) {
-        return new Money(stringValue);
+        return Money.of(stringValue);
     }
 }

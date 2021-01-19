@@ -23,7 +23,7 @@ public class Movie {
     private String name;
     private String genre;
     private Integer duration;
-    private Money ticketPrice;
+//    private Money ticketPrice;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate premiereDate;
@@ -33,7 +33,7 @@ public class Movie {
                 .id(id)
                 .name(name)
                 .genre(genre)
-                .price(ticketPrice)
+//                .price(ticketPrice)
                 .premiereDate(premiereDate)
                 .duration(duration)
                 .build();

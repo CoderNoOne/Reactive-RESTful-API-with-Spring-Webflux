@@ -11,6 +11,7 @@ import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.TicketOrder;
 import com.app.domain.ticket_order.TicketOrderRepository;
+import com.app.domain.vo.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -65,7 +66,7 @@ public class TicketOrderService {
                                                         .position(ticketDetailsDto.getPosition())
                                                         .type(ticketDetailsDto.getTicketType())
                                                         .movieEmission(movieEmission)
-                                                        .price(new BigDecimal("2"))
+                                                        .price(Money.of("2"))
                                                         .build())
                                                 .collect(Collectors.toList()))
                                         .build()

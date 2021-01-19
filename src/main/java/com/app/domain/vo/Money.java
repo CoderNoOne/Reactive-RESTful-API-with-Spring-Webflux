@@ -15,11 +15,15 @@ public class Money {
 
     private BigDecimal value;
 
-    public Money() {
+    private Money() {
         this.value = BigDecimal.ZERO;
     }
 
-    public Money(String value) {
+    public static Money of(String value) {
+        return new Money(value);
+    }
+
+    private Money(String value) {
         this.value = init(value);
     }
 

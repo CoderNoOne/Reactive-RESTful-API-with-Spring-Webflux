@@ -24,9 +24,6 @@ public class CreateMovieDto {
     @CsvBindByName
     private Integer duration;
 
-    @CsvBindByName
-    private BigDecimal price;
-
     @CsvBindByName(format = "yyyy-MM-dd")
     private String premiereDate;
 }
