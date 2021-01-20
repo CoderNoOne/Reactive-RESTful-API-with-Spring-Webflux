@@ -8,35 +8,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.multipart.Part;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
-import org.springframework.security.web.server.WebFilterExchange;
-import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
-import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler;
 import org.springframework.security.web.server.authorization.ServerAccessDeniedHandler;
-import org.springframework.util.MultiValueMap;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.util.Map;
 
 
 @EnableWebFluxSecurity
@@ -123,18 +108,17 @@ public class WebSecurityConfig {
 
                 .and()
                 .authorizeExchange()
-//                .pathMatchers(HttpMethod.OPTIONS).permitAll()
-////                .pathMatchers(HttpMethod.GET, "/cinemas").permitAll()
-//                .pathMatchers( "/cinemas/**").permitAll()
-//                .pathMatchers( "/cities/**").permitAll()
-//                .pathMatchers("/login").permitAll()
-//                .pathMatchers("/demo/**").permitAll()
-//                .pathMatchers("/security/register").permitAll()
-//                .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
-//                .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
-//                .pathMatchers("/tickets/**").hasRole("USER")
-//                .pathMatchers("/ticketOrders/**").permitAll()/*.hasRole("USER")*/
-//                .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
+                .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                .pathMatchers("/security/register").permitAll()
+                .pathMatchers("/login").permitAll()
+                .pathMatchers(HttpMethod.GET, "/cinemas").hasRole("USER")
+                .pathMatchers( "/cinemas/**").hasRole("USER")
+                .pathMatchers( "/cities/**").hasRole("USER")
+                .pathMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
+                .pathMatchers("/movies/**").hasAnyRole("USER", "ADMIN")
+                .pathMatchers("/tickets/**").hasRole("USER")
+                .pathMatchers("/ticketOrders/**").hasRole("USER")
+                .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
 
 
                 .anyExchange().permitAll()

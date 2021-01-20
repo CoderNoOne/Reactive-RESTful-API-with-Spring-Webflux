@@ -1,5 +1,6 @@
 package com.app.infrastructure.security;
 
+import com.app.application.dto.ResponseDto;
 import com.app.application.exception.AuthenticationException;
 import com.app.domain.security.UserRepository;
 import com.app.infrastructure.security.tokens.AppTokensService;
@@ -39,7 +40,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
                     ));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return Mono.error(() -> new AuthenticationException("USER CANNOT BE AUTHENTICATED"));
+            return Mono.error(() -> new AuthenticationException("User cannot be authenticated"));
         }
     }
 }
