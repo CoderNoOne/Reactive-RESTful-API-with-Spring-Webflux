@@ -51,9 +51,9 @@ public class CreateMovieDtoValidator implements Validator<CreateMovieDto> {
 
     private boolean isPremiereDateValid(String premiereDate) {
 
-        var dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        var dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         return nonNull(premiereDate) &&
-                GenericValidator.isDate(premiereDate, "yyyy-MM-dd", true) &&
+                GenericValidator.isDate(premiereDate, "dd-MM-yyyy", true) &&
                 LocalDate.from(dateTimeFormatter.parse(premiereDate)).compareTo(LocalDate.now()) > 0;
 
     }
