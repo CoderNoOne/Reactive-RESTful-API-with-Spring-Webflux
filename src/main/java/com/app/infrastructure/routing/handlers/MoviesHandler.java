@@ -24,21 +24,21 @@ public class MoviesHandler {
     public Mono<ServerResponse> addMovieToFavorites(final ServerRequest serverRequest) {
 
         return serverRequest.principal()
-                .map(principal -> movieService.addMovieToFavorites(serverRequest.pathVariable("id"), principal.getName()))
+                .flatMap(principal -> movieService.addMovieToFavorites(serverRequest.pathVariable("id"), principal.getName()))
                 .flatMap(movie -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(movie)))
-                .onErrorResume(AuthenticationException.class, ex -> ServerResponse
-                        .status(401)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(
-                                ResponseDto.builder()
-                                        .error(ErrorMessageDto.builder()
-                                                .message(ex.getMessage())
-                                                .build())
-                                        .build()
-                        )));
+                        .body(BodyInserters.fromValue(movie)));
+//                .onErrorResume(AuthenticationException.class, ex -> ServerResponse
+//                        .status(401)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .body(BodyInserters.fromValue(
+//                                ResponseDto.builder()
+//                                        .error(ErrorMessageDto.builder()
+//                                                .message(ex.getMessage())
+//                                                .build())
+//                                        .build()
+//                        )));
 
     }
 

@@ -7,6 +7,7 @@ import com.app.application.dto.ResponseDto;
 import com.app.application.exception.RegistrationUserException;
 import com.app.application.service.UsersService;
 import com.app.infrastructure.aspect.annotations.Loggable;
+import com.mongodb.lang.NonNullApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

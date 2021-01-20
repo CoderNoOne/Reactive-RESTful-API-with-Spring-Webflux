@@ -7,8 +7,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 @Getter
 @NoArgsConstructor
@@ -67,21 +70,13 @@ public final class User extends BaseUser {
         public User build() {
             return new User(username, password, birthDate, favoriteMovies);
         }
+    }
 
-        public void setUsername(String username) {
-            this.username = username;
+    public User addMovieToFavorites(Movie movie) {
+        if (isNull(favoriteMovies)) {
+            favoriteMovies = new ArrayList<>();
         }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        public void setBirthDate(LocalDate birthDate) {
-            this.birthDate = birthDate;
-        }
-
-        public void setFavoriteMovies(List<Movie> favoriteMovies) {
-            this.favoriteMovies = favoriteMovies;
-        }
+        favoriteMovies.add(movie);
+        return this;
     }
 }
