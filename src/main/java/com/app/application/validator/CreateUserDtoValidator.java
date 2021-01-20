@@ -3,7 +3,6 @@ package com.app.application.validator;
 import com.app.application.dto.CreateUserDto;
 import com.app.application.validator.generic.Validator;
 import org.apache.commons.validator.GenericValidator;
-import org.joda.time.format.DateTimeFormat;
 
 import org.springframework.stereotype.Component;
 
