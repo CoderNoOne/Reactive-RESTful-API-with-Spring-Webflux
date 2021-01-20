@@ -25,7 +25,6 @@ public class UsersHandler {
     @Loggable
     public Mono<ServerResponse> register(ServerRequest serverRequest) {
 
-
         return serverRequest
                 .bodyToMono(CreateUserDto.class)
                 .flatMap(createUserDto -> usersService
@@ -33,16 +32,8 @@ public class UsersHandler {
                         .flatMap(response -> ServerResponse
                                 .status(HttpStatus.CREATED)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(response))))
-                .onErrorResume(RegistrationUserException.class, ex -> ServerResponse
-                        .status(HttpStatus.BAD_REQUEST)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(
-                                ResponseDto.builder().error(ErrorMessageDto.builder()
-                                        .message(ex.getMessage())
-                                        .build())
-                                        .build()
-                        )));
+                                .body(BodyInserters.fromValue(response))));
+
     }
 
     @Loggable

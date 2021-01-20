@@ -4,10 +4,10 @@ server:
 spring:
   data:
     mongodb:
-      database: cinema_db2
+      database: db2
       host: localhost
       port: 27017
-
+      replica-set-name: rs0
 jwt:
   token:
     prefix: Bearer
@@ -17,3 +17,10 @@ jwt:
     expiration-time-ms: 28800000
     access-token-key: AccessTokenKey
 
+change-logs-scan-package: com.app.infrastructure.mongo.initscripts
+
+adminusername: admin1111
+
+jasypt:
+  encryptor:
+    password: password
