@@ -2,6 +2,7 @@ package com.app.domain.security;
 
 import com.app.domain.security.enums.Role;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 

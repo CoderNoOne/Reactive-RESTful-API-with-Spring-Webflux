@@ -1,6 +1,7 @@
 package com.app.application.service;
 
 import com.app.application.dto.CreateUserDto;
+import com.app.application.dto.UserDto;
 import com.app.application.exception.RegistrationUserException;
 import com.app.application.validator.CreateUserDtoValidator;
 import com.app.application.validator.util.Validations;
@@ -49,7 +50,15 @@ public class UsersService {
                 .map(User::getId);
     }
 
-    public Flux<User> getAll() {
-        return userRepository.findAll();
+    public Flux<UserDto> getAll() {
+        return userRepository
+                .findAll()
+                .map(User::toDto);
+    }
+
+    public Mono<UserDto> getByUsername(String username) {
+        return userRepository
+                .findByUsername(username)
+                .map(User::toDto);
     }
 }

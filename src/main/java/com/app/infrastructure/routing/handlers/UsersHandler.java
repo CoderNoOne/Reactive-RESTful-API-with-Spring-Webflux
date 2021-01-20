@@ -48,4 +48,13 @@ public class UsersHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(createdUser)));
     }
+
+    public Mono<ServerResponse> getByUsername(ServerRequest serverRequest) {
+        return usersService.getByUsername(serverRequest.pathVariable("username"))
+                .flatMap(user -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(user))
+                );
+    }
 }

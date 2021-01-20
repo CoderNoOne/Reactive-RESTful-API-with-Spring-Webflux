@@ -41,10 +41,10 @@ public class AppRouting {
 
                 .andNest(
                         path("/movies"),
-                        route(GET("/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getById)
+                        route(GET("id/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getById)
                                 .andRoute(PATCH("addToFavorites/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::addMovieToFavorites)
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::addMovieToDatabase)
-                                .andRoute(DELETE("/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::deleteMovieById)
+                                .andRoute(DELETE("/id/{id}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::deleteMovieById)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getAllMovies)
                                 .andRoute(GET("filter/premiereDate").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByPremiereDate)
                                 .andRoute(GET("filter/duration").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByDuration)
@@ -52,6 +52,7 @@ public class AppRouting {
                                 .andRoute(GET("filter/genre/{genre}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByGenre)
                                 .andRoute(GET("filter/keyword/{keyword}").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getMoviesFilteredByKeyword)
                                 .andRoute(POST("/csv").and(accept(MediaType.MULTIPART_FORM_DATA)), moviesHandler::addMovieToDatabaseWithCsvFile)
+                                .andRoute(GET("/favorites").and(accept(MediaType.APPLICATION_JSON)), moviesHandler::getFavoriteMovies)
                 )
 
                 .andNest(
@@ -85,6 +86,10 @@ public class AppRouting {
                 .andNest(path("/ticketPurchases"),
                         route(POST("/ticketOrderId/{ticketOrderId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicketFromOrder)
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicket)
+                )
+                .andNest(path("/users"),
+                        route(GET("").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
+                                .andRoute(GET("/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
                 );
     }
 

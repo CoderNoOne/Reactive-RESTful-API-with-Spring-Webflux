@@ -7,6 +7,7 @@ import com.app.application.validator.CreateMovieDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.movie.Movie;
 import com.app.domain.movie.MovieRepository;
+import com.app.domain.security.User;
 import com.app.domain.security.UserRepository;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
@@ -150,6 +151,13 @@ public class MovieService {
 
     public Mono<MovieDto> getById(final String id) {
         return movieRepository.findById(id)
+                .map(Movie::toDto);
+    }
+
+    public Flux<MovieDto> getFavoriteMovies(String username){
+        return userRepository.findByUsername(username)
+                .map(User::getFavoriteMovies)
+                .flatMapMany(Flux::fromIterable)
                 .map(Movie::toDto);
     }
 

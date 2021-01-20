@@ -1,17 +1,21 @@
 package com.app.domain.security;
 
+import com.app.application.dto.UserDto;
 import com.app.domain.movie.Movie;
 import com.app.domain.security.enums.Role;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
 @Getter
 @NoArgsConstructor
@@ -21,14 +25,6 @@ public final class User extends BaseUser {
 
     private LocalDate birthDate;
     private List<Movie> favoriteMovies;
-
-    public Integer getAge() {
-
-        return Optional
-                .ofNullable(birthDate)
-                .map(value -> Period.between(value, LocalDate.now()).getYears())
-                .orElse(null);
-    }
 
     public User(String username, String password, LocalDate birthDate, List<Movie> favoriteMovies) {
         super(username, password, Role.ROLE_USER);
@@ -78,5 +74,19 @@ public final class User extends BaseUser {
         }
         favoriteMovies.add(movie);
         return this;
+    }
+
+    public UserDto toDto() {
+        return UserDto.builder()
+                .id(super.getId())
+                .username(super.getUsername())
+                .role(super.getRole().name())
+                .birthDate(birthDate.toString())
+                .favoriteMovies(isNull(favoriteMovies) ? Collections.emptyList() : favoriteMovies
+                        .stream()
+                        .map(Movie::toDto)
+                        .collect(Collectors.toList())
+                )
+                .build();
     }
 }
