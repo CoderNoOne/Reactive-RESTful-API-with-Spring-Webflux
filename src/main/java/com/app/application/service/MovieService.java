@@ -3,7 +3,6 @@ package com.app.application.service;
 import com.app.application.dto.CreateMovieDto;
 import com.app.application.dto.MovieDto;
 import com.app.application.exception.MovieServiceException;
-import com.app.application.mapper.Mappers;
 import com.app.application.validator.CreateMovieDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.movie.Movie;
@@ -170,7 +169,7 @@ public class MovieService {
                     }
                     return dto;
                 })
-                .flatMap(val -> movieRepository.addOrUpdate(Mappers.fromCreateMovieDtoToMovie(val)))
+                .flatMap(dto -> movieRepository.addOrUpdate(dto.toEntity()))
                 .doOnSuccess(movie -> log.info("Movie {} saved", movie))
                 .map(Movie::toDto);
     }
@@ -200,7 +199,7 @@ public class MovieService {
                                         throw new MovieServiceException(Validations.createErrorMessage(errors));
                                     }
                                 })
-                                .map(Mappers::fromCreateMovieDtoToMovie)
+                                .map(CreateMovieDto::toEntity)
                                 .collect(Collectors.toList()))
                 )
                 .flatMapMany(Function.identity())

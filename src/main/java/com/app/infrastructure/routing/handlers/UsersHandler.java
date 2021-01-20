@@ -24,6 +24,8 @@ public class UsersHandler {
 
     @Loggable
     public Mono<ServerResponse> register(ServerRequest serverRequest) {
+
+
         return serverRequest
                 .bodyToMono(CreateUserDto.class)
                 .flatMap(createUserDto -> usersService

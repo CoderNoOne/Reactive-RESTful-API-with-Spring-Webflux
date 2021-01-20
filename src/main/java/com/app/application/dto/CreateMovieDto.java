@@ -1,5 +1,6 @@
 package com.app.application.dto;
 
+import com.app.domain.movie.Movie;
 import com.opencsv.bean.CsvBindByName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,4 +28,15 @@ public class CreateMovieDto {
 
     @CsvBindByName(format = "yyyy-MM-dd")
     private String premiereDate;
+
+    public Movie toEntity() {
+        return Movie.builder()
+                .duration(duration)
+                .genre(genre)
+                .name(name)
+                .premiereDate(LocalDate.parse(premiereDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .build();
+
+    }
+
 }

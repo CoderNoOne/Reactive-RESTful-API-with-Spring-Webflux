@@ -1,5 +1,6 @@
 package com.app.application.dto;
 
+import com.app.domain.security.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 @Data
@@ -14,10 +16,23 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class CreateUserDto {
+
     private String username;
     private String password;
     private String passwordConfirmation;
+    private String birthDate;
 
-    @DateTimeFormat()
-    private LocalDate birthDate;
+    public User toEntity() {
+        return User.builder()
+                .password(password)
+                .birthDate(LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
+                .username(username)
+                .build();
+
+    }
+
+    public CreateUserDto setPassword(String password) {
+        this.password = password;
+        return this;
+    }
 }

@@ -2,9 +2,8 @@ package com.app.application.service;
 
 import com.app.application.dto.CreateUserDto;
 import com.app.application.exception.RegistrationUserException;
-import com.app.application.exception.UsersServiceException;
-import com.app.application.mapper.Mappers;
 import com.app.application.validator.CreateUserDtoValidator;
+import com.app.application.validator.util.Validations;
 import com.app.domain.security.User;
 import com.app.domain.security.UserRegistrationResponseDto;
 import com.app.domain.security.UserRepository;
@@ -17,6 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
 
+import static java.util.Objects.nonNull;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,13 +29,9 @@ public class UsersService {
 
     public Mono<UserRegistrationResponseDto> register(final CreateUserDto createUserDto) {
         var errors = createUserDtoValidator.validate(createUserDto);
-        if (!errors.isEmpty()) {
-            var errorMessage = errors
-                    .entrySet()
-                    .stream()
-                    .map(e -> e.getKey() + ": " + e.getValue())
-                    .collect(Collectors.joining("\n"));
-            return Mono.error(() -> new RegistrationUserException(errorMessage));
+
+        if (Validations.hasErrors(errors)) {
+            return Mono.error(() -> new RegistrationUserException(Validations.createErrorMessage(errors)));
         }
 
         return userRepository
@@ -46,10 +43,10 @@ public class UsersService {
     }
 
     private Mono<String> createUser(final CreateUserDto createUserDto) {
-        createUserDto.setPassword(createUserDto.getPassword() != null ?
-                passwordEncoder.encode(createUserDto.getPassword()) : null);
-        var user = Mappers.fromCreateUserDtoToRegularUser(createUserDto);
-        return userRepository.addOrUpdate(user).map(User::getId);
+
+        return userRepository
+                .addOrUpdate(createUserDto.setPassword(nonNull(createUserDto.getPassword()) ? passwordEncoder.encode(createUserDto.getPassword()) : null).toEntity())
+                .map(User::getId);
     }
 
     public Flux<User> getAll() {

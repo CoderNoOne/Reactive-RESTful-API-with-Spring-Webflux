@@ -4,7 +4,7 @@ server:
 spring:
   data:
     mongodb:
-      database: cinema_db
+      database: cinema_db2
       host: localhost
       port: 27017
 

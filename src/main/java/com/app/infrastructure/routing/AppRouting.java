@@ -24,7 +24,8 @@ public class AppRouting {
             final CinemasHandler cinemasHandler,
             final MovieEmissionsHandler movieEmissionsHandler,
             final CitiesHandler citiesHandler,
-            final CinemaHallsHandler cinemaHallsHandler
+            final CinemaHallsHandler cinemaHallsHandler,
+            final TicketPurchaseHandler ticketPurchaseHandler
     ) {
 
         return RouterFunctions
@@ -80,6 +81,10 @@ public class AppRouting {
                         route(POST("addToCinema/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::addCinemaHallToCinema)
                                 .andRoute(GET("/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAllForCinema)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAll)
+                )
+                .andNest(path("/ticketPurchases"),
+                        route(POST("/ticketOrderId/{ticketOrderId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicketFromOrder)
+                                .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicket)
                 );
     }
 
