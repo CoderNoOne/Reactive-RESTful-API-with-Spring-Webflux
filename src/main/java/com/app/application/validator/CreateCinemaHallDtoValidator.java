@@ -10,7 +10,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class CreateCinemaHallDtoValidator implements Validator<CreateCinemaHallDto> {
+public class CreateCinemaHallDtoValidator implements Validator<CreateCinemaHallDto, String> {
 
     private static final Integer MIN_NUMBER_OF_ROWS_AND_COL = 5;
 

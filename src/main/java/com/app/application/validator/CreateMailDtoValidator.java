@@ -12,7 +12,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 
 @Component
-public class CreateMailDtoValidator implements Validator<CreateMailDto> {
+public class CreateMailDtoValidator implements Validator<CreateMailDto, String> {
 
     private final EmailValidator emailValidator = EmailValidator.getInstance();
 
@@ -22,20 +22,20 @@ public class CreateMailDtoValidator implements Validator<CreateMailDto> {
         var errors = new HashMap<String, String>();
 
         if (isNull(item)) {
-            errors.put("dto object: ", "is null");
+            errors.put("dto object", "is null");
             return errors;
         }
 
         if (!isEmailValid(item.getTo())) {
-            errors.put("To email: %s :".formatted(item.getTo()), "is not valid");
+            errors.put("To email: %s".formatted(item.getTo()), "is not valid");
         }
 
         if (!isHtmlContentValid(item.getHtmlContent())) {
-            errors.put("Html Content:", "is not valid");
+            errors.put("Html Content", "is not valid");
         }
 
         if (!isTittleValid(item.getTitle())) {
-            errors.put("Title: %s : ".formatted(item.getTitle()), "is not valid");
+            errors.put("Title: %s".formatted(item.getTitle()), "is not valid");
         }
 
         return errors;

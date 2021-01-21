@@ -15,7 +15,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 
 @Component
-public class CreateUserDtoValidator implements Validator<CreateUserDto> {
+public class CreateUserDtoValidator implements Validator<CreateUserDto, String> {
 
     private final String DATE_FORMAT = "dd-MM-yyyy";
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);

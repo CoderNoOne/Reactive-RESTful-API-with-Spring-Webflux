@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 
-public class AddCinemaHallToCinemaDtoValidator implements Validator<AddCinemaHallToCinemaDto> {
+public class AddCinemaHallToCinemaDtoValidator implements Validator<AddCinemaHallToCinemaDto, String> {
 
     private static final Integer MIN_NUM_OF_POSITIONS = 50;
 

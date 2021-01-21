@@ -12,7 +12,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class CreateMovieEmissionDtoValidator implements Validator<CreateMovieEmissionDto> {
+public class CreateMovieEmissionDtoValidator implements Validator<CreateMovieEmissionDto, String> {
 
     @Override
     public Map<String, String> validate(CreateMovieEmissionDto item) {

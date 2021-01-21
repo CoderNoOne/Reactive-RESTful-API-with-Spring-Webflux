@@ -11,7 +11,7 @@ import java.util.Map;
 import static java.util.Objects.nonNull;
 
 @Component
-public class CreateTicketsOrderDtoValidator implements Validator<CreateTicketOrderDto> {
+public class CreateTicketsOrderDtoValidator implements Validator<CreateTicketOrderDto, String> {
 
     @Override
     public Map<String, String> validate(CreateTicketOrderDto item) {

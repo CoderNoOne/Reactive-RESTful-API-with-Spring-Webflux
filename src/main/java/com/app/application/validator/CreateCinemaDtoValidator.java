@@ -10,7 +10,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
-public class CreateCinemaDtoValidator implements Validator<CreateCinemaDto> {
+public class CreateCinemaDtoValidator implements Validator<CreateCinemaDto, String> {
 
     @Override
     public Map<String, String> validate(CreateCinemaDto item) {

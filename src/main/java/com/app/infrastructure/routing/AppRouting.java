@@ -94,7 +94,8 @@ public class AppRouting {
                                 .andRoute(POST("/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole)
                 )
                 .andNest(path("/emails"),
-                        route(POST("/send/single").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendSingleEmail));
+                        route(POST("/send/single").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendSingleEmail)
+                                .andRoute(POST("/send/multiple").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendMultipleEmails));
     }
 
 }

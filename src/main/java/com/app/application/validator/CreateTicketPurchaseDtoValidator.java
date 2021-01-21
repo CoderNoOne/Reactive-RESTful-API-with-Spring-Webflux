@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class CreateTicketPurchaseDtoValidator implements Validator<CreateTicketPurchaseDto> {
+public class CreateTicketPurchaseDtoValidator implements Validator<CreateTicketPurchaseDto, String> {
 
     @Override
     public Map<String, String> validate(CreateTicketPurchaseDto item) {

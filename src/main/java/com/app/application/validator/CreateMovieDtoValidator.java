@@ -18,7 +18,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Component
-public class CreateMovieDtoValidator implements Validator<CreateMovieDto> {
+public class CreateMovieDtoValidator implements Validator<CreateMovieDto, String> {
 
     @Override
     public Map<String, String> validate(CreateMovieDto item) {

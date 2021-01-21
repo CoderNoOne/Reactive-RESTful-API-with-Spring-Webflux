@@ -2,6 +2,7 @@ package com.app;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,9 @@ import java.util.TimeZone;
 @EnableAspectJAutoProxy
 public class CinemaApplication {
 
+    @Value("${timezone}")
+    private String timeZone;
+
     public static void main(String[] args) {
         SpringApplication.run(CinemaApplication.class, args);
     }
@@ -27,7 +31,7 @@ public class CinemaApplication {
 
     @PostConstruct
     public void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        TimeZone.setDefault(TimeZone.getTimeZone(timeZone));
     }
 }
 
