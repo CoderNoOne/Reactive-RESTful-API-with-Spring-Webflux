@@ -26,10 +26,6 @@ public class CreateMailDtoValidator implements Validator<CreateMailDto> {
             return errors;
         }
 
-        if (!isEmailValid(item.getFrom())) {
-            errors.put("From email: %s :".formatted(item.getFrom()), "is not valid");
-        }
-
         if (!isEmailValid(item.getTo())) {
             errors.put("To email: %s :".formatted(item.getTo()), "is not valid");
         }

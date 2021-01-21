@@ -16,4 +16,5 @@ public interface Validations {
     static boolean hasErrors(Map<String, String> errors) {
         return !errors.isEmpty();
     }
+
 }

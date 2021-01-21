@@ -21,12 +21,14 @@ public class CreateUserDto {
     private String password;
     private String passwordConfirmation;
     private String birthDate;
+    private String email;
 
     public User toEntity() {
         return User.builder()
                 .password(password)
                 .birthDate(LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("dd-MM-yyyy")))
                 .username(username)
+                .email(email)
                 .build();
 
     }

@@ -66,7 +66,6 @@ public class EmailService {
             MimeMessage mimeMessage = createMimeMessage(createMailDto.getTo(), createMailDto.getHtmlContent(), createMailDto.getTitle());
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false);
             messageHelper.setText(createMailDto.getHtmlContent(), true);
-            messageHelper.setFrom(Objects.requireNonNullElse(createMailDto.getFrom(), "noreply@domain.com"));
             messageHelper.setTo(createMailDto.getTo());
             messageHelper.setSubject(createMailDto.getTitle());
             mailSender.send(mimeMessage);

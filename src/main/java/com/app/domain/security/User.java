@@ -39,6 +39,7 @@ public final class User extends BaseUser {
 
         private String username;
         private String password;
+        private String email;
         private LocalDate birthDate;
         private List<Movie> favoriteMovies;
 
@@ -49,6 +50,11 @@ public final class User extends BaseUser {
 
         public RegularUserBuilder password(String password) {
             this.password = password;
+            return this;
+        }
+
+        public RegularUserBuilder email(String email) {
+            this.email = email;
             return this;
         }
 

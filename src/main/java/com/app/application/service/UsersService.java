@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,6 +28,7 @@ public class UsersService {
     private final CreateUserDtoValidator createUserDtoValidator;
     private final PasswordEncoder passwordEncoder;
     private final AdminRepository adminRepository;
+    private final TransactionalOperator transactionalOperator;
 
     public Mono<UserRegistrationResponseDto> register(final CreateUserDto createUserDto) {
         var errors = createUserDtoValidator.validate(createUserDto);
@@ -72,7 +74,8 @@ public class UsersService {
                 .flatMap(user -> adminRepository
                         .addOrUpdate(promoteUserToAdmin(user))
                         .map(Admin::toUserDto)
-                );
+                )
+                .as(transactionalOperator::transactional);
     }
 
     private Admin promoteUserToAdmin(User user) {

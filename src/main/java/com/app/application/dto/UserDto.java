@@ -22,6 +22,8 @@ public class UserDto {
 
     private String role;
 
+    private String email;
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<MovieDto> favoriteMovies;
 

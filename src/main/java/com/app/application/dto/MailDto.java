@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class MailDto {
 
-    private String from;
     private String to;
     private String title;
 }

@@ -28,6 +28,7 @@ public class UsersHandler {
 
         return serverRequest
                 .bodyToMono(CreateUserDto.class)
+                .switchIfEmpty(Mono.error(() -> new RegistrationUserException("No body found")))
                 .flatMap(createUserDto -> usersService
                         .register(createUserDto)
                         .flatMap(response -> ServerResponse

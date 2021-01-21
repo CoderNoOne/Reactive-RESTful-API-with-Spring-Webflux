@@ -12,13 +12,11 @@ import lombok.NoArgsConstructor;
 public class CreateMailDto {
 
     private String to;
-    private String from;
     private String htmlContent;
     private String title;
 
     public MailDto toMailDto() {
         return MailDto.builder()
-                .from(from)
                 .title(title)
                 .to(to)
                 .build();
