@@ -49,8 +49,19 @@ public class UsersHandler {
                         .body(BodyInserters.fromValue(createdUser)));
     }
 
+    @Loggable
     public Mono<ServerResponse> getByUsername(ServerRequest serverRequest) {
         return usersService.getByUsername(serverRequest.pathVariable("username"))
+                .flatMap(user -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(user))
+                );
+    }
+
+    @Loggable
+    public Mono<ServerResponse> promoteUserToAdminRole(ServerRequest serverRequest) {
+        return usersService.promoteUserToAdminRole(serverRequest.pathVariable("username"))
                 .flatMap(user -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)

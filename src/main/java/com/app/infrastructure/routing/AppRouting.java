@@ -90,6 +90,7 @@ public class AppRouting {
                 .andNest(path("/users"),
                         route(GET("").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
                                 .andRoute(GET("/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
+                                .andRoute(POST("/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole)
                 );
     }
 

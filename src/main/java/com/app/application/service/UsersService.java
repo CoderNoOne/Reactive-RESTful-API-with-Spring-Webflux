@@ -6,15 +6,15 @@ import com.app.application.exception.RegistrationUserException;
 import com.app.application.exception.UserServiceException;
 import com.app.application.validator.CreateUserDtoValidator;
 import com.app.application.validator.util.Validations;
-import com.app.domain.security.User;
-import com.app.domain.security.UserRegistrationResponseDto;
-import com.app.domain.security.UserRepository;
+import com.app.domain.security.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
@@ -26,6 +26,7 @@ public class UsersService {
     private final UserRepository userRepository;
     private final CreateUserDtoValidator createUserDtoValidator;
     private final PasswordEncoder passwordEncoder;
+    private final AdminRepository adminRepository;
 
     public Mono<UserRegistrationResponseDto> register(final CreateUserDto createUserDto) {
         var errors = createUserDtoValidator.validate(createUserDto);
@@ -60,5 +61,23 @@ public class UsersService {
                 .findByUsername(username)
                 .switchIfEmpty(Mono.error(() -> new UserServiceException("No user with username: %s".formatted(username))))
                 .map(User::toDto);
+    }
+
+    public Mono<UserDto> promoteUserToAdminRole(String username) {
+
+        return userRepository
+                .findByUsername(username)
+                .switchIfEmpty(Mono.error(() -> new UserServiceException("No user with username: %s".formatted(username))))
+                .flatMap(user -> userRepository.deleteById(user.getId()))
+                .flatMap(user -> adminRepository
+                        .addOrUpdate(promoteUserToAdmin(user))
+                        .map(Admin::toUserDto)
+                );
+    }
+
+    private Admin promoteUserToAdmin(User user) {
+        return Optional.ofNullable(user)
+                .map(userVal -> new Admin(user.getUsername(), userVal.getPassword()))
+                .orElse(null);
     }
 }
