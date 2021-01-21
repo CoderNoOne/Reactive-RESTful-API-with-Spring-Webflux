@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
+import static java.util.Objects.*;
 
 @Getter
 @NoArgsConstructor
@@ -81,7 +80,7 @@ public final class User extends BaseUser {
                 .id(super.getId())
                 .username(super.getUsername())
                 .role(super.getRole().name())
-                .birthDate(birthDate.toString())
+                .birthDate(nonNull(birthDate) ? birthDate.toString() : null)
                 .favoriteMovies(isNull(favoriteMovies) ? Collections.emptyList() : favoriteMovies
                         .stream()
                         .map(Movie::toDto)

@@ -1,5 +1,6 @@
 package com.app.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,8 +16,13 @@ public class UserDto {
 
     private String id;
     private String username;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String birthDate;
+
     private String role;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<MovieDto> favoriteMovies;
 
 }
