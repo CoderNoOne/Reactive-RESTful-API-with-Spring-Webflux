@@ -24,11 +24,13 @@ public final class User extends BaseUser {
 
     private LocalDate birthDate;
     private List<Movie> favoriteMovies;
+    private String email;
 
-    public User(String username, String password, LocalDate birthDate, List<Movie> favoriteMovies) {
+    public User(String username, String password, LocalDate birthDate, List<Movie> favoriteMovies, String email) {
         super(username, password, Role.ROLE_USER);
         this.birthDate = birthDate;
         this.favoriteMovies = favoriteMovies;
+        this.email = email;
     }
 
     public static RegularUserBuilder builder() {
@@ -69,7 +71,7 @@ public final class User extends BaseUser {
         }
 
         public User build() {
-            return new User(username, password, birthDate, favoriteMovies);
+            return new User(username, password, birthDate, favoriteMovies, email);
         }
     }
 
