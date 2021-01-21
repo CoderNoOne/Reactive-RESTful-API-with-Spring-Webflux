@@ -3,6 +3,7 @@ package com.app.application.service;
 import com.app.application.dto.CreateUserDto;
 import com.app.application.dto.UserDto;
 import com.app.application.exception.RegistrationUserException;
+import com.app.application.exception.UserServiceException;
 import com.app.application.validator.CreateUserDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.security.User;
@@ -14,8 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
 
@@ -59,6 +58,7 @@ public class UsersService {
     public Mono<UserDto> getByUsername(String username) {
         return userRepository
                 .findByUsername(username)
+                .switchIfEmpty(Mono.error(() -> new UserServiceException("No user with username: %s".formatted(username))))
                 .map(User::toDto);
     }
 }
