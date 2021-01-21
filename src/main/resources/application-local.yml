@@ -8,6 +8,19 @@ spring:
       host: localhost
       port: 27017
       replica-set-name: rs0
+
+  mail:
+    host: smtp.gmail.com
+    username: firelight.code@gmail.com
+    password: rxzbacwpboqvjllq
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 jwt:
   token:
     prefix: Bearer
@@ -18,8 +31,7 @@ jwt:
     access-token-key: AccessTokenKey
 
 change-logs-scan-package: com.app.infrastructure.mongo.initscripts
-
-adminusername: admin1111
+adminusername: admin123
 
 jasypt:
   encryptor:

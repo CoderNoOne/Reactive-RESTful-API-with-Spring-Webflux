@@ -25,7 +25,8 @@ public class AppRouting {
             final MovieEmissionsHandler movieEmissionsHandler,
             final CitiesHandler citiesHandler,
             final CinemaHallsHandler cinemaHallsHandler,
-            final TicketPurchaseHandler ticketPurchaseHandler
+            final TicketPurchaseHandler ticketPurchaseHandler,
+            final EmailHandler emailHandler
     ) {
 
         return RouterFunctions
@@ -91,7 +92,9 @@ public class AppRouting {
                         route(GET("").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
                                 .andRoute(GET("/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
                                 .andRoute(POST("/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole)
-                );
+                )
+                .andNest(path("/emails"),
+                        route(POST("/send/single").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendSingleEmail));
     }
 
 }
