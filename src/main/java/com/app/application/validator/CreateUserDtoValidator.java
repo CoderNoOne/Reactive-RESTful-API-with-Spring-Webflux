@@ -3,7 +3,6 @@ package com.app.application.validator;
 import com.app.application.dto.CreateUserDto;
 import com.app.application.validator.generic.Validator;
 import org.apache.commons.validator.GenericValidator;
-
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,7 @@ public class CreateUserDtoValidator implements Validator<CreateUserDto, String> 
         var errors = new HashMap<String, String>();
 
         if (isNull(createUserDto)) {
-            errors.put("dto object:", "is null");
+            errors.put("dto object", "is null");
             return errors;
         }
 
@@ -43,11 +42,11 @@ public class CreateUserDtoValidator implements Validator<CreateUserDto, String> 
         var errors = new HashMap<String, String>();
 
         if (isNull(birthDate)) {
-            errors.put("Birth date:", "is null");
+            errors.put("Birth date", "is null");
         } else if (!GenericValidator.isDate(birthDate, DATE_FORMAT, true)) {
-            errors.put("Birth date: %s:".formatted(birthDate), "Birth date format should be: %s".formatted(DATE_FORMAT));
+            errors.put("Birth date %s:".formatted(birthDate), "Birth date format should be: %s".formatted(DATE_FORMAT));
         } else if (LocalDate.now().minusYears(18).compareTo(LocalDate.from(dateTimeFormatter.parse(birthDate))) < 0) {
-            errors.put("Birt date:", "User has to be an adult");
+            errors.put("Birt date", "User has to be an adult");
         }
 
         return errors;
@@ -58,9 +57,9 @@ public class CreateUserDtoValidator implements Validator<CreateUserDto, String> 
         var errors = new HashMap<String, String>();
 
         if (isNull(username)) {
-            errors.put("Username:", "is null");
+            errors.put("Username", "is null");
         } else if (username.length() < 5) {
-            errors.put("Username:", "Minimum length of user is 5 characters");
+            errors.put("Username", "Minimum length of user is 5 characters");
         }
 
         return errors;
@@ -70,17 +69,16 @@ public class CreateUserDtoValidator implements Validator<CreateUserDto, String> 
         var errors = new HashMap<String, String>();
 
         if (isNull(password) || isNull(passwordConfirmation)) {
-            errors.put("Password:", "password and confirmation password must be set");
-        } else if (password.length() < 5) {
-            errors.put("Password:", "Minimum password length is 5 characters");
-        } else if (!password.equals(passwordConfirmation)) {
-            errors.put("Password:", "Password and confirmation password does not match");
-        }
+            errors.put("Password", "password and confirmation password must be set");
+        } else {
+            if (password.length() < 5) {
+                errors.put("Password", "Minimum password length is 5 characters");
+            }
+            if (!password.equals(passwordConfirmation)) {
+                errors.put("Password confirmation", "Password and confirmation password does not match");
+            }
 
-        if (isNull(password) || isNull(passwordConfirmation) || !password.equals(passwordConfirmation)) {
-            errors.put("Password:", "is not valid");
         }
-
         return errors;
     }
 
