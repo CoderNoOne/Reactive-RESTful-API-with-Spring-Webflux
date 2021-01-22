@@ -1,19 +1,14 @@
 package com.app.infrastructure.routing;
 
-import com.app.application.dto.CreateUserDto;
-import com.app.application.service.UsersService;
 import com.app.infrastructure.routing.handlers.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 
-import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -26,20 +21,34 @@ public class AppRouting {
 
     @Bean
     @RouterOperations({
-            @RouterOperation(path = "/security/register",
-                    beanClass = UsersHandler.class,
-                    beanMethod = "register")
+            @RouterOperation(path = "/register", beanClass = UsersHandler.class, beanMethod = "register"),
+            @RouterOperation(path = "/users", beanClass = UsersHandler.class, beanMethod = "getAllUsers"),
+            @RouterOperation(path = "/users/username/{username}", beanClass = UsersHandler.class, beanMethod = "getByUsername"),
+            @RouterOperation(path = "/users/promoteToAdmin/username/{username}", beanClass = UsersHandler.class, beanMethod = "promoteUserToAdminRole")
     })
-    public RouterFunction<ServerResponse> securityRoute(UsersHandler usersHandler) {
+    public RouterFunction<ServerResponse> usersRoute(UsersHandler usersHandler) {
         return RouterFunctions
-                .route(POST("/security/register")
-                        .and(accept(MediaType.APPLICATION_JSON)), usersHandler::register);
+                .route(POST("/register").and(accept(MediaType.APPLICATION_JSON)), usersHandler::register)
+                .andRoute(GET("/users").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
+                .andRoute(GET("/users/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
+                .andRoute(POST("/users/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole);
+    }
+
+    @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/login",
+                    beanClass = LoginHandler.class,
+                    beanMethod = "login")
+    })
+    public RouterFunction<ServerResponse> loginRoute(LoginHandler loginHandler) {
+        return RouterFunctions
+                .route(POST("/login").and(accept(MediaType.APPLICATION_JSON)), loginHandler::login);
     }
 
     @Bean
     public RouterFunction<ServerResponse> routing(
             final UsersHandler usersHandler,
-            final SecurityHandler securityHandler,
+            final LoginHandler loginHandler,
             final MoviesHandler moviesHandler,
             final TicketOrderHandler ticketOrderHandler,
             final CinemasHandler cinemasHandler,
@@ -59,7 +68,7 @@ public class AppRouting {
                 .andNest(
                         path("/login"),
                         route(POST("")
-                                .and(accept(MediaType.APPLICATION_JSON)), securityHandler::login))
+                                .and(accept(MediaType.APPLICATION_JSON)), loginHandler::login))
 
                 .andNest(
                         path("/movies"),

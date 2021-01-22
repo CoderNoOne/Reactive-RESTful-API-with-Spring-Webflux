@@ -7,11 +7,16 @@ import com.app.domain.security.User;
 import com.app.infrastructure.aspect.annotations.Loggable;
 import com.mongodb.lang.NonNullApi;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,7 +35,7 @@ public class UsersHandler {
     @Loggable
     @Operation(summary = "POST register user", requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateUserDto.class))))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "user saved", content = {
+            @ApiResponse(responseCode = "201", description = "Success", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
@@ -53,18 +58,38 @@ public class UsersHandler {
     }
 
     @Loggable
+    @Operation(summary = "GET all users", security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = UserDto.class)), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> getAllUsers(ServerRequest serverRequest) {
 
         return usersService
                 .getAll()
                 .collectList()
-                .flatMap(createdUser -> ServerResponse
+                .flatMap(usersList -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(createdUser)));
+                        .body(BodyInserters.fromValue(usersList)));
     }
 
     @Loggable
+    @Operation(summary = "GET user by username", security = @SecurityRequirement(name = "JwtAuthToken"), parameters = {@Parameter(in = ParameterIn.PATH, name = "username")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(schema = @Schema(implementation = UserDto.class), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> getByUsername(ServerRequest serverRequest) {
         return usersService.getByUsername(serverRequest.pathVariable("username"))
                 .flatMap(user -> ServerResponse
@@ -75,6 +100,16 @@ public class UsersHandler {
     }
 
     @Loggable
+    @Operation(summary = "POST promote user to admin", security = @SecurityRequirement(name = "JwtAuthToken"), parameters = {@Parameter(in = ParameterIn.PATH, name = "username")})
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Success", content = {
+                    @Content(schema = @Schema(implementation = UserDto.class), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> promoteUserToAdminRole(ServerRequest serverRequest) {
         return usersService.promoteUserToAdminRole(serverRequest.pathVariable("username"))
                 .flatMap(user -> ServerResponse
