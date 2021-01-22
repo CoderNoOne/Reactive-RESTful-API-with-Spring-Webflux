@@ -1,9 +1,18 @@
 package com.app.infrastructure.routing;
 
+import com.app.application.dto.CreateUserDto;
+import com.app.application.service.UsersService;
 import com.app.infrastructure.routing.handlers.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
@@ -14,6 +23,18 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @Configuration
 public class AppRouting {
+
+    @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/security/register",
+                    beanClass = UsersHandler.class,
+                    beanMethod = "register")
+    })
+    public RouterFunction<ServerResponse> securityRoute(UsersHandler usersHandler) {
+        return RouterFunctions
+                .route(POST("/security/register")
+                        .and(accept(MediaType.APPLICATION_JSON)), usersHandler::register);
+    }
 
     @Bean
     public RouterFunction<ServerResponse> routing(

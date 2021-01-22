@@ -1,13 +1,17 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.CreateUserDto;
-import com.app.application.dto.ErrorMessageDto;
-import com.app.application.dto.ExceptionResponseDto;
-import com.app.application.dto.ResponseDto;
+import com.app.application.dto.*;
 import com.app.application.exception.RegistrationUserException;
 import com.app.application.service.UsersService;
+import com.app.domain.security.User;
 import com.app.infrastructure.aspect.annotations.Loggable;
 import com.mongodb.lang.NonNullApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +28,16 @@ public class UsersHandler {
     private final UsersService usersService;
 
     @Loggable
+    @Operation(summary = "POST register user", requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateUserDto.class))))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "user saved", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> register(ServerRequest serverRequest) {
 
         return serverRequest

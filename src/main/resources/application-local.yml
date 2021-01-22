@@ -1,5 +1,5 @@
 server:
-  port: 9010
+  port: 9011
 
 spring:
   data:
@@ -37,3 +37,9 @@ timezone: UTC
 jasypt:
   encryptor:
     password: password
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  packages-to-scan: com.app

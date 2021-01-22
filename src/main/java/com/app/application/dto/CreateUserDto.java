@@ -1,6 +1,7 @@
 package com.app.application.dto;
 
 import com.app.domain.security.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
