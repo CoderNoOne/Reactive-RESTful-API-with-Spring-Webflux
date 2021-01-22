@@ -94,6 +94,7 @@ public final class User extends BaseUser {
                         .map(Movie::toDto)
                         .collect(Collectors.toList())
                 )
+                .email(email)
                 .build();
     }
 }
