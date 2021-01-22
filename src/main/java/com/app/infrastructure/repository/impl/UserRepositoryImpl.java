@@ -66,4 +66,9 @@ public class UserRepositoryImpl implements UserRepository {
                         .then(Mono.just(users)))
                 .flatMapMany(Flux::fromIterable);
     }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return mongoUserRepository.findByEmail(email);
+    }
 }

@@ -4,19 +4,24 @@ import com.app.application.dto.CreateUserDto;
 import com.app.application.dto.UserDto;
 import com.app.application.exception.RegistrationUserException;
 import com.app.application.exception.UserServiceException;
+import com.app.application.service.enums.UserField;
 import com.app.application.validator.CreateUserDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.security.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Subscriber;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Optional;
+import java.util.function.Function;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -30,26 +35,36 @@ public class UsersService {
     private final AdminRepository adminRepository;
     private final TransactionalOperator transactionalOperator;
 
-    public Mono<UserRegistrationResponseDto> register(final CreateUserDto createUserDto) {
+    public Mono<UserDto> register(final CreateUserDto createUserDto) {
+
         var errors = createUserDtoValidator.validate(createUserDto);
 
         if (Validations.hasErrors(errors)) {
             return Mono.error(() -> new RegistrationUserException(Validations.createErrorMessage(errors)));
         }
 
-        return userRepository
-                .findByUsername(createUserDto.getUsername())
-                .map(userFromDb -> UserRegistrationResponseDto.builder()
-                        .errorMessage("User with username %s already exist".formatted(userFromDb.getUsername()))
-                        .build())
-                .switchIfEmpty(createUser(createUserDto).map(id -> UserRegistrationResponseDto.builder().id(id).build()));
+        return returnMonoErrorIfExists(userRepository::findByUsername, UserField.USERNAME, createUserDto.getUsername())
+                .then(returnMonoErrorIfExists(userRepository::findByEmail, UserField.EMAIL, createUserDto.getEmail()))
+                .then(createUser(createUserDto).map(User::toDto));
+
     }
 
-    private Mono<String> createUser(final CreateUserDto createUserDto) {
+    private Mono<?> returnMonoErrorIfExists(Function<String, Mono<User>> function, UserField userField, String arg) {
+
+        return function.apply(arg)
+                .flatMap(user -> {
+                    if (nonNull(user)) {
+                        return Mono.error(new RegistrationUserException("User with %s: %s already exists".formatted(userField.getDesc(), arg)));
+                    }
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<User> createUser(final CreateUserDto createUserDto) {
 
         return userRepository
-                .addOrUpdate(createUserDto.setPassword(nonNull(createUserDto.getPassword()) ? passwordEncoder.encode(createUserDto.getPassword()) : null).toEntity())
-                .map(User::getId);
+                .addOrUpdate(createUserDto.setPassword(nonNull(createUserDto.getPassword()) ? passwordEncoder.encode(createUserDto.getPassword()) : null).toEntity());
+
     }
 
     public Flux<UserDto> getAll() {
