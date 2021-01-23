@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.springframework.web.reactive.function.server.RouterFunctions.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -27,8 +28,7 @@ public class AppRouting {
             @RouterOperation(path = "/users/promoteToAdmin/username/{username}", beanClass = UsersHandler.class, beanMethod = "promoteUserToAdminRole")
     })
     public RouterFunction<ServerResponse> usersRoute(UsersHandler usersHandler) {
-        return RouterFunctions
-                .route(POST("/register").and(accept(MediaType.APPLICATION_JSON)), usersHandler::register)
+        return route(POST("/register").and(accept(MediaType.APPLICATION_JSON)), usersHandler::register)
                 .andRoute(GET("/users").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
                 .andRoute(GET("/users/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
                 .andRoute(POST("/users/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole);
@@ -36,13 +36,32 @@ public class AppRouting {
 
     @Bean
     @RouterOperations({
-            @RouterOperation(path = "/login",
-                    beanClass = LoginHandler.class,
-                    beanMethod = "login")
+            @RouterOperation(path = "/login", beanClass = LoginHandler.class, beanMethod = "login")
     })
     public RouterFunction<ServerResponse> loginRoute(LoginHandler loginHandler) {
-        return RouterFunctions
-                .route(POST("/login").and(accept(MediaType.APPLICATION_JSON)), loginHandler::login);
+        return route(POST("/login").and(accept(MediaType.APPLICATION_JSON)), loginHandler::login);
+    }
+
+    @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/emails/send/single", beanClass = EmailHandler.class, beanMethod = "sendSingleEmail"),
+            @RouterOperation(path = "/emails/send/multiple", beanClass = EmailHandler.class, beanMethod = "sendMultipleEmails")
+    })
+    public RouterFunction<ServerResponse> emailsRoute(EmailHandler emailHandler) {
+        return route(POST("/emails/send/single").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendSingleEmail)
+                .andRoute(POST("/emails/send/multiple").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendMultipleEmails);
+    }
+
+    @Bean
+    @RouterOperations({
+            @RouterOperation(path = "/cinemaHalls", beanClass = CinemaHallsHandler.class, beanMethod = "getAll"),
+            @RouterOperation(path = "/cinemaHalls/cinemaId/{cinemaId}", beanClass = CinemaHallsHandler.class, beanMethod = "getAllForCinema"),
+            @RouterOperation(path = "/cinemaHalls/addToCinema/cinemaId/{cinemaId}", beanClass = CinemaHallsHandler.class, beanMethod = "addCinemaHallToCinema"),
+    })
+    public RouterFunction<ServerResponse> cinemaHallsRoute(CinemaHallsHandler cinemaHallsHandler) {
+        return route(POST("/cinemaHalls/addToCinema/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::addCinemaHallToCinema)
+                .andRoute(GET("/cinemaHalls//cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAllForCinema)
+                .andRoute(GET("/cinemaHalls/").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAll)
     }
 
     @Bean
@@ -59,11 +78,10 @@ public class AppRouting {
             final EmailHandler emailHandler
     ) {
 
-        return RouterFunctions
-                .nest(
-                        path("/security"),
-                        route(POST("/register")
-                                .and(accept(MediaType.APPLICATION_JSON)), usersHandler::register))
+        return nest(
+                path("/security"),
+                route(POST("/register")
+                        .and(accept(MediaType.APPLICATION_JSON)), usersHandler::register))
 
                 .andNest(
                         path("/login"),
@@ -109,20 +127,20 @@ public class AppRouting {
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::getAll)
                                 .andRoute(PUT("").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::addCinemaToCity)
                 )
-                .andNest(path("/cinemaHalls"),
+                /*.andNest(path("/cinemaHalls"),
                         route(POST("addToCinema/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::addCinemaHallToCinema)
                                 .andRoute(GET("/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAllForCinema)
                                 .andRoute(GET("").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAll)
-                )
+                )*/
                 .andNest(path("/ticketPurchases"),
                         route(POST("/ticketOrderId/{ticketOrderId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicketFromOrder)
                                 .andRoute(POST("").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicket)
                 )
-                .andNest(path("/users"),
-                        route(GET("").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
-                                .andRoute(GET("/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
-                                .andRoute(POST("/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole)
-                )
+//                .andNest(path("/users"),
+//                        route(GET("").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
+//                                .andRoute(GET("/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
+//                                .andRoute(POST("/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole)
+//                )
                 .andNest(path("/emails"),
                         route(POST("/send/single").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendSingleEmail)
                                 .andRoute(POST("/send/multiple").and(accept(MediaType.APPLICATION_JSON)), emailHandler::sendMultipleEmails));

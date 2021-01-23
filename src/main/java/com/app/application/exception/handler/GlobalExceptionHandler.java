@@ -2,6 +2,7 @@ package com.app.application.exception.handler;
 
 import com.app.application.dto.ErrorMessageDto;
 import com.app.application.dto.ResponseDto;
+import com.app.application.dto.ResponseErrorDto;
 import com.app.application.exception.HandledException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,11 +47,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         if (throwable instanceof HandledException ex) {
             try {
                 return dataBufferFactory
-                        .wrap(objectMapper.writeValueAsBytes(ResponseDto
-                                .builder()
-                                .error(ErrorMessageDto.builder()
-                                        .message(ex.getMessage())
-                                        .build())
+                        .wrap(objectMapper.writeValueAsBytes(ResponseErrorDto.builder()
+                                .error(ErrorMessageDto.builder().message(ex.getMessage()).build())
                                 .build()));
             } catch (JsonProcessingException exception) {
                 return dataBufferFactory.wrap(new byte[]{});

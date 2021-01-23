@@ -36,7 +36,7 @@ public class LoginHandler {
     @Loggable
     @Operation(summary = "POST login", requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = AuthenticationDto.class))))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "user saved", content = {
+            @ApiResponse(responseCode = "201", description = "Success", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = TokensDto.class))
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
@@ -60,7 +60,7 @@ public class LoginHandler {
                 .switchIfEmpty(Mono.error(() -> new AuthenticationException("Provide valid credentials")))
                 .flatMap(appTokensService::generateTokens)
                 .flatMap(tokensDto -> ServerResponse
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(tokensDto)));
     }
