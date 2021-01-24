@@ -1,5 +1,6 @@
 package com.app.domain.ticket_purchase;
 
+import com.app.application.dto.TicketPurchaseDto;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.security.User;
 import com.app.domain.ticket.Ticket;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @NoArgsConstructor
@@ -32,4 +34,14 @@ public class TicketPurchase {
 
     @Field("ticket_order_type")
     private TicketGroupType ticketGroupType;
+
+    public TicketPurchaseDto toDto() {
+        return TicketPurchaseDto.builder()
+                .id(id)
+                .username(user.getUsername())
+                .movieEmissionDto(movieEmission.toDto())
+                .purchaseDate(purchaseDate)
+                .tickets(tickets.stream().map(Ticket::toDto).collect(Collectors.toList()))
+                .build();
+    }
 }

@@ -1,11 +1,18 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.CinemaDto;
-import com.app.application.dto.CreateCinemaDto;
-import com.app.application.dto.CreateCinemaHallDto;
-import com.app.application.dto.ResponseDto;
+import com.app.application.dto.*;
 import com.app.application.service.CinemaService;
 import com.app.infrastructure.aspect.annotations.Loggable;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +31,19 @@ public class CinemasHandler {
     private final CinemaService cinemaService;
 
     @Loggable
+    @Operation(
+            summary = "POST add cinema",
+            security = @SecurityRequirement(name = "JwtAuthToken"),
+            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateCinemaDto.class))))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Success", content = {
+                    @Content(schema = @Schema(implementation = UserDto.class), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> addCinema(ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(CreateCinemaDto.class)
@@ -36,6 +56,18 @@ public class CinemasHandler {
     }
 
     @Loggable
+    @Operation(
+            summary = "GET all cinemas",
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = CinemaDto.class)), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> getAll(ServerRequest serverRequest) {
 
         return cinemaService.getAll()
@@ -43,11 +75,24 @@ public class CinemasHandler {
                 .flatMap(cinemas -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ResponseDto.<List<CinemaDto>>builder().data(cinemas).build()))
-                );
+                        .body(BodyInserters.fromValue(cinemas)
+                        ));
     }
 
     @Loggable
+    @Operation(
+            summary = "GET cinemas by city",
+            parameters = {@Parameter(name = "city", in = ParameterIn.PATH, description = "City name")},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = CinemaDto.class)), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> getAllCinemasByCity(ServerRequest serverRequest) {
 
         return cinemaService.getAllByCity(serverRequest.pathVariable("city"))
@@ -60,6 +105,19 @@ public class CinemasHandler {
     }
 
     @Loggable
+    @Operation(
+            summary = "POST cinemas by city",
+           requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateCinemaHallDto.class), mediaType = "application/json")),
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(schema = @Schema(implementation = CinemaDto.class), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
     public Mono<ServerResponse> addCinemaHall(ServerRequest serverRequest) {
 
         return serverRequest.bodyToMono(CreateCinemaHallDto.class)

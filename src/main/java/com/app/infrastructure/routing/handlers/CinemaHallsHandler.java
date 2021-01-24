@@ -106,7 +106,7 @@ public class CinemaHallsHandler {
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(list))
-                ));
+                );
 
     }
 }

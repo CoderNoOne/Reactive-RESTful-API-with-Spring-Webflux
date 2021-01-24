@@ -100,7 +100,7 @@ public class UsersHandler {
     }
 
     @Loggable
-    @Operation(summary = "POST promote user to admin", security = @SecurityRequirement(name = "JwtAuthToken"), parameters = {@Parameter(in = ParameterIn.PATH, name = "username")})
+    @Operation(summary = "POST promote user to admin", security = @SecurityRequirement(name = "JwtAuthToken"), parameters = {@Parameter(ref = "username")})
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Success", content = {
                     @Content(schema = @Schema(implementation = UserDto.class), mediaType = "application/json")

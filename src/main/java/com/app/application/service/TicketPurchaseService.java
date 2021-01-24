@@ -1,6 +1,7 @@
 package com.app.application.service;
 
 import com.app.application.dto.CreateTicketPurchaseDto;
+import com.app.application.dto.TicketPurchaseDto;
 import com.app.application.exception.TicketOrderServiceException;
 import com.app.application.exception.TicketPurchaseServiceException;
 import com.app.application.validator.CreateTicketPurchaseDtoValidator;
@@ -36,7 +37,7 @@ public class TicketPurchaseService {
     private final TicketOrderRepository ticketOrderRepository;
     private final TransactionalOperator transactionalOperator;
 
-    public Mono<TicketPurchase> purchaseTicket(Mono<? extends Principal> principal, CreateTicketPurchaseDto createPurchaseDto) {
+    public Mono<TicketPurchaseDto> purchaseTicket(Mono<? extends Principal> principal, CreateTicketPurchaseDto createPurchaseDto) {
 
         var errors = createTicketPurchaseDtoValidator.validate(createPurchaseDto);
 
@@ -74,10 +75,11 @@ public class TicketPurchaseService {
                                         .build()
                                 )
                         ))
-                .flatMap(ticketPurchaseRepository::addOrUpdate);
+                .flatMap(ticketPurchaseRepository::addOrUpdate)
+                .map(TicketPurchase::toDto);
     }
 
-    public Mono<TicketPurchase> purchaseTicketFromOrder(String username, String ticketOrderId) {
+    public Mono<TicketPurchaseDto> purchaseTicketFromOrder(String username, String ticketOrderId) {
 
         if (isNull(ticketOrderId)) {
             throw new TicketPurchaseServiceException("Ticket order id is null");
@@ -88,6 +90,7 @@ public class TicketPurchaseService {
                 .flatMap(ticketOrder ->
                         ticketOrderRepository.addOrUpdate(ticketOrder.changeOrderStatusToDone())
                                 .then(ticketPurchaseRepository.addOrUpdate(ticketOrder.toTicketPurchase())))
+                .map(TicketPurchase::toDto)
                 .as(transactionalOperator::transactional);
 
     }

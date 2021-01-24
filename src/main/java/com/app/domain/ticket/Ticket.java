@@ -1,5 +1,6 @@
 package com.app.domain.ticket;
 
+import com.app.application.dto.TicketDto;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket.enums.IndividualTicketType;
@@ -26,5 +27,16 @@ public class Ticket {
     private MovieEmission movieEmission;
     private Position position;
     private Discount discount;
+
+    public TicketDto toDto() {
+        return TicketDto.builder()
+                .id(id)
+                .movieEmissionDto(movieEmission.toDto())
+                .position(position)
+                .discount(discount)
+                .type(type)
+                .ticketStatus(ticketStatus)
+                .build();
+    }
 }
 

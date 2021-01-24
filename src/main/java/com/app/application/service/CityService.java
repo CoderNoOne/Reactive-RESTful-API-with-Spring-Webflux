@@ -40,7 +40,9 @@ public class CityService {
     }
 
     public Mono<CityDto> findByName(String name) {
-        return cityRepository.findByName(name).map(City::toDto);
+        return cityRepository.findByName(name)
+                .switchIfEmpty(Mono.error(new CityServiceException("No city with name: %s".formatted(name))))
+                .map(City::toDto);
     }
 
     public Mono<CityDto> addCinemaToCity(AddCinemaToCityDto addCinemaToCityDto) {
