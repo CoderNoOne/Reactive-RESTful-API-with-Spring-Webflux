@@ -91,11 +91,13 @@ public class AppRouting {
     }
 
     @RouterOperations({
-            @RouterOperation(path = "/ticketOrders", beanClass = TicketOrderHandler.class, beanMethod = "orderTickets")
+            @RouterOperation(path = "/ticketOrders", beanClass = TicketOrderHandler.class, beanMethod = "orderTickets"),
+            @RouterOperation(path = "/ticketsOrder/cancel/orderId/{orderId}", beanClass = TicketOrderHandler.class, beanMethod = "cancelOrder")
     })
     @Bean
     public RouterFunction<ServerResponse> tickerOrdersRouting(TicketOrderHandler ticketOrderHandler) {
-        return route(POST("/ticketOrders").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::orderTickets);
+        return route(POST("/ticketOrders").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::orderTickets)
+                .andRoute(PUT("/ticketsOrder/cancel/orderId/{orderId}").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::cancelOrder);
     }
 
     @RouterOperations({

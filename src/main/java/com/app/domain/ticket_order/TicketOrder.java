@@ -1,5 +1,6 @@
 package com.app.domain.ticket_order;
 
+import com.app.application.dto.TicketOrderDto;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.security.User;
 import com.app.domain.ticket.Ticket;
@@ -16,6 +17,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.RecursiveTask;
+import java.util.stream.Collectors;
 
 
 @Builder
@@ -61,6 +64,20 @@ public class TicketOrder {
     public TicketOrder changeOrderStatusToCancelled() {
         ticketOrderStatus = TicketOrderStatus.CANCELLED;
         return this;
+    }
+
+    public TicketOrderDto toDto(){
+        return TicketOrderDto.builder()
+                .id(id)
+                .username(user.getUsername())
+                .movieEmissionDto(movieEmission.toDto())
+                .orderDate(orderDate)
+                .ticketGroupType(ticketGroupType)
+                .ticketOrderStatus(ticketOrderStatus)
+                .tickets(tickets.stream().map(Ticket::toDto).collect(Collectors.toList()))
+                .build();
+
+
     }
 }
 

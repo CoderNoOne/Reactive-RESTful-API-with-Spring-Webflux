@@ -2,6 +2,7 @@ package com.app.application.service;
 
 import com.app.application.dto.CreateTicketOrderDto;
 import com.app.application.dto.TicketDetailsDto;
+import com.app.application.dto.TicketOrderDto;
 import com.app.application.exception.TicketOrderServiceException;
 import com.app.application.validator.CreateTicketsOrderDtoValidator;
 import com.app.application.validator.util.Validations;
@@ -32,7 +33,7 @@ public class TicketOrderService {
     private final CreateTicketsOrderDtoValidator createTicketsOrderDtoValidator;
 
 
-    public Mono<TicketOrder> addTicketOrder(Mono<? extends Principal> principal, CreateTicketOrderDto createTicketOrderDto) {
+    public Mono<TicketOrderDto> addTicketOrder(Mono<? extends Principal> principal, CreateTicketOrderDto createTicketOrderDto) {
 
         var errors = createTicketsOrderDtoValidator.validate(createTicketOrderDto);
 
@@ -74,11 +75,12 @@ public class TicketOrderService {
                                         .build()
                                 )
                         ))
-                .flatMap(ticketOrderRepository::addOrUpdate);
+                .flatMap(ticketOrderRepository::addOrUpdate)
+                .map(TicketOrder::toDto);
     }
 
 
-    public Mono<TicketOrder> cancelOrder(String username, String orderId) {
+    public Mono<TicketOrderDto> cancelOrder(String username, String orderId) {
 
         if (isNull(orderId)) {
             throw new TicketOrderServiceException("Order id is null");
@@ -90,6 +92,7 @@ public class TicketOrderService {
                         throw new TicketOrderServiceException("That ticker order does not belong to you");
                     }
                     return ticketOrder.changeOrderStatusToCancelled();
-                });
+                })
+                .map(TicketOrder::toDto);
     }
 }
