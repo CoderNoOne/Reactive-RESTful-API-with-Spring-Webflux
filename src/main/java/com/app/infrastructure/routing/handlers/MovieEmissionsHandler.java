@@ -80,6 +80,7 @@ public class MovieEmissionsHandler {
                 );
     }
 
+    @Loggable
     @Operation(
             summary = "GET all movie emissions by movie id",
             parameters = {@Parameter(name = "movieId", in = ParameterIn.PATH)},
@@ -104,6 +105,7 @@ public class MovieEmissionsHandler {
                 );
     }
 
+    @Loggable
     @Operation(
             summary = "GET all movie emissions by cinemaHall id",
             parameters = {@Parameter(name = "cinemaHallId", in = ParameterIn.PATH)},
@@ -125,6 +127,30 @@ public class MovieEmissionsHandler {
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(movieEmissions))
+                );
+    }
+
+    @Loggable
+    @Operation(
+            summary = "DELETE movie emission by id",
+            parameters = {@Parameter(name = "id", in = ParameterIn.PATH)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(schema = @Schema(implementation = MovieEmissionDto.class), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> deleteMovieEmissionById(ServerRequest serverRequest) {
+
+        return movieEmissionService.deleteMovieEmission(serverRequest.pathVariable("id"))
+                .flatMap(movieEmission -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(movieEmission))
                 );
     }
 

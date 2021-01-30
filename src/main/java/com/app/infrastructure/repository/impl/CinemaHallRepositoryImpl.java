@@ -65,4 +65,9 @@ public class CinemaHallRepositoryImpl implements CinemaHallRepository {
     public Flux<CinemaHall> getAllForCinemaById(String cinemaId) {
         return mongoCinemaHallRepository.findByCinemaId(cinemaId);
     }
+
+    @Override
+    public Mono<CinemaHall> getByMovieEmissionId(String movieEmissionId) {
+        return mongoCinemaHallRepository.findByMovieEmissionId(movieEmissionId);
+    }
 }

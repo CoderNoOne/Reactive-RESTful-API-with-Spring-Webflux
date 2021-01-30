@@ -61,7 +61,7 @@ public class MovieEmissionService {
                             .map(x -> Pair.of(x, movie));
                 })
                 .flatMap(pair -> {
-                    if (!isFreeSpaceForMovieEmissionInCinemaHall(pair.getLeft(), pair.getRight(), createMovieEmission.getStartTime())) {
+                    if (!pair.getLeft().getMovieEmissions().isEmpty() && !isFreeSpaceForMovieEmissionInCinemaHall(pair.getLeft(), pair.getRight(), createMovieEmission.getStartTime())) {
                         return Mono.error(new MovieEmissionServiceException("No time space for this movieEmission in this cinema hall!"));
                     }
                     return movieEmissionRepository.addOrUpdate(
@@ -88,22 +88,23 @@ public class MovieEmissionService {
         var startDateTime = toLocalDateTime(startDateTimeOfMovieEmission);
         var movieEmissionTimesInDay = getMovieEmissionTimesInDay(startDateTime.toLocalDate(), cinemaHall);
 
+        if (movieEmissionTimesInDay.isEmpty()) {
+            return true;
+        }
+
         var counter = new AtomicInteger(1);
 
-        var collect = movieEmissionTimesInDay
+        var bookedTimeSpace = movieEmissionTimesInDay
                 .stream()
                 .map(interval -> counter.get() != 0 && counter.get() != movieEmissionTimesInDay.size() ? interval : new Interval(interval.getStart().minusMinutes(10), interval.getEnd().plusMinutes(10)))
                 .peek((pair) -> counter.incrementAndGet())
                 .collect(Collectors.toList());
 
-        List<Interval> gaps = DateTimeGapFinder.findGaps(collect, dayToInterval(startDateTime.toLocalDate()));
-
         var endDateTime = startDateTime.plusHours(movie.getDuration());
         var movieInterval = new Interval(startDateTime.toEpochSecond(ZoneOffset.UTC) * 1000, endDateTime.toEpochSecond(ZoneOffset.UTC) * 1000);
 
-        boolean b = gaps.stream().anyMatch(interval -> interval.contains(movieInterval));
+        return DateTimeGapFinder.findGaps(bookedTimeSpace, dayToInterval(startDateTime.toLocalDate())).stream().anyMatch(interval -> interval.contains(movieInterval));
 
-        return b;
     }
 
     private Interval dayToInterval(LocalDate date) {
@@ -112,8 +113,7 @@ public class MovieEmissionService {
 
     private List<Interval> getMovieEmissionTimesInDay(LocalDate date, CinemaHall cinemaHall) {
 
-        var movieEmissions = cinemaHall.getMovieEmissions();
-        return movieEmissions
+        return cinemaHall.getMovieEmissions()
                 .stream()
                 .filter(movieEmission -> movieEmission.getStartDateTime().toLocalDate().compareTo(date) == 0)
                 .sorted(Comparator.comparing(MovieEmission::getStartDateTime))
@@ -136,6 +136,7 @@ public class MovieEmissionService {
 
         return movieEmissionRepository
                 .findMovieEmissionsByMovieId(movieId)
+                .switchIfEmpty(Mono.error(() -> new MovieEmissionServiceException("No movie hall with id: %s".formatted(movieId))))
                 .map(MovieEmission::toDto);
     }
 
@@ -143,7 +144,22 @@ public class MovieEmissionService {
 
         return movieEmissionRepository
                 .findMovieEmissionsByCinemaHallId(cinemaHallId)
+                .switchIfEmpty(Mono.error(() -> new MovieEmissionServiceException("No cinema hall with id: %s".formatted(cinemaHallId))))
                 .map(MovieEmission::toDto);
+    }
+
+    public Mono<MovieEmissionDto> deleteMovieEmission(String movieEmissionId) {
+
+        return movieEmissionRepository
+                .deleteById(movieEmissionId)
+                .switchIfEmpty(Mono.error(() -> new MovieEmissionServiceException("No movie emission with id: %s".formatted(movieEmissionId))))
+                .flatMap(movieEmission -> cinemaHallRepository.getByMovieEmissionId(movieEmissionId)
+                        .switchIfEmpty(Mono.error(() -> new MovieEmissionServiceException("No cinema hall connected to movie emission with id %s".formatted(movieEmissionId))))
+                        .flatMap(cinemaHall -> cinemaHallRepository
+                                .addOrUpdate(cinemaHall.removeMovieEmissionById(movieEmission.getId()))
+                                .then(Mono.just(movieEmission))))
+                .map(MovieEmission::toDto)
+                .as(transactionalOperator::transactional);
     }
 
 

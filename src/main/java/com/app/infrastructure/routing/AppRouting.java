@@ -119,14 +119,16 @@ public class AppRouting {
             @RouterOperation(method = RequestMethod.POST, path = "/movieEmissions", beanClass = MovieEmissionsHandler.class, beanMethod = "addMovieEmission"),
             @RouterOperation(method = RequestMethod.GET, path = "/movieEmissions", beanClass = MovieEmissionsHandler.class, beanMethod = "getAllMovieEmissions"),
             @RouterOperation(method = RequestMethod.GET, path = "/movieEmissions/movieId/{movieId}", beanClass = MovieEmissionsHandler.class, beanMethod = "getAllMovieEmissionsByMovieId"),
-            @RouterOperation(method = RequestMethod.GET, path = "/movieEmissions/cinemaHallId/{cinemaHallId}", beanClass = MovieEmissionsHandler.class, beanMethod = "getAllMovieEmissionsByCinemaHallId")
+            @RouterOperation(method = RequestMethod.GET, path = "/movieEmissions/cinemaHallId/{cinemaHallId}", beanClass = MovieEmissionsHandler.class, beanMethod = "getAllMovieEmissionsByCinemaHallId"),
+            @RouterOperation(method = RequestMethod.DELETE, path = "/movieEmissions/{id}", beanClass = MovieEmissionsHandler.class, beanMethod = "deleteMovieEmissionById")
     })
     @Bean
     public RouterFunction<ServerResponse> movieEmissionsRouting(MovieEmissionsHandler movieEmissionsHandler) {
         return route(POST("/movieEmissions").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::addMovieEmission)
                 .andRoute(GET("/movieEmissions/movieId/{movieId}").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::getAllMovieEmissionsByMovieId)
                 .andRoute(GET("/movieEmissions").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::getAllMovieEmissions)
-                .andRoute(GET("/movieEmissions/cinemaHallId/{cinemaHallId}").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::getAllMovieEmissionsByCinemaHallId);
+                .andRoute(GET("/movieEmissions/cinemaHallId/{cinemaHallId}").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::getAllMovieEmissionsByCinemaHallId)
+                .andRoute(DELETE("/movieEmissions/{id}").and(accept(MediaType.APPLICATION_JSON)), movieEmissionsHandler::deleteMovieEmissionById);
     }
 
     @RouterOperations({

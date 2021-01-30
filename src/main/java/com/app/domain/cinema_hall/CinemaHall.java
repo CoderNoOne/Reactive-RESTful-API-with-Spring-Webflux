@@ -63,4 +63,12 @@ public class CinemaHall {
         }
         return this;
     }
+
+    public CinemaHall removeMovieEmissionById(String movieEmissionId) {
+        if (nonNull(movieEmissions)) {
+            movieEmissions.removeIf(movieEmission -> movieEmission.getId().equals(movieEmissionId));
+        }
+        return this;
+    }
+
 }
