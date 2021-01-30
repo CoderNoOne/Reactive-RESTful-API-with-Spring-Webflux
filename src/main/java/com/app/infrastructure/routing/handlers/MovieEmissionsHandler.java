@@ -6,6 +6,8 @@ import com.app.application.dto.ResponseErrorDto;
 import com.app.application.service.MovieEmissionService;
 import com.app.infrastructure.aspect.annotations.Loggable;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,12 +38,11 @@ public class MovieEmissionsHandler {
             security = @SecurityRequirement(name = "JwtAuthToken"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Success", content = {
-                    @Content(array = @ArraySchema(schema = @Schema(implementation = MovieEmissionDto.class)), mediaType = "application/json")
+                    @Content(schema = @Schema(implementation = MovieEmissionDto.class), mediaType = "application/json")
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
             })
-
     })
     public Mono<ServerResponse> addMovieEmission(ServerRequest serverRequest) {
 
@@ -53,6 +54,78 @@ public class MovieEmissionsHandler {
                         .body(BodyInserters.fromValue(savedVal))
                 );
 
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all movie emissions",
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = MovieEmissionDto.class)), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllMovieEmissions(ServerRequest serverRequest) {
+
+        return movieEmissionService.getAllMovieEmissions()
+                .collectList()
+                .flatMap(list -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(list))
+                );
+    }
+
+    @Operation(
+            summary = "GET all movie emissions by movie id",
+            parameters = {@Parameter(name = "movieId", in = ParameterIn.PATH)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = MovieEmissionDto.class)), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllMovieEmissionsByMovieId(ServerRequest serverRequest) {
+
+        return movieEmissionService.getAllMovieEmissionsByMovieId(serverRequest.pathVariable("movieId"))
+                .collectList()
+                .flatMap(movieEmissions -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(movieEmissions))
+                );
+    }
+
+    @Operation(
+            summary = "GET all movie emissions by cinemaHall id",
+            parameters = {@Parameter(name = "cinemaHallId", in = ParameterIn.PATH)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(array = @ArraySchema(schema = @Schema(implementation = MovieEmissionDto.class)), mediaType = "application/json")
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllMovieEmissionsByCinemaHallId(ServerRequest serverRequest) {
+
+        return movieEmissionService.getAllMovieEmissionsByCinemaHallId(serverRequest.pathVariable("cinemaHallId"))
+                .collectList()
+                .flatMap(movieEmissions -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(movieEmissions))
+                );
     }
 
 }

@@ -32,10 +32,19 @@ public class CreateMovieEmissionDtoValidator implements Validator<CreateMovieEmi
         }
 
         if (!isStartTimeValid(item.getStartTime())) {
-            errors.put("start time: %s".formatted(item.getStartTime()), "is not valid");
+            errors.put("start time: %s".formatted(item.getStartTime()), "is not valid. Valid format is: yyyy-MM-dd HH:mm");
         }
 
+        if (isNull(item.getBaseTicketPrice())) {
+            errors.put("base ticket price", "is required");
+        } else if (!isBaseTicketPriceValid(item.getBaseTicketPrice())) {
+            errors.put("base ticket price: %s".formatted(item.getBaseTicketPrice()), "should have valid format \\d+(\\.\\d{2})?");
+        }
         return errors;
+    }
+
+    private boolean isBaseTicketPriceValid(String baseTicketPrice) {
+        return baseTicketPrice.matches("\\d+(\\.\\d{2})?");
     }
 
     private boolean isStartTimeValid(String startTime) {

@@ -97,13 +97,14 @@ public class CitiesHandler {
                 .collectList()
                 .flatMap(cities -> ServerResponse
                         .status(HttpStatus.OK)
+                        .header("Access-Control-Allow-Origin", "*")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ResponseDto.<List<CityDto>>builder().data(cities).build())));
+                        .body(BodyInserters.fromValue(cities)));
     }
 
     @Loggable
     @Operation(
-            summary = "POST add cinema to city",
+            summary = "POST add city",
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateCityDto.class))),
             security = @SecurityRequirement(name = "JwtAuthToken"))
     @ApiResponses({

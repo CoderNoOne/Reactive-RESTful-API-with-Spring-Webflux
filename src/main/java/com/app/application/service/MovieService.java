@@ -12,6 +12,7 @@ import com.app.domain.security.UserRepository;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -180,27 +182,57 @@ public class MovieService {
                 .map(Movie::toDto);
     }
 
-    public Flux<MovieDto> uploadCSVFile(final Mono<Resource> resourceMono) {
 
-        return resourceMono
-                .map(resource -> {
-                    try {
-                        return new BufferedReader(new InputStreamReader(resource.getInputStream()));
-                    } catch (IOException e) {
-                        throw new MovieServiceException("Cannot parse csv file");
+    private Mono<Movie> doMovieExistsInDb(Movie movie, List<String> errorsList, AtomicInteger counter) {
+
+        return movieRepository.findByNameAndGenre(movie.getName(), movie.getGenre())
+                .filter(Objects::nonNull)
+                .hasElement()
+                .map(isPresent -> {
+                    var counterVal = counter.getAndIncrement();
+                    if (isPresent) {
+                        errorsList.add("Movie in row no. %s is not unique by name nad genre".formatted(counterVal));
                     }
+                    return movie;
                 })
-                .map(bufferedReader -> movieRepository.addOrUpdateMany(collectMoviesToAddFromCsvFile(bufferedReader)))
-                .flatMapMany(Function.identity())
-                .map(Movie::toDto);
+                .then(Mono.just(movie));
     }
 
-    private List<Movie> collectMoviesToAddFromCsvFile(BufferedReader bufferedReader) {
+    public Flux<MovieDto> uploadCSVFile(final Mono<Resource> resourceMono) {
+
+        var errorsList = new ArrayList<String>();
+        var counter = new AtomicInteger(1);
+
+        return resourceMono
+                .map(this::convertResourceToBufferedReader)
+                .map(bufferedReader -> collectMoviesToAddFromCsvFile(bufferedReader, errorsList))
+                .flatMapIterable(Function.identity())
+                .flatMap(movie -> doMovieExistsInDb(movie, errorsList, counter))
+                .collectList()
+                .map(movies -> saveMovies(movies, errorsList))
+                .flatMapMany(Function.identity());
+    }
+
+    private Flux<MovieDto> saveMovies(List<Movie> movies, List<String> errorsList) {
+        if (!errorsList.isEmpty()) {
+            throw new MovieServiceException("Errors are: %s".formatted(errorsList));
+        }
+        return movieRepository.addOrUpdateMany(movies).map(Movie::toDto);
+    }
+
+    private BufferedReader convertResourceToBufferedReader(Resource resource) {
+        try {
+            return new BufferedReader(new InputStreamReader(resource.getInputStream()));
+        } catch (IOException e) {
+            throw new MovieServiceException("Cannot parse csv file");
+        }
+    }
+
+    private List<Movie> collectMoviesToAddFromCsvFile(BufferedReader bufferedReader, List<String> errorsList) {
         try {
             var counter = new AtomicInteger(1);
-            var errorsList = new ArrayList<String>();
 
-            var movies = new CsvToBeanBuilder<CreateMovieDto>(bufferedReader)
+            return new CsvToBeanBuilder<CreateMovieDto>(bufferedReader)
                     .withType(CreateMovieDto.class)
                     .withIgnoreLeadingWhiteSpace(true)
                     .withSeparator(',')
@@ -211,18 +243,14 @@ public class MovieService {
                     .peek(dto -> {
                         var errors = createMovieDtoValidator.validate(dto);
                         var counterVal = counter.getAndIncrement();
+
                         if (Validations.hasErrors(errors)) {
-                            errorsList.add("Movie in row no. %s is not valid. Errors are: %s".formatted(counterVal, Validations.createErrorMessage(errors)));
+                            errorsList.add("Movie in row no. %s is not valid. %s".formatted(counterVal, Validations.createErrorMessage(errors)));
                         }
                     })
                     .map(CreateMovieDto::toEntity)
                     .collect(Collectors.toList());
 
-            if (!errorsList.isEmpty()) {
-                throw new MovieServiceException(String.join(" | ", errorsList));
-            }
-
-            return movies;
         } catch (Exception e) {
             throw e instanceof MovieServiceException me ? me : new MovieServiceException("The file extension .csv is required");
         }

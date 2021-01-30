@@ -35,6 +35,7 @@ public class MovieEmission {
     @Getter
     private String cinemaHallId;
 
+    @Getter
     private List<PositionIndex> positionIndices;
 
 
@@ -49,12 +50,12 @@ public class MovieEmission {
     public MovieEmissionDto toDto() {
         return MovieEmissionDto.builder()
                 .id(id)
-                .baseTicketPrice(baseTicketPrice.toString())
+                .movieId(movie.getId())
                 .startTime(startDateTime)
                 .cinemaHallId(cinemaHallId)
-                .movieId(movie.getId())
                 .positionIndices(positionIndices)
+                .baseTicketPrice(baseTicketPrice.getValue().toString())
                 .build();
     }
-
 }
+

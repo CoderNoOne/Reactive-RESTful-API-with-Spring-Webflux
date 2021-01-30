@@ -51,7 +51,16 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     @Override
-    public Flux<Movie> deleteAllById(List<String> strings) {
-        return null;
+    public Mono<Movie> findByNameAndGenre(String name, String genre) {
+        return mongoMovieRepository.findByNameAndGenre(name, genre);
+    }
+
+    @Override
+    public Flux<Movie> deleteAllById(List<String> ids) {
+        return mongoMovieRepository.findAllById(ids)
+                .collectList()
+                .flatMap(movies -> mongoMovieRepository.deleteAll(movies)
+                        .then(Mono.just(movies)))
+                .flatMapMany(Flux::fromIterable);
     }
 }

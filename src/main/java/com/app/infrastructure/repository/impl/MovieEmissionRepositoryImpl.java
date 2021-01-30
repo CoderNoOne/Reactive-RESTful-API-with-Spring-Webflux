@@ -68,4 +68,9 @@ public class MovieEmissionRepositoryImpl implements MovieEmissionRepository {
     public Flux<MovieEmission> findMovieEmissionsByMovieId(String movieId) {
         return mongoMovieEmissionRepository.findMovieEmissionsByMovieId(movieId);
     }
+
+    @Override
+    public Flux<MovieEmission> findMovieEmissionsByCinemaHallId(String cinemaHallId) {
+        return mongoMovieEmissionRepository.findMovieEmissionsByCinemaHallId(cinemaHallId);
+    }
 }

@@ -1,5 +1,7 @@
 package com.app.application.validator.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +13,7 @@ public interface Validations {
         return errors
                 .entrySet()
                 .stream()
+                .sequential()
                 .map(e -> {
                     if (e.getValue() instanceof String value) {
                         return "%s -> %s".formatted(e.getKey(), value);
@@ -22,7 +25,7 @@ public interface Validations {
                                 .map(item -> "%s -> %s".formatted(item.getKey(), item.getValue()))
                                 .collect(Collectors.joining(", ")));
                     }
-                    return "";
+                    return StringUtils.EMPTY;
 
                 })
                 .collect(Collectors.joining(", "));

@@ -5,6 +5,7 @@ import com.app.application.dto.CreateCinemaDto;
 import com.app.application.dto.CreateCinemaHallDto;
 import com.app.application.exception.CinemaServiceException;
 import com.app.application.service.util.ServiceUtils;
+import com.app.application.validator.CreateCinemaDtoValidator;
 import com.app.application.validator.CreateCinemaHallDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.cinema.Cinema;
@@ -33,10 +34,17 @@ public class CinemaService {
     private final CinemaRepository cinemaRepository;
     private final CinemaHallRepository cinemaHallRepository;
     private final CityRepository cityRepository;
+    private final CreateCinemaDtoValidator createCinemaDtoValidator;
 
     private final TransactionalOperator transactionalOperator;
 
-    public Mono<Cinema> addCinema(CreateCinemaDto createCinemaDto) {
+    public Mono<CinemaDto> addCinema(CreateCinemaDto createCinemaDto) {
+
+        var errors = createCinemaDtoValidator.validate(createCinemaDto);
+
+        if(Validations.hasErrors(errors)){
+            return Mono.error(() -> new CinemaServiceException(Validations.createErrorMessage(errors)));
+        }
 
         return cinemaHallRepository
                 .addOrUpdateMany(createCinemaDto
@@ -53,15 +61,13 @@ public class CinemaService {
                         .build()))
                 .flatMap(cinema ->
                         cityRepository.findByName(createCinemaDto.getCity())
-                                .switchIfEmpty(cityRepository.addOrUpdate(
-                                        City.builder()
-                                                .name(createCinemaDto.getCity())
-                                                .build()))
+                                .switchIfEmpty(Mono.error(() -> new CinemaServiceException("No city with name: %s".formatted(createCinemaDto.getCity()))))
                                 .flatMap(city -> cinemaHallRepository
                                         .addOrUpdateMany(cinema.getCinemaHalls())
                                         .then(cityRepository.addOrUpdate(city.addCinema(cinema)))
                                         .then(cinemaRepository.addOrUpdate(cinema.setCity(city.getName()).setCinemasIdForCinemaHalls(cinema.getId())))
                                 ))
+                .map(Cinema::toDto)
                 .as(transactionalOperator::transactional);
     }
 

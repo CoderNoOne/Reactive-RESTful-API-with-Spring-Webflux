@@ -37,7 +37,7 @@ public class CinemasHandler {
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateCinemaDto.class))))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Success", content = {
-                    @Content(schema = @Schema(implementation = UserDto.class), mediaType = "application/json")
+                    @Content(schema = @Schema(implementation = CinemaDto.class), mediaType = "application/json")
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
@@ -106,8 +106,9 @@ public class CinemasHandler {
 
     @Loggable
     @Operation(
-            summary = "POST cinemas by city",
-           requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateCinemaHallDto.class), mediaType = "application/json")),
+            summary = "PUT add cinemaHall to existing cinema",
+            parameters = {@Parameter(name = "id", in = ParameterIn.PATH, description = "cinema id")},
+            requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = CreateCinemaHallDto.class), mediaType = "application/json")),
             security = @SecurityRequirement(name = "JwtAuthToken"))
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success", content = {

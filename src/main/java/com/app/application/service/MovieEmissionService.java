@@ -3,6 +3,7 @@ package com.app.application.service;
 import com.app.application.dto.CreateMovieEmissionDto;
 import com.app.application.dto.MovieEmissionDto;
 import com.app.application.exception.MovieEmissionServiceException;
+import com.app.application.service.util.DateTimeGapFinder;
 import com.app.application.validator.CreateMovieEmissionDtoValidator;
 import com.app.application.validator.util.Validations;
 import com.app.domain.cinema_hall.CinemaHall;
@@ -10,8 +11,9 @@ import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.movie.Movie;
 import com.app.domain.movie.MovieRepository;
 import com.app.domain.movie_emission.MovieEmission;
-import com.app.domain.movie_emission.MovieEmissionMapper;
 import com.app.domain.movie_emission.MovieEmissionRepository;
+import com.app.domain.position_index.PositionIndex;
+import com.app.domain.vo.Money;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.Interval;
@@ -27,7 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,6 +69,8 @@ public class MovieEmissionService {
                                     .movie(pair.getRight())
                                     .startDateTime(toLocalDateTime(createMovieEmission.getStartTime()))
                                     .cinemaHallId(pair.getLeft().getId())
+                                    .positionIndices(pair.getLeft().getPositions().stream().map(position -> PositionIndex.builder().position(position).isFree(true).build()).collect(Collectors.toList()))
+                                    .baseTicketPrice(Money.of(createMovieEmission.getBaseTicketPrice()))
                                     .build())
                             .map(movieEmission -> Pair.of(pair.getLeft(), movieEmission));
                 })
@@ -75,42 +78,47 @@ public class MovieEmissionService {
                     pair.getLeft().getMovieEmissions().add(pair.getRight());
                     return cinemaHallRepository.addOrUpdate(pair.getLeft()).then(Mono.just(pair));
                 })
-                .map(x -> MovieEmissionMapper.mapMovieEmissionToDto(x.getRight()))
+                .map(x -> x.getRight().toDto())
                 .as(transactionalOperator::transactional);
 
     }
 
-    private boolean isFreeSpaceForMovieEmissionInCinemaHall(CinemaHall cinemaHall, Movie movie, String
-            startDateTimeOfMovieEmission) {
+    private boolean isFreeSpaceForMovieEmissionInCinemaHall(CinemaHall cinemaHall, Movie movie, String startDateTimeOfMovieEmission) {
 
         var startDateTime = toLocalDateTime(startDateTimeOfMovieEmission);
         var movieEmissionTimesInDay = getMovieEmissionTimesInDay(startDateTime.toLocalDate(), cinemaHall);
 
         var counter = new AtomicInteger(1);
-        var allDayInterval = new AtomicReference<>(new Interval(startDateTime.toLocalDate().atTime(0, 0).toEpochSecond(ZoneOffset.UTC) * 1000, startDateTime.plusHours(24).toEpochSecond(ZoneOffset.UTC) * 1000));
 
-      movieEmissionTimesInDay
+        var collect = movieEmissionTimesInDay
                 .stream()
-                .map(interval -> counter.get() != 0 && counter.get() != movieEmissionTimesInDay.size() ? interval : new Interval(interval.getStart().plusMinutes(10), interval.getEnd().plusMinutes(10)))
+                .map(interval -> counter.get() != 0 && counter.get() != movieEmissionTimesInDay.size() ? interval : new Interval(interval.getStart().minusMinutes(10), interval.getEnd().plusMinutes(10)))
                 .peek((pair) -> counter.incrementAndGet())
-                .forEach(interval -> allDayInterval.set(allDayInterval.get().gap(interval)));
+                .collect(Collectors.toList());
+
+        List<Interval> gaps = DateTimeGapFinder.findGaps(collect, dayToInterval(startDateTime.toLocalDate()));
 
         var endDateTime = startDateTime.plusHours(movie.getDuration());
         var movieInterval = new Interval(startDateTime.toEpochSecond(ZoneOffset.UTC) * 1000, endDateTime.toEpochSecond(ZoneOffset.UTC) * 1000);
 
-        return allDayInterval.get().contains(movieInterval);
+        boolean b = gaps.stream().anyMatch(interval -> interval.contains(movieInterval));
+
+        return b;
+    }
+
+    private Interval dayToInterval(LocalDate date) {
+        return new Interval(date.atTime(0, 0).toEpochSecond(ZoneOffset.UTC) * 1000, date.plusDays(1).atTime(0, 0).toEpochSecond(ZoneOffset.UTC) * 1000);
     }
 
     private List<Interval> getMovieEmissionTimesInDay(LocalDate date, CinemaHall cinemaHall) {
 
         var movieEmissions = cinemaHall.getMovieEmissions();
-        var collect = movieEmissions
+        return movieEmissions
                 .stream()
                 .filter(movieEmission -> movieEmission.getStartDateTime().toLocalDate().compareTo(date) == 0)
                 .sorted(Comparator.comparing(MovieEmission::getStartDateTime))
                 .map(movieEmission -> new Interval(movieEmission.getStartDateTime().toEpochSecond(ZoneOffset.UTC) * 1000, movieEmission.getStartDateTime().plusHours(movieEmission.getMovie().getDuration()).toEpochSecond(ZoneOffset.UTC) * 1000))
                 .collect(Collectors.toList());
-        return collect;
     }
 
     private LocalDateTime toLocalDateTime(String stringValue) {
@@ -121,14 +129,21 @@ public class MovieEmissionService {
 
         return movieEmissionRepository
                 .findAll()
-                .map(MovieEmissionMapper::mapMovieEmissionToDto);
+                .map(MovieEmission::toDto);
     }
 
     public Flux<MovieEmissionDto> getAllMovieEmissionsByMovieId(String movieId) {
 
         return movieEmissionRepository
                 .findMovieEmissionsByMovieId(movieId)
-                .map(MovieEmissionMapper::mapMovieEmissionToDto);
+                .map(MovieEmission::toDto);
+    }
+
+    public Flux<MovieEmissionDto> getAllMovieEmissionsByCinemaHallId(String cinemaHallId) {
+
+        return movieEmissionRepository
+                .findMovieEmissionsByCinemaHallId(cinemaHallId)
+                .map(MovieEmission::toDto);
     }
 
 

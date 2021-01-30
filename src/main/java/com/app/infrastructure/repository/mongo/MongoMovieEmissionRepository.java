@@ -7,4 +7,6 @@ import reactor.core.publisher.Flux;
 public interface MongoMovieEmissionRepository extends ReactiveMongoRepository<MovieEmission, String> {
 
     Flux<MovieEmission> findMovieEmissionsByMovieId(String movieId);
+
+    Flux<MovieEmission> findMovieEmissionsByCinemaHallId(String cinemaHallId);
 }

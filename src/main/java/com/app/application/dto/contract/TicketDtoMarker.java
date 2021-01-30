@@ -4,6 +4,7 @@ import com.app.application.dto.TicketDetailsDto;
 import com.app.domain.ticket_order.enums.TicketGroupType;
 import com.app.domain.vo.Discount;
 import com.app.domain.vo.Position;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public interface TicketDtoMarker {
                 .allMatch(freePositions::contains);
     }
 
+    @JsonIgnore
     default Discount getBaseDiscount() {
         return getTicketGroupType().getDiscount();
     }
