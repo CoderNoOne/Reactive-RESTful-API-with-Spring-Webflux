@@ -22,6 +22,7 @@ public class Cinema {
     @Getter
     private String id;
 
+    @Getter
     private String city;
     private String street;
 

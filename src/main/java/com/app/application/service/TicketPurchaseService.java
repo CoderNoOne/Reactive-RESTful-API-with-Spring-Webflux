@@ -6,6 +6,12 @@ import com.app.application.exception.TicketOrderServiceException;
 import com.app.application.exception.TicketPurchaseServiceException;
 import com.app.application.validator.CreateTicketPurchaseDtoValidator;
 import com.app.application.validator.util.Validations;
+import com.app.domain.cinema.Cinema;
+import com.app.domain.cinema.CinemaRepository;
+import com.app.domain.cinema_hall.CinemaHall;
+import com.app.domain.cinema_hall.CinemaHallRepository;
+import com.app.domain.city.City;
+import com.app.domain.city.CityRepository;
 import com.app.domain.movie_emission.MovieEmissionRepository;
 import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
@@ -14,14 +20,22 @@ import com.app.domain.ticket_order.TicketOrder;
 import com.app.domain.ticket_order.TicketOrderRepository;
 import com.app.domain.ticket_purchase.TicketPurchase;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
+import com.sun.mail.imap.IMAPBodyPart;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -34,6 +48,9 @@ public class TicketPurchaseService {
     private final CreateTicketPurchaseDtoValidator createTicketPurchaseDtoValidator;
     private final MovieEmissionRepository movieEmissionRepository;
     private final UserRepository userRepository;
+    private final CinemaHallRepository cinemaHallRepository;
+    private final CinemaRepository cinemaRepository;
+    private final CityRepository cityRepository;
     private final TicketOrderRepository ticketOrderRepository;
     private final TransactionalOperator transactionalOperator;
 
@@ -67,7 +84,6 @@ public class TicketPurchaseService {
                                                 .map(ticketDetailsDto -> Ticket.builder()
                                                         .position(ticketDetailsDto.getPosition())
                                                         .type(ticketDetailsDto.getIndividualTicketType())
-                                                        .movieEmission(movieEmission)
                                                         .ticketStatus(TicketStatus.PURCHASED)
                                                         .discount(createPurchaseDto.getBaseDiscount().add(ticketDetailsDto.getIndividualTicketType().getDiscount()))
                                                         .build())
@@ -76,7 +92,11 @@ public class TicketPurchaseService {
                                 )
                         ))
                 .flatMap(ticketPurchaseRepository::addOrUpdate)
-                .map(TicketPurchase::toDto);
+                .map(savedTicketPurchase -> {
+                    savedTicketPurchase.getTickets().forEach(ticket -> ticket.setTicketPurchaseId(savedTicketPurchase.getId()));
+                    return savedTicketPurchase.toDto();
+                })
+                .as(transactionalOperator::transactional);
     }
 
     public Mono<TicketPurchaseDto> purchaseTicketFromOrder(String username, String ticketOrderId) {
@@ -104,4 +124,45 @@ public class TicketPurchaseService {
 
         return ticketOrder;
     }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesByUser(String username) {
+
+        return ticketPurchaseRepository
+                .findAllByUserUsername(username)
+                .map(TicketPurchase::toDto);
+    }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesByUserAndCity(String username, String cityName) {
+
+
+        if (isNull(cityName) || StringUtils.isBlank(cityName)) {
+            return Flux.error(() -> new TicketPurchaseServiceException("City name is required and cannot be empty"));
+        }
+
+        return cityRepository.findByName(cityName)
+                .flatMapMany(Flux::just)
+                .switchIfEmpty(Flux.error(() -> new TicketPurchaseServiceException("No city with name %s".formatted(cityName))))
+                .flatMap(city ->
+                        cinemaHallRepository
+                                .findAllById(city.getCinemas()
+                                        .stream()
+                                        .flatMap(cinema -> cinema.getCinemaHalls().stream())
+                                        .map(CinemaHall::getId)
+                                        .collect(Collectors.toList())))
+                .map(CinemaHall::getId)
+                .collectList()
+                .flatMapMany(cinemaHallsIds -> ticketPurchaseRepository.findAllByUserUsername(username)
+                        .collect(
+                                ArrayList<TicketPurchase>::new,
+                                (list, nextItem) -> cinemaHallsIds
+                                        .forEach(id -> {
+                                            if (id.equals(nextItem.getMovieEmission().getCinemaHallId())) {
+                                                list.add(nextItem);
+                                            }
+                                        })
+                        ))
+                .flatMapIterable(Function.identity())
+                .map(TicketPurchase::toDto);
+    }
+
 }

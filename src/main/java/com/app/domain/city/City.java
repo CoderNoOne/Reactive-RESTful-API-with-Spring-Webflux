@@ -26,6 +26,7 @@ public class City {
 
     @Getter
     private String name;
+    @Getter
     private List<Cinema> cinemas;
 
     public CityDto toDto() {

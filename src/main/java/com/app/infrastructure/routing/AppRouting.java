@@ -147,11 +147,16 @@ public class AppRouting {
 
     @Bean
     @RouterOperations({
-            @RouterOperation(path = "/ticketPurchases/ticketOrderId/{ticketOrderId}", beanClass = TicketPurchaseHandler.class, beanMethod = "purchaseTicketFromOrder"),
-            @RouterOperation(path = "/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "purchaseTicket")}
-    )
+            @RouterOperation(method = RequestMethod.POST, path = "/ticketPurchases/ticketOrderId/{ticketOrderId}", beanClass = TicketPurchaseHandler.class, beanMethod = "purchaseTicketFromOrder"),
+            @RouterOperation(method = RequestMethod.POST, path = "/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "purchaseTicket"),
+            @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByUser"),
+            @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases/city/{city}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesForLoggedUserByCityName")
+
+    })
     public RouterFunction<ServerResponse> ticketPurchasesRouting(TicketPurchaseHandler ticketPurchaseHandler) {
         return route(POST("/ticketPurchases/ticketOrderId/{ticketOrderId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicketFromOrder)
-                .andRoute(POST("/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicket);
+                .andRoute(POST("/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicket)
+                .andRoute(GET("/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesForLoggedUser)
+                .andRoute(GET("/ticketPurchases/city/{city}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesForLoggedUserByCityName);
     }
 }

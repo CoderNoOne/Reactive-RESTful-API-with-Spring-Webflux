@@ -29,6 +29,7 @@ public class CinemaHall {
     private List<Position> positions;
 
     @Setter
+    @Getter
     private String cinemaId;
 
     @Getter

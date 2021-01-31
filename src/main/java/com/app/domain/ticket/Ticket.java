@@ -9,6 +9,7 @@ import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,14 +25,16 @@ public class Ticket {
 
     private TicketStatus ticketStatus;
     private IndividualTicketType type;
-    private MovieEmission movieEmission;
+
+    @Setter
+    private String ticketPurchaseId;
     private Position position;
     private Discount discount;
 
     public TicketDto toDto() {
         return TicketDto.builder()
                 .id(id)
-                .movieEmissionDto(movieEmission.toDto())
+                .ticketPurchaseId(ticketPurchaseId)
                 .position(position)
                 .discount(discount)
                 .type(type)

@@ -96,7 +96,7 @@ public class MovieEmissionService {
 
         var bookedTimeSpace = movieEmissionTimesInDay
                 .stream()
-                .map(interval -> counter.get() != 0 && counter.get() != movieEmissionTimesInDay.size() ? interval : new Interval(interval.getStart().minusMinutes(10), interval.getEnd().plusMinutes(10)))
+                .map(interval -> counter.get() != 0 && counter.get() != movieEmissionTimesInDay.size() ? interval : new Interval(interval.getStart().minusMinutes(MINIMAL_BREAK_BETWEEN_MOVIE_EMISSIONS_IN_MIN), interval.getEnd().plusMinutes(MINIMAL_BREAK_BETWEEN_MOVIE_EMISSIONS_IN_MIN)))
                 .peek((pair) -> counter.incrementAndGet())
                 .collect(Collectors.toList());
 
@@ -161,6 +161,4 @@ public class MovieEmissionService {
                 .map(MovieEmission::toDto)
                 .as(transactionalOperator::transactional);
     }
-
-
 }

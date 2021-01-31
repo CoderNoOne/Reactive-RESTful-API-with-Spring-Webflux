@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -37,7 +38,7 @@ public class TicketPurchaseHandler {
             security = @SecurityRequirement(name = "JwtAuthToken"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Success", content = {
-                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TicketPurchaseDto.class))
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
@@ -62,7 +63,7 @@ public class TicketPurchaseHandler {
             security = @SecurityRequirement(name = "JwtAuthToken"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Success", content = {
-                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TicketPurchaseDto.class))
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
@@ -79,4 +80,56 @@ public class TicketPurchaseHandler {
                         .body(BodyInserters.fromValue(ticketPurchase))
                 );
     }
+
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases by username",
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesForLoggedUser(ServerRequest serverRequest) {
+        return serverRequest.principal()
+                .flatMapMany(principal -> ticketPurchaseService.getAllTicketPurchasesByUser(principal.getName()))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases by city for logged user ",
+            parameters = {@Parameter(in = ParameterIn.PATH, name = "city", description = "city name")},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesForLoggedUserByCityName(ServerRequest serverRequest) {
+
+        return serverRequest.principal()
+                .flatMapMany(principal -> ticketPurchaseService.getAllTicketPurchasesByUserAndCity(principal.getName(), serverRequest.pathVariable("city")))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+    }
+
 }

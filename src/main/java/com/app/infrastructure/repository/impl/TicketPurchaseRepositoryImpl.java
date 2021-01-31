@@ -59,4 +59,9 @@ public class TicketPurchaseRepositoryImpl implements TicketPurchaseRepository {
                         .then(Mono.just(ticketPurchases)))
                 .flatMapMany(Flux::fromIterable);
     }
+
+    @Override
+    public Flux<TicketPurchase> findAllByUserUsername(String username) {
+        return mongoTicketPurchaseRepository.findAllByUserUsername(username);
+    }
 }

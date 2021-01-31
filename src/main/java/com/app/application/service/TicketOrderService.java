@@ -67,7 +67,7 @@ public class TicketOrderService {
                                                 .map(ticketDetailsDto -> Ticket.builder()
                                                         .position(ticketDetailsDto.getPosition())
                                                         .type(ticketDetailsDto.getIndividualTicketType())
-                                                        .movieEmission(movieEmission)
+                                                        /*.ticketPurchaseId()*/ // TODO: 31.01.2021
                                                         .discount(createTicketOrderDto.getBaseDiscount())
                                                         .ticketStatus(TicketStatus.ORDERED)
                                                         .build())

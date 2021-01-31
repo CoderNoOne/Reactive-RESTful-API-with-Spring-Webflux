@@ -7,6 +7,7 @@ import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.enums.TicketGroupType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,12 +25,15 @@ import java.util.stream.Collectors;
 public class TicketPurchase {
 
     @Id
+    @Getter
     private String id;
 
     private User user;
     private LocalDate purchaseDate;
-    private MovieEmission movieEmission;
 
+    @Getter
+    private MovieEmission movieEmission;
+    @Getter
     private List<Ticket> tickets;
 
     @Field("ticket_order_type")
