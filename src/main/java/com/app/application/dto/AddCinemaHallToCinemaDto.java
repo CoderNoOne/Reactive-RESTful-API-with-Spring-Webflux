@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddCinemaHallToCinemaDto {
 
-    private Integer positions;
+    private Integer rowNo;
+    private Integer colNo;
     private String cinemaId;
 }

@@ -15,6 +15,7 @@ import com.app.domain.city.CityRepository;
 import com.app.domain.movie_emission.MovieEmissionRepository;
 import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
+import com.app.domain.ticket.TicketRepository;
 import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket_order.TicketOrder;
 import com.app.domain.ticket_order.TicketOrderRepository;
@@ -49,7 +50,7 @@ public class TicketPurchaseService {
     private final MovieEmissionRepository movieEmissionRepository;
     private final UserRepository userRepository;
     private final CinemaHallRepository cinemaHallRepository;
-    private final CinemaRepository cinemaRepository;
+    private final TicketRepository ticketRepository;
     private final CityRepository cityRepository;
     private final TicketOrderRepository ticketOrderRepository;
     private final TransactionalOperator transactionalOperator;
@@ -70,15 +71,17 @@ public class TicketPurchaseService {
                             if (createPurchaseDto.areAllPositionsAvailable(movieEmission.getFreePositions())) {
                                 return movieEmission;
                             }
-                            throw new TicketOrderServiceException("Positions are not valid");
+                            throw new TicketOrderServiceException("Positions are not available");
                         })
-                        .flatMap(movieEmission -> principal
+                        .flatMap(movieEmission -> movieEmissionRepository.addOrUpdate(movieEmission.removeFreePositions(createPurchaseDto.getTicketsDetails()))
+                                .then(principal)
                                 .flatMap(val -> userRepository.findByUsername(val.getName()))
                                 .map(user -> TicketPurchase.builder()
                                         .purchaseDate(LocalDate.now())
-                                        .movieEmission(movieEmission)
                                         .ticketGroupType(value.getTicketGroupType())
                                         .user(user)
+                                        .movieEmission(movieEmission)
+                                        .ticketGroupType(createPurchaseDto.getTicketGroupType())
                                         .tickets(value.getTicketsDetails()
                                                 .stream()
                                                 .map(ticketDetailsDto -> Ticket.builder()
@@ -88,14 +91,22 @@ public class TicketPurchaseService {
                                                         .discount(createPurchaseDto.getBaseDiscount().add(ticketDetailsDto.getIndividualTicketType().getDiscount()))
                                                         .build())
                                                 .collect(Collectors.toList()))
-                                        .build()
-                                )
-                        ))
-                .flatMap(ticketPurchaseRepository::addOrUpdate)
-                .map(savedTicketPurchase -> {
-                    savedTicketPurchase.getTickets().forEach(ticket -> ticket.setTicketPurchaseId(savedTicketPurchase.getId()));
-                    return savedTicketPurchase.toDto();
-                })
+                                        .build())))
+                .flatMap(ticketPurchase ->
+                        ticketRepository.addOrUpdateMany(ticketPurchase.getTickets())
+                                .then(ticketPurchaseRepository.addOrUpdate(ticketPurchase))
+                                .map(savedTicketPurchase -> {
+                                    savedTicketPurchase.getTickets().forEach(ticket -> ticket.setTicketPurchaseId(savedTicketPurchase.getId()));
+                                    return savedTicketPurchase.toDto();
+                                })
+                )
+//                .flatMap(savedTicketPurchase -> {
+//                    savedTicketPurchase.getTickets().forEach(ticket -> ticket.setTicketPurchaseId(savedTicketPurchase.getId()));
+//                    return ticketRepository.addOrUpdateMany(savedTicketPurchase.getTickets())
+//                            .collectList()
+//                            .map(list -> savedTicketPurchase.setTickets())
+//                            .then(Mono.just(savedTicketPurchase.toDto()));
+//                })
                 .as(transactionalOperator::transactional);
     }
 
@@ -164,5 +175,4 @@ public class TicketPurchaseService {
                 .flatMapIterable(Function.identity())
                 .map(TicketPurchase::toDto);
     }
-
 }

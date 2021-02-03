@@ -8,6 +8,7 @@ import com.app.application.validator.util.Validations;
 import com.app.domain.cinema.CinemaRepository;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.cinema_hall.CinemaHallRepository;
+import com.app.domain.vo.Position;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
@@ -16,6 +17,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.Objects.isNull;
 
@@ -47,7 +51,7 @@ public class CinemaHallService {
                         .flatMap(cinema -> cinemaHallRepository.addOrUpdate(CinemaHall.builder()
                                 .cinemaId(cinema.getId())
                                 .movieEmissions(new ArrayList<>())
-                                .positions(Collections.emptyList())
+                                .positions(createPositions(dto.getColNo(), dto.getRowNo()))
                                 .build())
                                 .flatMap(savedCinemaHall -> {
                                     cinema.getCinemaHalls().add(savedCinemaHall);
@@ -58,6 +62,21 @@ public class CinemaHallService {
                 )
                 .map(CinemaHall::toDto)
                 .as(transactionalOperator::transactional);
+    }
+
+    private List<Position> createPositions(Integer colNo, Integer rowNo) {
+
+        return IntStream.rangeClosed(1, colNo)
+                .boxed()
+                .collect(ArrayList::new, (list, col) -> IntStream
+                                .rangeClosed(1, rowNo)
+                                .boxed()
+                                .map(row -> Position.builder()
+                                        .colNo(col)
+                                        .rowNo(row)
+                                        .build())
+                                .forEach(list::add)
+                        , List::addAll);
     }
 
     public Flux<CinemaHallDto> getAll() {

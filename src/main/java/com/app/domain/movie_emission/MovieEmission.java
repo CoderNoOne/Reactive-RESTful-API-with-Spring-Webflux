@@ -1,6 +1,7 @@
 package com.app.domain.movie_emission;
 
 import com.app.application.dto.MovieEmissionDto;
+import com.app.application.dto.TicketDetailsDto;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;
 import com.app.domain.vo.Money;
@@ -8,10 +9,14 @@ import com.app.domain.vo.Position;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,15 +41,17 @@ public class MovieEmission {
     private String cinemaHallId;
 
     @Getter
-    private List<PositionIndex> positionIndices;
+    private Map<Position, Boolean> isPositionFree;
 
 
     public List<Position> getFreePositions() {
-        return positionIndices
+
+        return isPositionFree
+                .entrySet()
                 .stream()
-                .filter(PositionIndex::isFree)
-                .map(PositionIndex::getPosition)
-                .collect(Collectors.toList());
+                .filter(Map.Entry::getValue)
+                .collect(ArrayList::new, (list, entry) -> list.add(entry.getKey()), ArrayList::addAll);
+
     }
 
     public MovieEmissionDto toDto() {
@@ -53,9 +60,21 @@ public class MovieEmission {
                 .movieId(movie.getId())
                 .startTime(startDateTime)
                 .cinemaHallId(cinemaHallId)
-                .positionIndices(positionIndices)
+                .isPositionFree(isPositionFree)
                 .baseTicketPrice(baseTicketPrice.getValue().toString())
                 .build();
+    }
+
+    public MovieEmission removeFreePositions(List<TicketDetailsDto> ticketsDetails) {
+
+        Optional
+                .ofNullable(ticketsDetails)
+                .map(Collection::stream)
+                .map(stream -> stream.map(TicketDetailsDto::getPosition))
+                .ifPresent(stream -> stream
+                        .forEach(position -> isPositionFree.computeIfPresent(position, (key, value) -> false)));
+
+        return this;
     }
 }
 

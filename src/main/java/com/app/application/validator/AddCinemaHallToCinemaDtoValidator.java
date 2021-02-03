@@ -28,11 +28,12 @@ public class AddCinemaHallToCinemaDtoValidator implements Validator<AddCinemaHal
             errors.put("cinema id", "is null");
         }
 
-        if (isNull(item.getPositions())) {
-            errors.put("positions", "is null");
-        } else if (item.getPositions() < MIN_NUM_OF_POSITIONS) {
-            errors.put("positions", "%s is less than min required: %s".formatted(item.getPositions(), MIN_NUM_OF_POSITIONS));
-        }
+        // TODO: 02.02.2021
+//        if (isNull(item.getPositions())) {
+//            errors.put("positions", "is null");
+//        } else if (item.getPositions() < MIN_NUM_OF_POSITIONS) {
+//            errors.put("positions", "%s is less than min required: %s".formatted(item.getPositions(), MIN_NUM_OF_POSITIONS));
+//        }
 
         return errors;
     }

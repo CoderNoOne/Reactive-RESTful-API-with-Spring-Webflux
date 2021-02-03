@@ -46,6 +46,7 @@ public class TicketPurchase {
                 .movieEmissionDto(movieEmission.toDto())
                 .purchaseDate(purchaseDate)
                 .tickets(tickets.stream().map(Ticket::toDto).collect(Collectors.toList()))
+                .ticketGroupType(ticketGroupType)
                 .build();
     }
 }

@@ -27,8 +27,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,8 +71,8 @@ public class MovieEmissionService {
                                     .movie(pair.getRight())
                                     .startDateTime(toLocalDateTime(createMovieEmission.getStartTime()))
                                     .cinemaHallId(pair.getLeft().getId())
-                                    .positionIndices(pair.getLeft().getPositions().stream().map(position -> PositionIndex.builder().position(position).isFree(true).build()).collect(Collectors.toList()))
                                     .baseTicketPrice(Money.of(createMovieEmission.getBaseTicketPrice()))
+                                    .isPositionFree(pair.getLeft().getPositions().stream().collect(Collectors.toMap(Function.identity(), position -> true, (old, newVa) -> old, LinkedHashMap::new)))
                                     .build())
                             .map(movieEmission -> Pair.of(pair.getLeft(), movieEmission));
                 })

@@ -10,6 +10,7 @@ import java.util.List;
 @Configuration
 public class ConvertersConfig {
 
+
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
 
@@ -20,7 +21,9 @@ public class ConvertersConfig {
                         new LocalDateTimeToStringConverter(),
                         new StringToLocalDateTimeConverter(),
                         new MoneyToStringConverter(),
-                        new StringToMoneyConverter()
+                        new StringToMoneyConverter(),
+                        new PositionMapToBSONObjectConverter()
+//                        new StringToPositionMapConverter()
                 ));
     }
 }
