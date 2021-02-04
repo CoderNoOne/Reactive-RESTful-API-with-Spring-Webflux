@@ -2,7 +2,6 @@ package com.app.infrastructure.routing.handlers;
 
 import com.app.application.dto.AddCinemaHallToCinemaDto;
 import com.app.application.dto.CinemaHallDto;
-import com.app.application.dto.ResponseDto;
 import com.app.application.dto.ResponseErrorDto;
 import com.app.application.service.CinemaHallService;
 import com.app.infrastructure.aspect.annotations.Loggable;
@@ -25,8 +24,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class CinemaHallsHandler {
@@ -37,6 +34,7 @@ public class CinemaHallsHandler {
     @Operation(
             summary = "POST add cinemaHall to cinema",
             requestBody = @RequestBody(content = @Content(schema = @Schema(implementation = AddCinemaHallToCinemaDto.class))),
+            parameters = @Parameter(in = ParameterIn.PATH, name = "cinemaId"),
             security = @SecurityRequirement(name = "JwtAuthToken"))
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Success", content = {

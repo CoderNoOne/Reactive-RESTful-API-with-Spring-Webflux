@@ -8,6 +8,7 @@ import com.app.infrastructure.aspect.annotations.Loggable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -76,5 +77,30 @@ public class TicketOrderHandler {
                         .body(BodyInserters.fromValue(ticketOrder))
                 );
 
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket orders by username",
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketOrderDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketOrdersByUsername(ServerRequest serverRequest) {
+
+        return serverRequest.principal()
+                .flatMapMany(principal -> ticketOrderService.getAllTicketOrdersForLoggedUser(principal.getName()))
+                .collectList()
+                .flatMap(list -> ServerResponse
+                        .status(200)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(list))
+                );
     }
 }

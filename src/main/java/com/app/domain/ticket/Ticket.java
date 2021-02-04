@@ -26,15 +26,12 @@ public class Ticket {
     private TicketStatus ticketStatus;
     private IndividualTicketType type;
 
-    @Setter
-    private String ticketPurchaseId;
     private Position position;
     private Discount discount;
 
     public TicketDto toDto() {
         return TicketDto.builder()
                 .id(id)
-                .ticketPurchaseId(ticketPurchaseId)
                 .position(position)
                 .discount(discount)
                 .type(type)

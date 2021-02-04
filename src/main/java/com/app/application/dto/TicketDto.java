@@ -19,8 +19,6 @@ public class TicketDto {
 
     private TicketStatus ticketStatus;
     private IndividualTicketType type;
-    private String ticketPurchaseId;
-//    private MovieEmissionDto movieEmissionDto;
     private Position position;
     private Discount discount;
 }

@@ -60,4 +60,9 @@ public class TickerOrderRepositoryImpl implements TicketOrderRepository {
                         .then(Mono.just(ticketOrders)))
                 .flatMapMany(Flux::fromIterable);
     }
+
+    @Override
+    public Flux<TicketOrder> findAllByUsername(String username) {
+        return mongoTicketOrderRepository.findAllByUserUsername(username);
+    }
 }

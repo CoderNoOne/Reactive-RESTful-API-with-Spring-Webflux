@@ -56,7 +56,7 @@ public class AppRouting {
     })
     public RouterFunction<ServerResponse> cinemaHallsRoute(CinemaHallsHandler cinemaHallsHandler) {
         return route(POST("/cinemaHalls/addToCinema/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::addCinemaHallToCinema)
-                .andRoute(GET("/cinemaHalls//cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAllForCinema)
+                .andRoute(GET("/cinemaHalls/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAllForCinema)
                 .andRoute(GET("/cinemaHalls").and(accept(MediaType.APPLICATION_JSON)), cinemaHallsHandler::getAll);
     }
 
@@ -92,12 +92,14 @@ public class AppRouting {
 
     @RouterOperations({
             @RouterOperation(path = "/ticketOrders", beanClass = TicketOrderHandler.class, beanMethod = "orderTickets"),
-            @RouterOperation(path = "/ticketsOrder/cancel/orderId/{orderId}", beanClass = TicketOrderHandler.class, beanMethod = "cancelOrder")
+            @RouterOperation(path = "/ticketsOrders/cancel/orderId/{orderId}", beanClass = TicketOrderHandler.class, beanMethod = "cancelOrder"),
+            @RouterOperation(path = "/ticketsOrders/username", beanClass = TicketOrderHandler.class, beanMethod = "getAllTicketOrdersByUsername")
     })
     @Bean
     public RouterFunction<ServerResponse> tickerOrdersRouting(TicketOrderHandler ticketOrderHandler) {
         return route(POST("/ticketOrders").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::orderTickets)
-                .andRoute(PUT("/ticketsOrder/cancel/orderId/{orderId}").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::cancelOrder);
+                .andRoute(PUT("/ticketsOrders/cancel/orderId/{orderId}").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::cancelOrder)
+                .andRoute(GET("/ticketsOrders/username").and(accept(MediaType.APPLICATION_JSON)), ticketOrderHandler::getAllTicketOrdersByUsername);
     }
 
     @RouterOperations({

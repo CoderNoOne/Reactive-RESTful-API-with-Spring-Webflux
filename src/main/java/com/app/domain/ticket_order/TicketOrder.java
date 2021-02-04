@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 public class TicketOrder {
 
     @Id
+    @Getter
     private String id;
 
     @Getter
@@ -41,6 +42,7 @@ public class TicketOrder {
     @Getter
     private MovieEmission movieEmission;
 
+    @Getter
     private List<Ticket> tickets;
 
     @Field("ticket_order_type")

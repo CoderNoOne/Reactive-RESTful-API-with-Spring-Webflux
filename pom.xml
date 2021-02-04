@@ -153,6 +153,12 @@
             <artifactId>springdoc-openapi-webflux-core</artifactId>
             <version>1.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 
@@ -182,6 +188,14 @@
                 <configuration>
                     <release>15</release>
                     <compilerArgs>--enable-preview</compilerArgs>
+                    <source>15</source>
+                    <target>15</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
                     <source>15</source>
                     <target>15</target>
                 </configuration>

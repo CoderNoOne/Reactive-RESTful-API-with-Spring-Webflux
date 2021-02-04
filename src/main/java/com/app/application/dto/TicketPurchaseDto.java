@@ -1,8 +1,5 @@
 package com.app.application.dto;
 
-import com.app.domain.movie_emission.MovieEmission;
-import com.app.domain.security.User;
-import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.enums.TicketGroupType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -95,18 +95,7 @@ public class TicketPurchaseService {
                 .flatMap(ticketPurchase ->
                         ticketRepository.addOrUpdateMany(ticketPurchase.getTickets())
                                 .then(ticketPurchaseRepository.addOrUpdate(ticketPurchase))
-                                .map(savedTicketPurchase -> {
-                                    savedTicketPurchase.getTickets().forEach(ticket -> ticket.setTicketPurchaseId(savedTicketPurchase.getId()));
-                                    return savedTicketPurchase.toDto();
-                                })
-                )
-//                .flatMap(savedTicketPurchase -> {
-//                    savedTicketPurchase.getTickets().forEach(ticket -> ticket.setTicketPurchaseId(savedTicketPurchase.getId()));
-//                    return ticketRepository.addOrUpdateMany(savedTicketPurchase.getTickets())
-//                            .collectList()
-//                            .map(list -> savedTicketPurchase.setTickets())
-//                            .then(Mono.just(savedTicketPurchase.toDto()));
-//                })
+                                .map(TicketPurchase::toDto))
                 .as(transactionalOperator::transactional);
     }
 
