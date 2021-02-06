@@ -161,7 +161,11 @@ public class AppRouting {
             @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/cinemaId/{cinemaId}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByCinemaId"),
             @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/city/{city}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByCity"),
             @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchases"),
-            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/dates", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByDate")
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/dates", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByDate"),
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/movieId/{movieId}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesWithMovieId"),
+            @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases/movieId/{movieId}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesWithMovieIdForLoggedUser"),
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/cinemaHallId/{cinemaHallId}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByCinemaHallId")
+
 
     })
     public RouterFunction<ServerResponse> ticketPurchasesRouting(TicketPurchaseHandler ticketPurchaseHandler) {
@@ -173,7 +177,10 @@ public class AppRouting {
                 .andRoute(GET("/admin/ticketPurchases/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByCinemaId)
                 .andRoute(GET("/admin/ticketPurchases/city/{city}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByCity)
                 .andRoute(GET("/admin/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchases)
-                .andRoute(GET("/admin/ticketPurchases/dates").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByDate);
+                .andRoute(GET("/admin/ticketPurchases/dates").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByDate)
+                .andRoute(GET("/admin/ticketPurchases/movieId/{movieId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesWithMovieId)
+                .andRoute(GET("/ticketPurchases/movieId/{movieId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesWithMovieIdForLoggedUser)
+                .andRoute(GET("/admin/ticketPurchases/cinemaHallId/{cinemaHallId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByCinemaHallId);
 
     }
 }

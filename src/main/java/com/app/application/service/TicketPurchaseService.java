@@ -12,6 +12,7 @@ import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.city.City;
 import com.app.domain.city.CityRepository;
+import com.app.domain.movie.MovieRepository;
 import com.app.domain.movie_emission.MovieEmissionRepository;
 import com.app.domain.security.UserRepository;
 import com.app.domain.ticket.Ticket;
@@ -51,6 +52,7 @@ public class TicketPurchaseService {
     private final TicketPurchaseRepository ticketPurchaseRepository;
     private final CreateTicketPurchaseDtoValidator createTicketPurchaseDtoValidator;
     private final MovieEmissionRepository movieEmissionRepository;
+    private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final CinemaHallRepository cinemaHallRepository;
     private final TicketRepository ticketRepository;
@@ -263,5 +265,32 @@ public class TicketPurchaseService {
     }
 
 
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesWithMovieId(String movieId) {
 
+        return movieRepository
+                .findById(movieId)
+                .switchIfEmpty(Mono.error(() -> new TicketPurchaseServiceException("No movie with id: %s".formatted(movieId))))
+                .flatMapMany(movie -> ticketPurchaseRepository
+                        .findAllByMovieId(movie.getId()))
+                .map(TicketPurchase::toDto);
+
+    }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesForUsernameAndMovieId(String username, String movieId) {
+        return movieRepository
+                .findById(movieId)
+                .switchIfEmpty(Mono.error(() -> new TicketPurchaseServiceException("No movie with id: %s".formatted(movieId))))
+                .flatMapMany(movie -> ticketPurchaseRepository
+                        .findAllByMovieIdAndUserUsername(movie.getId(), username))
+                .map(TicketPurchase::toDto);
+    }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesByCinemaHallId(String cinemaHallId) {
+
+        return cinemaHallRepository
+                .findById(cinemaHallId)
+                .switchIfEmpty(Mono.error(() -> new TicketPurchaseServiceException("No cinema hall with id: %s".formatted(cinemaHallId))))
+                .flatMapMany(cinemaHall -> ticketPurchaseRepository.findAllByCinemaHallId(cinemaHall.getId()))
+                .map(TicketPurchase::toDto);
+    }
 }

@@ -11,7 +11,7 @@ public interface MongoTicketPurchaseRepository extends ReactiveMongoRepository<T
 
     Flux<TicketPurchase> findAllByUserUsername(String username);
 
-    Flux<TicketPurchase> findAllByMovieEmissionCinemaHallId(List<String> cinemaHallsIds);
+    Flux<TicketPurchase> findAllByMovieEmissionCinemaHallIdIn(List<String> cinemaHallsIds);
 
     Flux<TicketPurchase> findAllByMovieEmissionCinemaHallIdAndUserUsername(List<String> cinemaHallsIds, String username);
 
@@ -21,5 +21,10 @@ public interface MongoTicketPurchaseRepository extends ReactiveMongoRepository<T
 
     Flux<TicketPurchase> findAllByPurchaseDateBefore(LocalDate to);
 
+    Flux<TicketPurchase> findAllByMovieEmissionMovieId(String movieId);
+
+    Flux<TicketPurchase> findAllByMovieEmissionMovieIdAndUserUsername(String movieId, String username);
+
+    Flux<TicketPurchase> findAllByMovieEmissionCinemaHallId(String cinemaHallId);
 
 }

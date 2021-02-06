@@ -260,4 +260,88 @@ public class TicketPurchaseHandler {
 
     }
 
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases with movie",
+            parameters = {@Parameter(name = "movieId", description = "movie id", in = ParameterIn.PATH)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesWithMovieId(ServerRequest serverRequest) {
+
+        return ticketPurchaseService.getAllTicketPurchasesWithMovieId(serverRequest.pathVariable("movieId"))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+    }
+
+
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases with movie for logged user",
+            parameters = {@Parameter(name = "movieId", description = "movie id", in = ParameterIn.PATH)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesWithMovieIdForLoggedUser(ServerRequest serverRequest) {
+
+
+        return serverRequest.principal()
+                .flatMapMany(principal -> ticketPurchaseService.getAllTicketPurchasesForUsernameAndMovieId(principal.getName(), serverRequest.pathVariable("movieId")))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+
+
+    }
+
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases with cinemaHall id",
+            parameters = {@Parameter(name = "cinemaHallId", description = "cinemaHall id", in = ParameterIn.PATH)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesByCinemaHallId(ServerRequest serverRequest) {
+
+
+
+        return ticketPurchaseService.getAllTicketPurchasesByCinemaHallId(serverRequest.pathVariable("cinemaHallId"))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+
+    }
 }

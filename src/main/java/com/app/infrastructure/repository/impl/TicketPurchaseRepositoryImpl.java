@@ -67,7 +67,7 @@ public class TicketPurchaseRepositoryImpl implements TicketPurchaseRepository {
 
     @Override
     public Flux<TicketPurchase> findAllByCinemaHallsIds(List<String> cinemaHallsIds) {
-        return mongoTicketPurchaseRepository.findAllByMovieEmissionCinemaHallId(cinemaHallsIds);
+        return mongoTicketPurchaseRepository.findAllByMovieEmissionCinemaHallIdIn(cinemaHallsIds);
     }
 
     @Override
@@ -88,5 +88,20 @@ public class TicketPurchaseRepositoryImpl implements TicketPurchaseRepository {
     @Override
     public Flux<TicketPurchase> findAllByPurchaseDateBefore(LocalDate to) {
         return mongoTicketPurchaseRepository.findAllByPurchaseDateBefore(to);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByMovieId(String movieId) {
+        return mongoTicketPurchaseRepository.findAllByMovieEmissionMovieId(movieId);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByMovieIdAndUserUsername(String movieId, String username) {
+        return mongoTicketPurchaseRepository.findAllByMovieEmissionMovieIdAndUserUsername(movieId, username);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByCinemaHallId(String cinemaHallId) {
+        return mongoTicketPurchaseRepository.findAllByMovieEmissionCinemaHallId(cinemaHallId);
     }
 }
