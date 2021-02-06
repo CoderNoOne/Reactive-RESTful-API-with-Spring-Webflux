@@ -24,6 +24,9 @@ import com.app.domain.ticket_purchase.TicketPurchaseRepository;
 import com.sun.mail.imap.IMAPBodyPart;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.validator.GenericValidator;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import reactor.core.publisher.Flux;
@@ -31,15 +34,15 @@ import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +56,7 @@ public class TicketPurchaseService {
     private final TicketRepository ticketRepository;
     private final CityRepository cityRepository;
     private final TicketOrderRepository ticketOrderRepository;
+    private final CinemaRepository cinemaRepository;
     private final TransactionalOperator transactionalOperator;
 
     public Mono<TicketPurchaseDto> purchaseTicket(Mono<? extends Principal> principal, CreateTicketPurchaseDto createPurchaseDto) {
@@ -133,7 +137,14 @@ public class TicketPurchaseService {
     }
 
     public Flux<TicketPurchaseDto> getAllTicketPurchasesByUserAndCity(String username, String cityName) {
+        return getAllTicketPurchasesByCityUtility(cityName, ticketPurchaseRepository.findAllByUserUsername(username));
+    }
 
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesByCity(String cityName) {
+        return getAllTicketPurchasesByCityUtility(cityName, ticketPurchaseRepository.findAll());
+    }
+
+    private Flux<TicketPurchaseDto> getAllTicketPurchasesByCityUtility(String cityName, Flux<TicketPurchase> ticketPurchases) {
 
         if (isNull(cityName) || StringUtils.isBlank(cityName)) {
             return Flux.error(() -> new TicketPurchaseServiceException("City name is required and cannot be empty"));
@@ -151,7 +162,7 @@ public class TicketPurchaseService {
                                         .collect(Collectors.toList())))
                 .map(CinemaHall::getId)
                 .collectList()
-                .flatMapMany(cinemaHallsIds -> ticketPurchaseRepository.findAllByUserUsername(username)
+                .flatMapMany(cinemaHallsIds -> ticketPurchases
                         .collect(
                                 ArrayList<TicketPurchase>::new,
                                 (list, nextItem) -> cinemaHallsIds
@@ -164,4 +175,93 @@ public class TicketPurchaseService {
                 .flatMapIterable(Function.identity())
                 .map(TicketPurchase::toDto);
     }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchaseByCinema(String cinemaId) {
+
+        if (isNull(cinemaId) || StringUtils.isBlank(cinemaId)) {
+            return Flux.error(() -> new TicketPurchaseServiceException("Cinema id is required and cannot be empty"));
+        }
+
+        return cinemaRepository.findById(cinemaId)
+                .switchIfEmpty(Mono.error(() -> new TicketPurchaseServiceException("No cinema with id: %s".formatted(cinemaId))))
+                .flatMap(cinema -> ticketPurchaseRepository
+                        .findAllByCinemaHallsIds(cinema
+                                .getCinemaHalls()
+                                .stream()
+                                .map(CinemaHall::getId)
+                                .collect(Collectors.toList()))
+                        .collectList())
+                .flatMapMany(Flux::fromIterable)
+                .map(TicketPurchase::toDto);
+    }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesByCinemaAndUsername(String cinemaId, String username) {
+        if (isNull(cinemaId) || StringUtils.isBlank(cinemaId)) {
+            return Flux.error(() -> new TicketPurchaseServiceException("Cinema id is required and cannot be empty"));
+        }
+
+        return cinemaRepository.findById(cinemaId)
+                .switchIfEmpty(Mono.error(() -> new TicketPurchaseServiceException("No cinema with id: %s".formatted(cinemaId))))
+                .flatMap(cinema -> ticketPurchaseRepository
+                        .findAllByCinemaHallsIdsAndUsername(cinema
+                                .getCinemaHalls()
+                                .stream()
+                                .map(CinemaHall::getId)
+                                .collect(Collectors.toList()), username)
+                        .collectList())
+                .flatMapMany(Flux::fromIterable)
+                .map(TicketPurchase::toDto);
+    }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchases() {
+        return ticketPurchaseRepository
+                .findAll()
+                .map(TicketPurchase::toDto);
+    }
+
+    private boolean compareDates(LocalDate from, LocalDate to) {
+        return from.compareTo(to) > 0;
+    }
+
+    public Flux<TicketPurchaseDto> getAllTicketPurchasesByDate(Optional<String> from, Optional<String> to) {
+
+        var result = new AtomicReference<Flux<TicketPurchaseDto>>(Flux.empty());
+        var toDateReference = new AtomicReference<LocalDate>();
+        var fromDateReference = new AtomicReference<LocalDate>();
+
+        from.ifPresentOrElse(
+                fromDateString -> {
+                    boolean isValidFrom = GenericValidator.isDate(fromDateString, "dd-MM-yyyy", true);
+
+                    to.ifPresentOrElse(toDateString -> {
+                                boolean isValidTo = GenericValidator.isDate(toDateString, "dd-MM-yyyy", true);
+
+                                result.set(isValidFrom && isValidTo ?
+                                        compareDates(
+                                                fromDateReference.accumulateAndGet(LocalDate.parse(fromDateString, DateTimeFormatter.ofPattern("dd-MM-yyyy")), (oldVal, newVal) -> newVal),
+                                                toDateReference.accumulateAndGet(LocalDate.parse(toDateString, DateTimeFormatter.ofPattern("dd-MM-yyyy")), (oldVal, newVal) -> newVal)) ?
+                                                Flux.error(() -> new TicketPurchaseServiceException("From date cannot be after to date!")) :
+                                                ticketPurchaseRepository.findAllByPurchaseDateBetween(fromDateReference.get(), toDateReference.get()).map(TicketPurchase::toDto)
+                                        : !isValidFrom && !isValidTo ? Flux.error(() -> new TicketPurchaseServiceException("Date from and date to has not valid format")) :
+                                        !isValidFrom ? Flux.error(() -> new TicketPurchaseServiceException("Date from has not valid format")) : Flux.error(() -> new TicketPurchaseServiceException("Date to has not valid format")));
+
+                            }
+                            , () ->
+                                    result.set(!isValidFrom ?
+                                            Flux.error(() -> new TicketPurchaseServiceException("Date from has not valid format")) :
+                                            ticketPurchaseRepository.findAllByPurchaseDateAfter(fromDateReference.get()).map(TicketPurchase::toDto)));
+                },
+                () ->
+                        result.set(to.isPresent() && !GenericValidator.isDate(to.get(), "dd-MM-yyyy", true) ?
+                                Flux.error(() -> new TicketPurchaseServiceException("Date to has not valid format")) :
+                                to.isEmpty() ? Flux.error(() -> new TicketPurchaseServiceException("At least one of dates [from, to] is required!")) :
+                                        ticketPurchaseRepository.findAllByPurchaseDateBefore(toDateReference.get()).map(TicketPurchase::toDto))
+        );
+
+
+        return result.get();
+    }
+
+
+
 }

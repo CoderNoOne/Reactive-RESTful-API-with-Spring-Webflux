@@ -1,6 +1,8 @@
 package com.app.infrastructure.routing;
 
 import com.app.infrastructure.routing.handlers.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
+
+import java.time.LocalDate;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -152,13 +156,24 @@ public class AppRouting {
             @RouterOperation(method = RequestMethod.POST, path = "/ticketPurchases/ticketOrderId/{ticketOrderId}", beanClass = TicketPurchaseHandler.class, beanMethod = "purchaseTicketFromOrder"),
             @RouterOperation(method = RequestMethod.POST, path = "/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "purchaseTicket"),
             @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesForLoggedUser"),
-            @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases/city/{city}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesForLoggedUserByCityName")
+            @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases/city/{city}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesForLoggedUserByCityName"),
+            @RouterOperation(method = RequestMethod.GET, path = "/ticketPurchases/cinemaId/{cinemaId}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesForUserByCinemaId"),
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/cinemaId/{cinemaId}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByCinemaId"),
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/city/{city}", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByCity"),
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchases"),
+            @RouterOperation(method = RequestMethod.GET, path = "/admin/ticketPurchases/dates", beanClass = TicketPurchaseHandler.class, beanMethod = "getAllTicketPurchasesByDate")
 
     })
     public RouterFunction<ServerResponse> ticketPurchasesRouting(TicketPurchaseHandler ticketPurchaseHandler) {
         return route(POST("/ticketPurchases/ticketOrderId/{ticketOrderId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicketFromOrder)
                 .andRoute(POST("/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::purchaseTicket)
                 .andRoute(GET("/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesForLoggedUser)
-                .andRoute(GET("/ticketPurchases/city/{city}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesForLoggedUserByCityName);
+                .andRoute(GET("/ticketPurchases/city/{city}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesForLoggedUserByCityName)
+                .andRoute(GET("/ticketPurchases/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesForUserByCinemaId)
+                .andRoute(GET("/admin/ticketPurchases/cinemaId/{cinemaId}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByCinemaId)
+                .andRoute(GET("/admin/ticketPurchases/city/{city}").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByCity)
+                .andRoute(GET("/admin/ticketPurchases").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchases)
+                .andRoute(GET("/admin/ticketPurchases/dates").and(accept(MediaType.APPLICATION_JSON)), ticketPurchaseHandler::getAllTicketPurchasesByDate);
+
     }
 }

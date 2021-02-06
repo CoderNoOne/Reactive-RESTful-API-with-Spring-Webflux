@@ -2,13 +2,13 @@ package com.app.infrastructure.repository.impl;
 
 import com.app.domain.ticket_purchase.TicketPurchase;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
-import com.app.infrastructure.repository.mongo.MongoTicketOrderRepository;
 import com.app.infrastructure.repository.mongo.MongoTicketPurchaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -63,5 +63,30 @@ public class TicketPurchaseRepositoryImpl implements TicketPurchaseRepository {
     @Override
     public Flux<TicketPurchase> findAllByUserUsername(String username) {
         return mongoTicketPurchaseRepository.findAllByUserUsername(username);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByCinemaHallsIds(List<String> cinemaHallsIds) {
+        return mongoTicketPurchaseRepository.findAllByMovieEmissionCinemaHallId(cinemaHallsIds);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByCinemaHallsIdsAndUsername(List<String> cinemaHallsIds, String username) {
+        return mongoTicketPurchaseRepository.findAllByMovieEmissionCinemaHallIdAndUserUsername(cinemaHallsIds, username);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByPurchaseDateBetween(LocalDate from, LocalDate to) {
+        return mongoTicketPurchaseRepository.findAllByPurchaseDateBetween(from, to);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByPurchaseDateAfter(LocalDate from) {
+        return mongoTicketPurchaseRepository.findAllByPurchaseDateAfter(from);
+    }
+
+    @Override
+    public Flux<TicketPurchase> findAllByPurchaseDateBefore(LocalDate to) {
+        return mongoTicketPurchaseRepository.findAllByPurchaseDateBefore(to);
     }
 }

@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -130,6 +131,133 @@ public class TicketPurchaseHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(ticketPurchases))
                 );
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases by cinema",
+            parameters = {@Parameter(in = ParameterIn.PATH, name = "cinemaId", description = "cinema id")},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesByCinemaId(ServerRequest serverRequest) {
+
+        return ticketPurchaseService
+                .getAllTicketPurchaseByCinema(serverRequest.pathVariable("cinemaId"))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases by city",
+            parameters = {@Parameter(in = ParameterIn.PATH, name = "city", description = "city name")},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesByCity(ServerRequest serverRequest) {
+        return ticketPurchaseService.getAllTicketPurchasesByCity(serverRequest.pathVariable("city")).collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases by cinema for logged user",
+            parameters = {@Parameter(in = ParameterIn.PATH, name = "cinemaId", description = "cinema id")},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesForUserByCinemaId(ServerRequest serverRequest) {
+
+        return serverRequest.principal()
+                .flatMapMany(principal -> ticketPurchaseService.getAllTicketPurchasesByCinemaAndUsername(serverRequest.pathVariable("cinemaId"), principal.getName()))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases",
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchases(ServerRequest serverRequest) {
+
+        return ticketPurchaseService.getAllTicketPurchases()
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+
+    }
+
+    @Loggable
+    @Operation(
+            summary = "GET all ticket purchases by date",
+            parameters = {@Parameter(name = "from", description = "date from", in = ParameterIn.QUERY, required = false), @Parameter(name = "to", description = "date to", in = ParameterIn.QUERY, required = false)},
+            security = @SecurityRequirement(name = "JwtAuthToken"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TicketPurchaseDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAllTicketPurchasesByDate(ServerRequest serverRequest) {
+
+        return ticketPurchaseService.getAllTicketPurchasesByDate(serverRequest.queryParam("from"), serverRequest.queryParam("to"))
+                .collectList()
+                .flatMap(ticketPurchases -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ticketPurchases))
+                );
+
     }
 
 }
