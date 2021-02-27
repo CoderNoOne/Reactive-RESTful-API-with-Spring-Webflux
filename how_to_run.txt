@@ -1,0 +1,12 @@
+
+docker network create net
+
+docker run -p 27017:27017 -d --name mongo_db --network=net mongo mongod --replSet rs0
+
+docker container exec -ti mongo_db bash && mongo && initiate
+
+mongo
+
+rs.initiate();
+
+docker run -p 8080:8080 -d --network=net codernoone/cinema-webflux-rest-api:latest

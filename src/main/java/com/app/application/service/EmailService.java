@@ -26,6 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailService {
 
+
     private final JavaMailSender mailSender;
     private final CreateMailDtoValidator createMailDtoValidator;
     private final CreateMailsDtoValidator createMailsDtoValidator;

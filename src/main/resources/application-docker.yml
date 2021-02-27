@@ -4,9 +4,11 @@ server:
 spring:
   data:
     mongodb:
+
       database: cinema_db
       host: mongo_db
       port: 27017
+      replica-set-name: rs0
 
 jwt:
   token:
@@ -16,3 +18,16 @@ jwt:
   refresh-token:
     expiration-time-ms: 28800000
     access-token-key: AccessTokenKey
+
+jasypt:
+  encryptor:
+    password: password
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+  packages-to-scan: com.app
+
+change-logs-scan-package: com.app.infrastructure.mongo.initscripts
+adminusername: admin123
