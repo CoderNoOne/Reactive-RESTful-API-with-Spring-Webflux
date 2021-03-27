@@ -99,9 +99,7 @@ public class WebSecurityConfig {
                 .disable()
 
                 .authenticationManager(authenticationManager)
-
                 .securityContextRepository(securityContextRepository)
-
                 .exceptionHandling()
                 .authenticationEntryPoint(serverAuthenticationEntryPoint())
                 .accessDeniedHandler(serverAccessDeniedHandler())
@@ -113,7 +111,7 @@ public class WebSecurityConfig {
                 .pathMatchers("/login").permitAll()
 
                 .pathMatchers("/users/**").hasRole("ADMIN")
-                .pathMatchers("/statistics/**").hasRole("ADMIN")
+                .pathMatchers("/statistics/**").permitAll()
 
                 .pathMatchers(HttpMethod.GET, "/cinemas").hasRole("USER")
 
@@ -125,8 +123,11 @@ public class WebSecurityConfig {
                 .pathMatchers("/ticketOrders/**").hasRole("USER")
                 .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
 
+                .pathMatchers("/swagger-ui.html/**").permitAll()
+                .pathMatchers("/v3/api-docs/**").permitAll()
+                .pathMatchers("/webjars/swagger-ui/**").permitAll()
 
-                .anyExchange().permitAll()
+                .anyExchange().denyAll()
                 .and().build();
     }
 }

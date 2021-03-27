@@ -1,9 +1,7 @@
 package com.app.domain.ticket_purchase;
 
 import com.app.domain.generic.CrudRepository;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,4 +25,6 @@ public interface TicketPurchaseRepository extends CrudRepository<TicketPurchase,
     Flux<TicketPurchase> findAllByMovieIdAndUserUsername(String movieId, String username);
 
     Flux<TicketPurchase> findAllByCinemaHallId(String cinemaHallId);
+
+    Flux<TicketPurchase> findAllByMovieEmissionInDateAndByCinemaHallsIdIn(LocalDate beforeDate, List<String> cinemaHallIds);
 }

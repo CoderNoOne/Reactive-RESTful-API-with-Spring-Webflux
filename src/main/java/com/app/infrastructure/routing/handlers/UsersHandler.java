@@ -1,11 +1,11 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.*;
+import com.app.application.dto.CreateUserDto;
+import com.app.application.dto.ResponseErrorDto;
+import com.app.application.dto.UserDto;
 import com.app.application.exception.RegistrationUserException;
 import com.app.application.service.UsersService;
-import com.app.domain.security.User;
 import com.app.infrastructure.aspect.annotations.Loggable;
-import com.mongodb.lang.NonNullApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

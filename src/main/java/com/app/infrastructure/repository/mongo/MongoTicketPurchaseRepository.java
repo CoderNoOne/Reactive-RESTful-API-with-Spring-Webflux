@@ -1,6 +1,7 @@
 package com.app.infrastructure.repository.mongo;
 
 import com.app.domain.ticket_purchase.TicketPurchase;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 
@@ -26,5 +27,10 @@ public interface MongoTicketPurchaseRepository extends ReactiveMongoRepository<T
     Flux<TicketPurchase> findAllByMovieEmissionMovieIdAndUserUsername(String movieId, String username);
 
     Flux<TicketPurchase> findAllByMovieEmissionCinemaHallId(String cinemaHallId);
+
+//    @Query(value = "{'cinemaHalls':{$elemMatch: {'id': ?0}}}")
+    @Query("{'movieEmission':{$elemMatch: {'startDateTime': }} }")
+
+    Flux<TicketPurchase> findAllByMovieEmission_StartDateTimeAndByMovieEmissionCinemaHallId();
 
 }

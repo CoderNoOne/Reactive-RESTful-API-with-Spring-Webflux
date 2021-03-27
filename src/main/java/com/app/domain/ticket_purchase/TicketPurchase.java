@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Document("ticket_purchases")
 @Builder
+@Document("ticket_purchases")
 public class TicketPurchase {
 
     @Id
@@ -50,3 +50,4 @@ public class TicketPurchase {
                 .build();
     }
 }
+

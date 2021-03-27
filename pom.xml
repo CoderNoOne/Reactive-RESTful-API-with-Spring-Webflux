@@ -175,6 +175,7 @@
             <artifactId>springdoc-openapi-webflux-core</artifactId>
             <version>1.5.2</version>
         </dependency>
+
     </dependencies>
 
 
@@ -190,17 +191,34 @@
         </dependencies>
     </dependencyManagement>
 
+
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>http://repo.spring.io/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <url>http://repo.spring.io/milestone</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>http://repo.spring.io/snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <url>http://repo.spring.io/milestone</url>
+        </pluginRepository>
+
+    </pluginRepositories>
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArgs>--enable-preview</compilerArgs>
-                    <source>15</source>
-                    <target>15</target>
-                </configuration>
-            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
@@ -229,13 +247,22 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <jvmArguments>
+                        --enable-preview
+                    </jvmArguments>
+                    <image>
+                        <env>
+                            <JAVA_OPTS>--enable-preview</JAVA_OPTS>
+                        </env>
+                    </image>
                     <fork>true</fork>
                     <mainClass>${start-class}</mainClass>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>buildImage</id>
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>build-image</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -244,19 +271,48 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>15</source>
-                    <target>15</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>15</source>
-                    <target>15</target>
+<!--                    <source>16</source>-->
+<!--                    <target>16</target>-->
+                    <release>15</release>
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
+<!--            <plugin>-->
+<!--                <groupId>com.mysema.maven</groupId>-->
+<!--                <artifactId>apt-maven-plugin</artifactId>-->
+<!--                <version>1.1.3</version>-->
+<!--&lt;!&ndash;                <dependencies>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <groupId>com.querydsl</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <artifactId>querydsl-apt</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <version>4.2.1</version>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;                </dependencies>&ndash;&gt;-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>-->
+<!--                                process-->
+<!--                            </goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <compilerOptions>-->
+<!--                                <source>15</source>-->
+<!--                                <deprecation>&#45;&#45;enable-preview</deprecation>-->
+<!--                            </compilerOptions>-->
+<!--                            <outputDirectory>target/generated-sources/java</outputDirectory>-->
+<!--                            <processor>-->
+<!--                                org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor-->
+<!--                            </processor>-->
+<!--                            <logOnlyOnError>true</logOnlyOnError>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
         </plugins>
     </build>

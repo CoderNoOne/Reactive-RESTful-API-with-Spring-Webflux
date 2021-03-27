@@ -1,0 +1,76 @@
+#Total Number of Services Found 2
+
+#Generating kubernetes YAML file for the Service mongo_db.yml
+#This is Service Configuration Kube definition
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongoservice
+  namespace: default
+spec:
+  ports:
+    - name: nameme_01
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+  selector:
+    app: mongoapp
+  type: NodePort
+
+#This is Pod Configuration Kube definition
+---
+kind: Pod
+metadata:
+  labels:
+    app: mongoapp
+  namespace: default
+spec:
+  containers:
+    - image: codernoone/mongo_with_rs0
+      imagePullPolicy: IfNotPresent
+      name: mongo_db
+      ports:
+        - containerPort: 27017
+          name: portname.0
+          protocol: TCP
+
+
+
+#Generating kubernetes YAML file for the Service cinema-webflux-rest-api.yml
+#This is Service Configuration Kube definition
+apiVersion: v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: application
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: appli
+  type: NodePort
+
+#This is Pod Configuration Kube definition
+---
+kind: Pod
+metadata:
+  labels:
+    app: appli
+  namespace: default
+spec:
+  containers:
+    - image: codernoone/webflux-rest-api
+      imagePullPolicy: IfNotPresent
+      name: app
+      ports:
+        - containerPort: 8080
+          name: portname.0
+          protocol: TCP
+  terminationGracePeriodSeconds: 0
+apiVersion: v1

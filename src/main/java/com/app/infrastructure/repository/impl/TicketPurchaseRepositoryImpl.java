@@ -4,6 +4,9 @@ import com.app.domain.ticket_purchase.TicketPurchase;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
 import com.app.infrastructure.repository.mongo.MongoTicketPurchaseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,6 +19,7 @@ import java.util.List;
 public class TicketPurchaseRepositoryImpl implements TicketPurchaseRepository {
 
     private final MongoTicketPurchaseRepository mongoTicketPurchaseRepository;
+    private final ReactiveMongoTemplate reactiveMongoTemplate;
 
     @Override
     public Mono<TicketPurchase> addOrUpdate(TicketPurchase item) {
@@ -104,4 +108,20 @@ public class TicketPurchaseRepositoryImpl implements TicketPurchaseRepository {
     public Flux<TicketPurchase> findAllByCinemaHallId(String cinemaHallId) {
         return mongoTicketPurchaseRepository.findAllByMovieEmissionCinemaHallId(cinemaHallId);
     }
+
+    @Override
+    public Flux<TicketPurchase> findAllByMovieEmissionInDateAndByCinemaHallsIdIn(LocalDate beforeDate, List<String> cinemaHallIds) {
+
+        return reactiveMongoTemplate
+                .find(new Query(Criteria
+                        .where("movieEmission")
+                        .elemMatch(Criteria
+                                .where("startDateTime")
+                                .lt(LocalDate.now().atTime(0, 0)))
+                        .elemMatch(Criteria
+                                .where("cinemaHallsId")
+                                .in(cinemaHallIds)
+                        )), TicketPurchase.class);
+    }
+
 }

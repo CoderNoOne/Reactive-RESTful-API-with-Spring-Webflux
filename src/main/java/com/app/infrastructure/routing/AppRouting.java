@@ -1,8 +1,6 @@
 package com.app.infrastructure.routing;
 
 import com.app.infrastructure.routing.handlers.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
 import org.springframework.context.annotation.Bean;
@@ -11,8 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-
-import java.time.LocalDate;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -25,13 +21,15 @@ public class AppRouting {
             @RouterOperation(path = "/register", beanClass = UsersHandler.class, beanMethod = "register"),
             @RouterOperation(path = "/users", beanClass = UsersHandler.class, beanMethod = "getAllUsers"),
             @RouterOperation(path = "/users/username/{username}", beanClass = UsersHandler.class, beanMethod = "getByUsername"),
-            @RouterOperation(path = "/users/promoteToAdmin/username/{username}", beanClass = UsersHandler.class, beanMethod = "promoteUserToAdminRole")
+            @RouterOperation(path = "/users/promoteToAdmin/username/{username}", beanClass = UsersHandler.class, beanMethod = "promoteUserToAdminRole"),
+            @RouterOperation(path = "/users/test", beanClass = UsersHandler.class, beanMethod = "promoteUserToAdminRole")
     })
     public RouterFunction<ServerResponse> usersRoute(UsersHandler usersHandler) {
         return route(POST("/register").and(accept(MediaType.APPLICATION_JSON)), usersHandler::register)
                 .andRoute(GET("/users").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getAllUsers)
                 .andRoute(GET("/users/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::getByUsername)
                 .andRoute(POST("/users/promoteToAdmin/username/{username}").and(accept(MediaType.APPLICATION_JSON)), usersHandler::promoteUserToAdminRole);
+
     }
 
     @Bean
@@ -149,6 +147,16 @@ public class AppRouting {
                 .andRoute(GET("/cities/name/{name}").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::findByName)
                 .andRoute(GET("/cities").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::getAll)
                 .andRoute(PUT("/cities").and(accept(MediaType.APPLICATION_JSON)), citiesHandler::addCinemaToCity);
+    }
+
+    @RouterOperations({
+            @RouterOperation(method = RequestMethod.GET, path = "/statistics/cities/cinemaFrequency", beanClass = StatisticsHandler.class, beanMethod = "getCinemaFrequencyByCityForAllCities"),
+            @RouterOperation(method = RequestMethod.GET, path = "/statistics/cities/cinemaFrequency/max", beanClass = StatisticsHandler.class, beanMethod = "getCinemaWithMaxFrequency")
+    })
+    @Bean
+    public RouterFunction<ServerResponse> statisticRouting(StatisticsHandler statisticsHandler) {
+        return route(GET("/statistics/cities/cinemaFrequency").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::getCinemaFrequencyByCityForAllCities)
+                .andRoute(GET("/statistics/cities/cinemaFrequency/max").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::getCinemaWithMaxFrequency);
     }
 
     @Bean

@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 
 services:
 
@@ -14,7 +14,9 @@ services:
       - net
 
   cinema-webflux-rest-api:
-    image: codernoone/webflux-rest-api
+    build:
+      context: ./
+      dockerfile: app.dockerfile
     container_name: app
     depends_on:
       - mongo_db

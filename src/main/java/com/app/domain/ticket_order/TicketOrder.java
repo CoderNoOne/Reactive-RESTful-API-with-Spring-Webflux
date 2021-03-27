@@ -37,6 +37,7 @@ public class TicketOrder {
     @Getter
     private LocalDate orderDate;
 
+    @Getter
     private TicketOrderStatus ticketOrderStatus;
 
     @Getter

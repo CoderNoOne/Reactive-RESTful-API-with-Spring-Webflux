@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
-public abstract sealed class BaseUser permits Admin, User {
+public abstract  class BaseUser {
 
     @Id
     private String id;
