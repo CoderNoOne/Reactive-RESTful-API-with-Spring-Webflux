@@ -39,7 +39,6 @@ public class StatisticsHandler {
     public Mono<ServerResponse> getCinemaFrequencyByCityForAllCities(final ServerRequest serverRequest) {
 
         return statisticsService.findCitiesFrequency()
-                .collectList()
                 .flatMap(list -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,8 +60,7 @@ public class StatisticsHandler {
     })
     public Mono<ServerResponse> getCinemaWithMaxFrequency(final ServerRequest serverRequest) {
 
-        return statisticsService.findCitiesFrequency()
-                .collectList()
+        return statisticsService.findCitiesWithMostFrequency()
                 .flatMap(list -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -70,4 +68,26 @@ public class StatisticsHandler {
                 );
 
     }
+
+    @Loggable
+    @Operation(summary = "GET most popular movie grouped by city")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(type = "object", requiredProperties = {"city", "frequency"}))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> findMostPopularMovieGroupedByCity(final ServerRequest serverRequest) {
+
+        return statisticsService.findMostPopularMovieGroupedByCity()
+                .flatMap(map -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(map))
+                );
+    }
+
 }
