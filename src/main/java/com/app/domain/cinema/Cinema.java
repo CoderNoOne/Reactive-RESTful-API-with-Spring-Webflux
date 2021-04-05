@@ -3,6 +3,7 @@ package com.app.domain.cinema;
 import com.app.application.dto.CinemaDto;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.city.City;
+import com.app.domain.generic.GenericEntity;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,7 +17,7 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 @Builder
 @Document("cinemas")
-public class Cinema {
+public class Cinema implements GenericEntity {
 
     @Id
     @Getter

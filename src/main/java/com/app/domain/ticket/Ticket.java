@@ -1,6 +1,7 @@
 package com.app.domain.ticket;
 
 import com.app.application.dto.TicketDto;
+import com.app.domain.generic.GenericEntity;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket.enums.IndividualTicketType;
@@ -19,7 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @Builder
 @Document(collection = "tickets")
-public class Ticket {
+public class Ticket implements GenericEntity {
 
     @Id
     private String id;

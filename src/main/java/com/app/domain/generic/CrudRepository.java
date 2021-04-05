@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface CrudRepository<T, ID> {
+public interface CrudRepository<T extends GenericEntity, ID> {
     Mono<T> addOrUpdate(T item);
     Flux<T> addOrUpdateMany(List<T> items);
     Flux<T> findAll();

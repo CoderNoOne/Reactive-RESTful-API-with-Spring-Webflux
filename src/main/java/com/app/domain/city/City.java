@@ -4,7 +4,11 @@ import com.app.application.dto.CinemaInCityDto;
 import com.app.application.dto.CityDto;
 import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema_hall.CinemaHall;
-import lombok.*;
+import com.app.domain.generic.GenericEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,7 +23,7 @@ import static java.util.Objects.isNull;
 @NoArgsConstructor
 @Builder
 @Document("cities")
-public class City {
+public class City implements GenericEntity {
 
     @Id
     private String id;

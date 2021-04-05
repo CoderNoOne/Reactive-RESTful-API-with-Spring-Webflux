@@ -2,6 +2,7 @@ package com.app.domain.movie_emission;
 
 import com.app.application.dto.MovieEmissionDto;
 import com.app.application.dto.TicketDetailsDto;
+import com.app.domain.generic.GenericEntity;
 import com.app.domain.movie.Movie;
 import com.app.domain.position_index.PositionIndex;
 import com.app.domain.vo.Money;
@@ -22,7 +23,7 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 @Builder
 @Document("movie_emissions")
-public class MovieEmission {
+public class MovieEmission implements GenericEntity {
 
     @Id
     @Getter

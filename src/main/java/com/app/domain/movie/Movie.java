@@ -1,6 +1,7 @@
 package com.app.domain.movie;
 
 import com.app.application.dto.MovieDto;
+import com.app.domain.generic.GenericEntity;
 import com.app.domain.vo.Money;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @Document(collection = "movies")
-public class Movie {
+public class Movie implements GenericEntity {
 
     @Id
     private String id;

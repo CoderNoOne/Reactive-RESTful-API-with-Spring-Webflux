@@ -1,6 +1,7 @@
 package com.app.domain.ticket_order;
 
 import com.app.application.dto.TicketOrderDto;
+import com.app.domain.generic.GenericEntity;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.security.User;
 import com.app.domain.ticket.Ticket;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document("ticket_orders")
-public class TicketOrder {
+public class TicketOrder implements GenericEntity {
 
     @Id
     @Getter

@@ -1,14 +1,14 @@
 package com.app.domain.security;
 
+import com.app.domain.generic.GenericEntity;
 import com.app.domain.security.enums.Role;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 @Data
 @NoArgsConstructor
-public abstract  class BaseUser {
+public abstract sealed class BaseUser implements GenericEntity permits Admin, User {
 
     @Id
     private String id;

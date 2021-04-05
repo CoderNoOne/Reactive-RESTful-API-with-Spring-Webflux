@@ -1,6 +1,7 @@
 package com.app.domain.cinema_hall;
 
 import com.app.application.dto.CinemaHallDto;
+import com.app.domain.generic.GenericEntity;
 import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.vo.Position;
 import lombok.*;
@@ -20,7 +21,7 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document("cinema_halls")
-public class CinemaHall {
+public class CinemaHall implements GenericEntity {
 
     @Id
     @Getter
