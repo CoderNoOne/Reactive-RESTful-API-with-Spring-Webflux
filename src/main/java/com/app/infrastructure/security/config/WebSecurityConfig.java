@@ -110,7 +110,7 @@ public class WebSecurityConfig {
                 .pathMatchers("/register").permitAll()
                 .pathMatchers("/login").permitAll()
 
-                .pathMatchers("/users/**").hasRole("ADMIN")
+                .pathMatchers("/users/**").permitAll()/*hasRole("ADMIN")*/
                 .pathMatchers("/statistics/**").permitAll()
 
                 .pathMatchers(HttpMethod.GET, "/cinemas").hasRole("USER")

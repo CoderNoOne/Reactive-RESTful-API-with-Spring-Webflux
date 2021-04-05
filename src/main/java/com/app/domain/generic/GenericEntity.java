@@ -1,5 +1,5 @@
 package com.app.domain.generic;
 
-/*,arker interface*/
+/*marker interface*/
 public interface GenericEntity {
 }

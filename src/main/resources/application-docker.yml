@@ -4,10 +4,8 @@ server:
 spring:
   data:
     mongodb:
+      uri: mongodb://mongo1:30001,mongo2:30002,mongo3:30003/?replicaSet=rs0
       database: cinema_db
-      host: mongo_db
-      replica-set-name: rs0
-      port: 30001
 
 jwt:
   token:

@@ -29,7 +29,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
         return Mono.justOrEmpty(serverWebExchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
                 .filter(header -> nonNull(header) && header.startsWith("Bearer "))
                 .map(header -> new UsernamePasswordAuthenticationToken("", header.substring(7)))
-                .flatMap(auth -> authenticationManager.authenticate(auth))
+                .flatMap(authenticationManager::authenticate)
                 .map(SecurityContextImpl::new);
 
     }
