@@ -5,6 +5,7 @@ import com.app.domain.movie_emission.MovieEmission;
 import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.ticket.enums.IndividualTicketType;
 import com.app.domain.vo.Discount;
+import com.app.domain.vo.Money;
 import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class Ticket {
 
     private Position position;
     private Discount discount;
+    private Money price;
 
     public TicketDto toDto() {
         return TicketDto.builder()
@@ -36,6 +38,7 @@ public class Ticket {
                 .discount(discount)
                 .type(type)
                 .ticketStatus(ticketStatus)
+                .price(price)
                 .build();
     }
 }

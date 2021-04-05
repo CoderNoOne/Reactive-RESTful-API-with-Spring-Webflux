@@ -3,6 +3,7 @@ package com.app.application.dto;
 import com.app.domain.ticket.enums.IndividualTicketType;
 import com.app.domain.ticket.enums.TicketStatus;
 import com.app.domain.vo.Discount;
+import com.app.domain.vo.Money;
 import com.app.domain.vo.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,4 +22,5 @@ public class TicketDto {
     private IndividualTicketType type;
     private Position position;
     private Discount discount;
+    private Money price;
 }

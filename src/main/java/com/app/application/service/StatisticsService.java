@@ -3,12 +3,14 @@ package com.app.application.service;
 import com.app.application.dto.MovieFrequencyByGenreDto;
 import com.app.application.dto.MovieFrequencyDto;
 import com.app.application.exception.StatisticsServiceException;
+import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema.CinemaRepository;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.city.CityRepository;
 import com.app.domain.movie.MovieRepository;
 import com.app.domain.movie_emission.MovieEmissionRepository;
+import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.TicketOrderRepository;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +18,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,7 +86,7 @@ public class StatisticsService {
     public Flux<MovieFrequencyByGenreDto> findMostPopularMoviesByCity(String cityName) {
 
         if (Objects.isNull(cityName)) {
-            return Flux.error(() -> new StatisticsServiceException("City name is required");
+            return Flux.error(() -> new StatisticsServiceException("City name is required"));
         }
 
         return cityRepository.findByName(cityName)
@@ -92,7 +96,7 @@ public class StatisticsService {
                         .flatMap(cinemaHall -> movieEmissionRepository.findMovieEmissionsByCinemaHallId(cinemaHall.getId()))
                         .flatMap(movieEmission -> ticketPurchaseRepository.findAllByMovieId(movieEmission.getMovie().getId())
                                 .collectMultimap(ticketPurchase -> ticketPurchase.getMovieEmission().getMovie().getGenre(), ticketPurchase -> ticketPurchase.getTickets().size())
-                                .map(this::reduceMultiMapToMapWithMaxElementsOf))
+                                .map(this::reduceMultiMapToMapWithMaxElementOf))
                         .reduce(new ArrayList<MovieFrequencyByGenreDto>(), (list, subMap) -> {
                             list.addAll(subMap
                                     .entrySet()
@@ -116,7 +120,7 @@ public class StatisticsService {
                         .flatMap(cinemaHall -> movieEmissionRepository.findMovieEmissionsByCinemaHallId(cinemaHall.getId()))
                         .flatMap(movieEmission -> ticketPurchaseRepository.findAllByMovieId(movieEmission.getMovie().getId())
                                 .collectMultimap(ticketPurchase -> ticketPurchase.getMovieEmission().getMovie(), ticketPurchase -> ticketPurchase.getTickets().size())
-                                .map(this::reduceMultiMapToMapWithMaxElementsOf))
+                                .map(this::reduceMultiMapToMapWithMaxElementOf))
                         .map(movieFrequencyMap -> Map
                                 .of(city.getName(),
                                         movieFrequencyMap.entrySet().stream()
@@ -130,7 +134,28 @@ public class StatisticsService {
 
     }
 
-    private <T> Map<T, Integer> reduceMultiMapToMapWithMaxElementsOf(Map<T, Collection<Integer>> multiMap) {
+//    Średnia cena biletu na osobę w każdej miejscowości,
+
+//    public Mono<Map<String, BigDecimal>> averageTicketPriceGroupedByCity() {
+//
+//        cityRepository.findAll()
+//                .flatMap(city -> ticketPurchaseRepository
+//                        .findAllByCinemaHallsIds(city.getCinemas()
+//                                .stream()
+//                                .flatMap(cinema -> cinema.getCinemaHalls()
+//                                        .stream()
+//                                        .map(CinemaHall::getId))
+//                                .collect(Collectors.toList())))
+//                .collectMultimap(
+//                        ticketPurchase -> ticketPurchase.getMovieEmission().getCinemaHallId(),
+//                        ticketPurchase -> ticketPurchase.getTickets().stream().map(x ->x. ).collect(
+//                                () -> new BigDecimal[2],
+//                                (arr, big) ->
+//
+//    }
+
+
+    private <T> Map<T, Integer> reduceMultiMapToMapWithMaxElementOf(Map<T, Collection<Integer>> multiMap) {
 
         AtomicInteger maxVal = new AtomicInteger(0);
         AtomicInteger numberOfSameMaxVal = new AtomicInteger(0);

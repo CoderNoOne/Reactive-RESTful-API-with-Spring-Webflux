@@ -4,11 +4,10 @@ server:
 spring:
   data:
     mongodb:
-
       database: cinema_db
       host: mongo_db
-      port: 27017
       replica-set-name: rs0
+      port: 30001
 
 jwt:
   token:
@@ -28,6 +27,8 @@ springdoc:
     groups:
       enabled: true
   packages-to-scan: com.app
+  swagger-ui:
+    path: /docs
 
 change-logs-scan-package: com.app.infrastructure.mongo.initscripts
 adminusername: admin123

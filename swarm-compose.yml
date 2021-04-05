@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+
+  mongo_db:
+    deploy:
+      mode: replicated
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+    image: codernoone/mongo_with_rs0
+    hostname: mongo_db
+    ports:
+      - "27017:27017"
+
+    networks:
+      - net
+
+  app:
+    image: codernoone/webflux_v3
+    depends_on:
+      - mongo_db
+    deploy:
+      mode: replicated
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8080:8080"
+    networks:
+      - net
+
+networks:
+  net:
+    driver: overlay
+
+

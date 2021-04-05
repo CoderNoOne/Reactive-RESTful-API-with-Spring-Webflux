@@ -107,7 +107,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeExchange()
                 .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                .pathMatchers("/security/register").permitAll()
+                .pathMatchers("/register").permitAll()
                 .pathMatchers("/login").permitAll()
 
                 .pathMatchers("/users/**").hasRole("ADMIN")
@@ -123,11 +123,12 @@ public class WebSecurityConfig {
                 .pathMatchers("/ticketOrders/**").hasRole("USER")
                 .pathMatchers(HttpMethod.POST, "/movieEmissions").hasRole("ADMIN")
 
-                .pathMatchers("/swagger-ui.html/**").permitAll()
+                .pathMatchers("/docs/**").permitAll()
                 .pathMatchers("/v3/api-docs/**").permitAll()
                 .pathMatchers("/webjars/swagger-ui/**").permitAll()
 
                 .anyExchange().denyAll()
-                .and().build();
+                .and()
+                .build();
     }
 }
