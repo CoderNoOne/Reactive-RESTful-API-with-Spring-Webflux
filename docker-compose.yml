@@ -1,12 +1,12 @@
-version: '3.8'
+version: '3.9'
 
 services:
 
   mongo1:
-    image: mongo:4.4
+    image: mongo:4.4.4
     container_name: mongo1
     restart: on-failure
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30001" ]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30001","--auth","--keyFile", "data/mongo-cluster.key" ]
     volumes:
       - ./data/mongo-1:/data/db
     ports:
@@ -16,39 +16,35 @@ services:
       interval: 30s
       start_period: 5s
     networks:
-      - net
+      net:
 
 
   mongo2:
-    image: mongo:4.4
+    image: mongo:4.4.4
     container_name: mongo2
     restart: on-failure
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30002" ]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30002","--auth","--keyFile", "data/mongo-cluster.key" ]
     volumes:
       - ./data/mongo-2:/data/db
     ports:
       - 30002:30002
     networks:
-      - net
+      net:
 
   mongo3:
     container_name: mongo3
-    image: mongo:4.4
+    image: mongo:4.4.4
     restart: on-failure
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30003" ]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30003","--auth","--keyFile", "data/mongo-cluster.key" ]
     volumes:
       - ./data/mongo-3:/data/db
     ports:
       - 30003:30003
     networks:
-      - net
-
+      net:
 
   app:
-#    image: codernoone/webflux_restful_api:2.0
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    image: codernnoone/webflux_reactive_restflul_api
     restart: on-failure
     container_name: app
     depends_on:
