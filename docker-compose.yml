@@ -6,7 +6,7 @@ services:
     image: mongo:4.4.4
     container_name: mongo1
     restart: on-failure
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30001","--auth","--keyFile", "data/mongo-cluster.key" ]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30001" ]
     volumes:
       - ./data/mongo-1:/data/db
     ports:
@@ -23,7 +23,7 @@ services:
     image: mongo:4.4.4
     container_name: mongo2
     restart: on-failure
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30002","--auth","--keyFile", "data/mongo-cluster.key" ]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30002" ]
     volumes:
       - ./data/mongo-2:/data/db
     ports:
@@ -35,7 +35,7 @@ services:
     container_name: mongo3
     image: mongo:4.4.4
     restart: on-failure
-    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30003","--auth","--keyFile", "data/mongo-cluster.key" ]
+    command: [ "--replSet", "rs0", "--bind_ip_all", "--port", "30003" ]
     volumes:
       - ./data/mongo-3:/data/db
     ports:
