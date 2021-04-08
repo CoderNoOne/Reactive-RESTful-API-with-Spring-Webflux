@@ -44,7 +44,10 @@ services:
       net:
 
   app:
-    image: codernnoone/webflux_reactive_restflul_api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+#    image: codernnoone/webflux_reactive_restflul_api
     restart: on-failure
     container_name: app
     depends_on:

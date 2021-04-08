@@ -71,10 +71,6 @@ services:
         delay: 10s
       restart_policy:
         condition: on-failure
-    depends_on:
-      - mongo1
-      - mongo2
-      - mongo3
     ports:
       - "8080:8080"
     networks:

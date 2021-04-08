@@ -9,7 +9,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.time.OffsetDateTime;
 import java.util.concurrent.atomic.AtomicReference;
