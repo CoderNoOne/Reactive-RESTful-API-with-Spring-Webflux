@@ -81,3 +81,4 @@ networks:
     driver: overlay
 
 
+# use: docker stack deploy -c <filename> <appName>

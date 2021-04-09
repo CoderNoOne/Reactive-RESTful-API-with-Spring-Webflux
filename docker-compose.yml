@@ -63,3 +63,4 @@ networks:
   net:
 
 
+#use: docker-compose up -d --build
