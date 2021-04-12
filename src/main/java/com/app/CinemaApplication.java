@@ -10,15 +10,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import javax.crypto.SecretKey;
-import java.time.OffsetDateTime;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
 public class CinemaApplication {
-
-    public static final AtomicReference<OffsetDateTime> INSTANCE_CREATION_TIME = new AtomicReference<>(OffsetDateTime.now());
 
     public static void main(String[] args) {
         SpringApplication.run(CinemaApplication.class, args);

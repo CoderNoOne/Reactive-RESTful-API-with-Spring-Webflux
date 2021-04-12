@@ -12,7 +12,6 @@
     <artifactId>cinema_webflux_ddd</artifactId>
     <version>0.0.1</version>
     <name>cinema_webflux_ddd</name>
-    <description>Demo project for Spring Boot</description>
 
     <properties>
         <maven.compiler.source>16</maven.compiler.source>

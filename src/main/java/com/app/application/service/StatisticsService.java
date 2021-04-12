@@ -1,16 +1,15 @@
 package com.app.application.service;
 
+import com.app.application.dto.CityFrequencyDto;
 import com.app.application.dto.MovieFrequencyByGenreDto;
 import com.app.application.dto.MovieFrequencyDto;
 import com.app.application.exception.StatisticsServiceException;
-import com.app.domain.cinema.Cinema;
 import com.app.domain.cinema.CinemaRepository;
 import com.app.domain.cinema_hall.CinemaHall;
 import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.city.CityRepository;
 import com.app.domain.movie.MovieRepository;
 import com.app.domain.movie_emission.MovieEmissionRepository;
-import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.TicketOrderRepository;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +17,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +34,7 @@ public class StatisticsService {
     private final MovieRepository movieRepository;
     private final MovieEmissionRepository movieEmissionRepository;
 
-    public Mono<Map<String, Integer>> findCitiesFrequency() {
+    public Flux<CityFrequencyDto> findCitiesFrequency() {
 
         final var currentDate = LocalDate.now();
 
@@ -49,29 +46,25 @@ public class StatisticsService {
                                 .flatMap(cinema -> cinema.getCinemaHalls().stream().map(CinemaHall::getId))
                                 .collect(Collectors.toList()))
                         .map(ticketPurchase -> ticketPurchase.getTickets().size())
-                        .map(ticketsNumber -> Map.of(city.getName(), ticketsNumber)))
-                .reduce(Collections.emptyMap(), (subMap1, subMap2) -> {
-                    subMap1.putAll(subMap2);
-                    return subMap1;
-                });
+                        .map(ticketsNumber -> CityFrequencyDto.builder()
+                                .city(city.getName())
+                                .frequency(ticketsNumber)
+                                .build()));
+
     }
 
-    public Mono<Map<String, Integer>> findCitiesWithMostFrequency() {
+    public Flux<CityFrequencyDto> findCitiesWithMostFrequency() {
 
-        final Mono<Map<String, Integer>> citiesFrequency = findCitiesFrequency();
+        Flux<CityFrequencyDto> citiesFrequency = findCitiesFrequency();
 
-        final Mono<Integer> maxFrequency = citiesFrequency
-                .map(dict -> Collections.max(dict.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getValue());
+        Mono<Integer> maxFrequency = citiesFrequency.collectList().map(list -> Collections.max(list, Comparator.comparing(CityFrequencyDto::getFrequency)).getFrequency());
 
         return maxFrequency
-                .flatMap(maxValue -> citiesFrequency
-                        .map(dict ->
-                                dict.entrySet()
-                                        .stream()
-                                        .filter(e -> e.getValue().equals(maxValue))
-                                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
-                );
+                .flatMapMany(maxValue -> citiesFrequency
+                        .filter(cityFrequencyDto -> cityFrequencyDto.getFrequency().equals(maxValue)));
+
     }
+
 
     public Flux<MovieFrequencyDto> findAllMoviesFrequency() {
 

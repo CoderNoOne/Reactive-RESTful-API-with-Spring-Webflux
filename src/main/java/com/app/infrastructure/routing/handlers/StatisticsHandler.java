@@ -1,6 +1,6 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.MovieDto;
+import com.app.application.dto.CityFrequencyDto;
 import com.app.application.dto.ResponseErrorDto;
 import com.app.application.service.StatisticsService;
 import com.app.infrastructure.aspect.annotations.Loggable;
@@ -29,7 +29,7 @@ public class StatisticsHandler {
     @Operation(summary = "GET cinema frequency by city for all cities")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(type = "object", requiredProperties = {"city", "frequency"}))
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CityFrequencyDto.class)))
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
@@ -39,6 +39,7 @@ public class StatisticsHandler {
     public Mono<ServerResponse> getCinemaFrequencyByCityForAllCities(final ServerRequest serverRequest) {
 
         return statisticsService.findCitiesFrequency()
+                .collectList()
                 .flatMap(list -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -51,7 +52,7 @@ public class StatisticsHandler {
     @Operation(summary = "GET city with max cinema frequency")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Success", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(type = "object", requiredProperties = {"city", "frequency"}))
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CityFrequencyDto.class)))
             }),
             @ApiResponse(responseCode = "500", description = "Error", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
@@ -61,6 +62,7 @@ public class StatisticsHandler {
     public Mono<ServerResponse> getCinemaWithMaxFrequency(final ServerRequest serverRequest) {
 
         return statisticsService.findCitiesWithMostFrequency()
+                .collectList()
                 .flatMap(list -> ServerResponse
                         .status(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
