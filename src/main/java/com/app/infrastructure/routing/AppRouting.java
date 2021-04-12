@@ -154,7 +154,8 @@ public class AppRouting {
             @RouterOperation(method = RequestMethod.GET, path = "/statistics/cities/cinemaFrequency/max", beanClass = StatisticsHandler.class, beanMethod = "getCinemaWithMaxFrequency"),
             @RouterOperation(method = RequestMethod.GET, path = "/statistics/movies/mostPopular/byCity", beanClass = StatisticsHandler.class, beanMethod = "findMostPopularMovieGroupedByCity"),
             @RouterOperation(method = RequestMethod.GET, path = "/statistics/movies/frequency", beanClass = StatisticsHandler.class, beanMethod = "findAllMoviesFrequency"),
-            @RouterOperation(method = RequestMethod.GET, path = "/statistics/movies/mostPopularGroupedByGenre/byCity/{city}", beanClass = StatisticsHandler.class, beanMethod = "findMostPopularMoviesGroupedByGenreInCity")
+            @RouterOperation(method = RequestMethod.GET, path = "/statistics/movies/mostPopularGroupedByGenre/byCity/{city}", beanClass = StatisticsHandler.class, beanMethod = "findMostPopularMoviesGroupedByGenreInCity"),
+            @RouterOperation(method = RequestMethod.GET, path = "/statistics/averageTicketPrice", beanClass = StatisticsHandler.class, beanMethod = "getAverageTicketPriceGroupedByCity")
     })
     @Bean
     public RouterFunction<ServerResponse> statisticRouting(StatisticsHandler statisticsHandler) {
@@ -162,7 +163,8 @@ public class AppRouting {
                 .andRoute(GET("/statistics/cities/cinemaFrequency/max").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::getCityWithMaxFrequency)
                 .andRoute(GET("/statistics/movies/mostPopular/byCity").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::findMostPopularMovieGroupedByCity)
                 .andRoute(GET("/statistics/movies/frequency").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::findAllMoviesFrequency)
-                .andRoute(GET("/statistics/movies/mostPopularGroupedByGenre/byCity/{city}").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::findMostPopularMoviesGroupedByGenreInCity);
+                .andRoute(GET("/statistics/movies/mostPopularGroupedByGenre/byCity/{city}").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::findMostPopularMoviesGroupedByGenreInCity)
+                .andRoute(GET("/statistics/averageTicketPrice").and(accept(MediaType.APPLICATION_JSON)), statisticsHandler::getAverageTicketPriceGroupedByCity);
     }
 
     @Bean

@@ -1,9 +1,6 @@
 package com.app.infrastructure.routing.handlers;
 
-import com.app.application.dto.CityFrequencyDto;
-import com.app.application.dto.MostPopularMovieGroupedByCityDto;
-import com.app.application.dto.MovieFrequencyDto;
-import com.app.application.dto.ResponseErrorDto;
+import com.app.application.dto.*;
 import com.app.application.service.StatisticsService;
 import com.app.infrastructure.aspect.annotations.Loggable;
 import io.swagger.v3.oas.annotations.Operation;
@@ -140,6 +137,30 @@ public class StatisticsHandler {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(list))
                 );
+    }
+
+
+    @Loggable
+    @Operation(summary = "GET average ticket price grouped by city")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Success", content = {
+                    @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = AverageTicketPriceByCityDto.class)))
+            }),
+            @ApiResponse(responseCode = "500", description = "Error", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = ResponseErrorDto.class))
+            })
+
+    })
+    public Mono<ServerResponse> getAverageTicketPriceGroupedByCity(final ServerRequest serverRequest) {
+
+        return statisticsService.getAverageTicketPriceGroupedByCity()
+                .collectList()
+                .flatMap(list -> ServerResponse
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(list))
+                );
+
     }
 
 }

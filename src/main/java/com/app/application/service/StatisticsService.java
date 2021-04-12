@@ -1,9 +1,6 @@
 package com.app.application.service;
 
-import com.app.application.dto.CityFrequencyDto;
-import com.app.application.dto.MostPopularMovieGroupedByCityDto;
-import com.app.application.dto.MovieFrequencyByGenreDto;
-import com.app.application.dto.MovieFrequencyDto;
+import com.app.application.dto.*;
 import com.app.application.exception.StatisticsServiceException;
 import com.app.domain.cinema.CinemaRepository;
 import com.app.domain.cinema_hall.CinemaHall;
@@ -11,6 +8,7 @@ import com.app.domain.cinema_hall.CinemaHallRepository;
 import com.app.domain.city.CityRepository;
 import com.app.domain.movie.MovieRepository;
 import com.app.domain.movie_emission.MovieEmissionRepository;
+import com.app.domain.ticket.Ticket;
 import com.app.domain.ticket_order.TicketOrderRepository;
 import com.app.domain.ticket_purchase.TicketPurchaseRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -146,7 +146,36 @@ public class StatisticsService {
                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
     }
 
+    public Flux<AverageTicketPriceByCityDto> getAverageTicketPriceGroupedByCity() {
 
+        return cityRepository.findAll()
+                .flatMap(city -> ticketPurchaseRepository
+                        .findAllByCinemaHallsIds(city.getCinemas()
+                                .stream()
+                                .flatMap(cinema -> cinema.getCinemaHalls()
+                                        .stream()
+                                        .map(CinemaHall::getId))
+                                .collect(Collectors.toList()))
+                        .collectMap(
+                                ticketPurchase -> city,
+                                ticketPurchase -> averageTicketPrice(ticketPurchase.getTickets())
+                        ))
+                .map(entry -> AverageTicketPriceByCityDto.builder()
+                        .city(entry.keySet().iterator().next().getName())
+                        .averageTicketPrice(entry.values().iterator().next())
+                        .build());
 
+    }
 
+    private BigDecimal averageTicketPrice(List<Ticket> tickets) {
+
+        var counter = new AtomicInteger(0);
+
+        return tickets
+                .stream()
+                .peek((ticket) -> counter.set(counter.get() + 1))
+                .map(ticket -> ticket.getPrice().getValue())
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(new BigDecimal(counter.get()), 2, RoundingMode.HALF_UP);
+    }
 }
