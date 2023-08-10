@@ -47,7 +47,7 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-#    image: codernnoone/webflux_reactive_restflul_api
+    #    image: codernnoone/webflux_reactive_restflul_api
     restart: on-failure
     container_name: app
     depends_on:
@@ -56,6 +56,7 @@ services:
       - mongo3
     ports:
       - "8080:8080"
+      - "5005:5005"
     networks:
       - net
 

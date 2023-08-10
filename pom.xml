@@ -14,8 +14,8 @@
     <name>cinema_webflux_ddd</name>
 
     <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <start-class>com.app.CinemaApplication</start-class>
     </properties>
 
@@ -250,14 +250,6 @@
                     <fork>true</fork>
                     <mainClass>${start-class}</mainClass>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>buildImage</id>
-                        <goals>
-                            <goal>build-image</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -285,11 +277,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <target>16</target>
-                    <source>16</source>
-                    <compilerArgs>
-                        <arg>--enable-preview</arg>
-                    </compilerArgs>
+                    <target>17</target>
+                    <source>17</source>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
